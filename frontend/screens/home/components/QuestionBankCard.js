@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const QuestionBankCard = ({ category, questions }) => {
     return (
@@ -11,7 +12,7 @@ const QuestionBankCard = ({ category, questions }) => {
 
                 {/* Coins (valor fijo) */}
                 <View style={styles.priceContainer}>
-                    <Ionicons name="cash-outline" size={16} color="#555" />
+                    <FontAwesome5 name="coins" size={15} color="#FFD700" />
                     <Text style={styles.priceText}> 1</Text>
                 </View>
 
