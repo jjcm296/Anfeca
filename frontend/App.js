@@ -1,8 +1,10 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import Home from './screens/home/Home';
+import Ionicons from 'react-native-vector-icons/Ionicons'; // 🔹 Importación corregida
+import Home from "./screens/home/Home";
+import Rewards from './screens/rewards/Rewards';
+import Profile from './screens/profile/Profile';
 
 const Tab = createBottomTabNavigator();
 
@@ -28,14 +30,10 @@ export default function App() {
               headerShown: false, // Oculta el título de cada pantalla
             })}
         >
-          <Tab.Screen name="Rewards" component={RewardsScreen} />
+          <Tab.Screen name="Rewards" component={Rewards} />
           <Tab.Screen name="Home" component={Home} />
-          <Tab.Screen name="Profile" component={ProfileScreen} />
+          <Tab.Screen name="Profile" component={Profile} />
         </Tab.Navigator>
       </NavigationContainer>
   );
 }
-
-// Pantallas temporales para Rewards y Profile
-const RewardsScreen = () => <></>;
-const ProfileScreen = () => <></>;
