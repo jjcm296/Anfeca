@@ -5,7 +5,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 const CoinsDisplay = ({ coins }) => {
     return (
         <View style={styles.container}>
-            <FontAwesome5 name="coins" size={18} color="#FFD700" />
+            <FontAwesome5 name="coins" size={20} color="#FFD700" />
             <Text style={styles.coinText}>{coins}</Text>
         </View>
     );
