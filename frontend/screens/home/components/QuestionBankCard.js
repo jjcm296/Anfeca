@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     priceContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 8, // Mayor separación con "Preguntas"
+        marginBottom: 1, // Mayor separación con "Preguntas"
     },
     priceText: {
         fontSize: 16,
