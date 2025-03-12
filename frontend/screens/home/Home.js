@@ -4,7 +4,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import CoinsDisplay from '../ui/CoinsDisplay'; // Monedas
 import StreakDisplay from '../ui/StreakDisplay'; // Racha
 import QuestionBankCard from "./components/QuestionBankCard"; // Tarjetas de categorías
-import QuestionCard from "./screens/questions/components/QuestionCard"; // Tarjetas de preguntas
+import QuestionCard from "./screens/questions/components/QuestionCard";
+import AddButton from "../ui/AddButton"; // Tarjetas de preguntas
 
 const questionBanks = [
     { id: '1', category: 'Matemáticas', questions: 5 },
@@ -24,6 +25,14 @@ const questionsList = {
         { id: '2', questionNumber: 2, questionText: "¿Qué planeta es el más grande?" },
     ],
     Historia: [
+        { id: '1', questionNumber: 1, questionText: "¿Quién descubrió América?" },
+        { id: '2', questionNumber: 2, questionText: "¿En qué año fue la Revolución Francesa?" },
+    ],
+    Geografia: [
+        { id: '1', questionNumber: 1, questionText: "¿Cuál es la fórmula del agua?" },
+        { id: '2', questionNumber: 2, questionText: "¿Qué planeta es el más grande?" },
+    ],
+    Deportes: [
         { id: '1', questionNumber: 1, questionText: "¿Quién descubrió América?" },
         { id: '2', questionNumber: 2, questionText: "¿En qué año fue la Revolución Francesa?" },
     ],
@@ -88,6 +97,7 @@ const HomeScreen = ({ navigation }) => {
                     showsVerticalScrollIndicator={false}
                 />
             )}
+            <AddButton/>
         </View>
     );
 };
