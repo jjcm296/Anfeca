@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, StatusBar } from 'react-native';
-import CoinsDisplay from '../../../stats/CoinsDisplay'; // Componente de monedas
-import StreakDisplay from '../../../stats/StreakDisplay'; // Componente de racha
-import QuestionCard from "./components/QuestionCard"; // Componente de tarjeta de preguntas
+import { View, FlatList, StatusBar, StyleSheet } from 'react-native';
+import QuestionCard from "./components/QuestionCard";
+import AddButton from "../../../ui/AddButton"; // Botón de agregar
 
 const questionCard = [
     { questionNumber: 1, questionText: "¿Cuál es la capital de Francia?", onPress: "a" },
@@ -22,12 +21,6 @@ const Questions = ({ route }) => {
 
     return (
         <View style={styles.container}>
-            {/* Contenedor superior para monedas y racha */}
-            <View style={styles.topBar}>
-                <CoinsDisplay coins={100} />
-                <StreakDisplay streak={5} />
-            </View>
-
             {/* Lista de preguntas */}
             <FlatList
                 data={questionCard}
@@ -42,6 +35,7 @@ const Questions = ({ route }) => {
                 contentContainerStyle={styles.listContainer}
                 showsVerticalScrollIndicator={false}
             />
+
         </View>
     );
 };
@@ -49,16 +43,6 @@ const Questions = ({ route }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    topBar: {
-        flexDirection: 'row',
-        width: '100%',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        marginTop: StatusBar.currentHeight || 10,
-        shadowOffset: { width: 0, height: 2 },
     },
     listContainer: {
         paddingVertical: 20,

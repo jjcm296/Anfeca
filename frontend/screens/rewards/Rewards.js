@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, StatusBar, FlatList } from 'react-native';
-import CoinsDisplay from '../stats/CoinsDisplay'; // Importar monedas
-import StreakDisplay from '../stats/StreakDisplay'; // Importar racha
+import CoinsDisplay from '../ui/CoinsDisplay'; // Importar monedas
+import StreakDisplay from '../ui/StreakDisplay'; // Importar racha
 
 const Rewards = () => {
     return (

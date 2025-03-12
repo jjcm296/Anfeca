@@ -2,27 +2,26 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const NavBar = () => {
+const NavBar = ({ navigation }) => {
     return (
         <View style={styles.navBar}>
-            {/* Botón Reward (Premio) */}
-            <TouchableOpacity style={styles.navItem}>
+            {/* Botón Rewards */}
+            <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Rewards")}>
                 <Ionicons name="trophy" size={24} color="gray" />
                 <Text style={styles.navText}>Rewards</Text>
             </TouchableOpacity>
 
             {/* Botón Home */}
-            <TouchableOpacity style={styles.navItem}>
+            <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Home")}>
                 <Ionicons name="home" size={24} color="#6200EE" />
                 <Text style={styles.navText}>Home</Text>
             </TouchableOpacity>
 
             {/* Botón Profile */}
-            <TouchableOpacity style={styles.navItem}>
+            <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Profile")}>
                 <Ionicons name="person" size={24} color="gray" />
                 <Text style={styles.navText}>Profile</Text>
             </TouchableOpacity>
-
         </View>
     );
 };

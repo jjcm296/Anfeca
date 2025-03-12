@@ -25,9 +25,6 @@ const styles = StyleSheet.create({
         padding: 15,
         alignItems: 'center',
         justifyContent: 'space-between',
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 2 },
         shadowRadius: 5,
         elevation: 3,
         marginVertical: 10, // Espaciado entre tarjetas
