@@ -11,7 +11,7 @@ const Tab = createBottomTabNavigator();
 export default function App() {
     return (
         <NavigationContainer>
-            <Tab.Navigator
+            <Tab.Navigator initialRouteName="Home"
                 screenOptions={({ route }) => ({
                     tabBarIcon: ({ color, size }) => {
                         let iconName;
@@ -30,9 +30,9 @@ export default function App() {
                     headerShown: false,
                 })}
             >
-                <Tab.Screen name="Rewards" component={Rewards} />
-                <Tab.Screen name="Home" component={Home} />
-                <Tab.Screen name="Profile" component={Profile} />
+                <Tab.Screen name="Rewards" component={Rewards} options={{ unmountOnBlur: true }}/>
+                <Tab.Screen name="Home" component={Home} options={{ unmountOnBlur: true }}/>
+                <Tab.Screen name="Profile" component={Profile} options={{ unmountOnBlur: true }}/>
             </Tab.Navigator>
         </NavigationContainer>
     );
