@@ -37,17 +37,13 @@ const QuestionBankCard = ({ category, questions }) => {
 const styles = StyleSheet.create({
     card: {
         flexDirection: 'row',
-        backgroundColor: '#F5F5F5', // Gris claro
-        borderRadius: 15,
+        backgroundColor: '#FFFFFF', // Blanco para mejor contraste
+        borderRadius: 20, // Esquinas más redondeadas
         padding: 15,
         alignItems: 'center',
         justifyContent: 'space-between',
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 5,
-        elevation: 3,
         marginHorizontal: 10,
+        marginTop: 5, // Mayor separación entre tarjetas
     },
     playButton: {
         width: 60,

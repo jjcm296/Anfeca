@@ -20,15 +20,15 @@ const QuestionCard = ({ questionNumber, questionText, onPress }) => {
 const styles = StyleSheet.create({
     card: {
         flexDirection: 'row',
-        backgroundColor: '#F5F5F5', // Fondo gris claro
-        borderRadius: 15,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
         padding: 15,
         alignItems: 'center',
         justifyContent: 'space-between',
         shadowRadius: 5,
         elevation: 3,
-        marginVertical: 10, // Espaciado entre tarjetas
-        marginHorizontal: 15, // Espaciado lateral
+        marginVertical: 5, // Espaciado entre tarjetas
+        marginHorizontal: 5, // Espaciado lateral
     },
     textContainer: {
         flex: 1,
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     },
     questionText: {
         fontSize: 14,
-        color: '#555',
+        color: '#000000',
     },
 });
 
