@@ -1,30 +1,24 @@
-import React from 'react';
-import { View, FlatList, StatusBar, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, FlatList, StyleSheet } from 'react-native';
 import QuestionCard from "./components/QuestionCard";
-import AddButton from "../../../ui/AddButton"; // Botón de agregar
+import AddButton from "../../../ui/components/AddButton";
+import FakeDataBase from '../../../../fakeDataBase/FakeDataBase';
 
-const questionCard = [
-    { questionNumber: 1, questionText: "¿Cuál es la capital de Francia?", onPress: "a" },
-    { questionNumber: 2, questionText: "¿Cuál es la capital de España?", onPress: "b" },
-    { questionNumber: 3, questionText: "¿Cuál es la capital de Italia?", onPress: "c" },
-    { questionNumber: 4, questionText: "¿Cuál es la capital de Alemania?", onPress: "d" },
-    { questionNumber: 5, questionText: "¿Cuál es la capital de Portugal?", onPress: "e" },
-    { questionNumber: 6, questionText: "¿Cuál es la capital de Rusia?", onPress: "f" },
-    { questionNumber: 7, questionText: "¿Cuál es la capital de China?", onPress: "g" },
-    { questionNumber: 8, questionText: "¿Cuál es la capital de Japón?", onPress: "h" },
-    { questionNumber: 9, questionText: "¿Cuál es la capital de Australia?", onPress: "i" },
-    { questionNumber: 10, questionText: "¿Cuál es la capital de Argentina?", onPress: "j" },
-];
+const Questions = ({ route, navigation }) => {
+    const { category } = route.params; // Recibe la categoría desde HomeScreen
+    const [questions, setQuestions] = useState([]);
 
-const Questions = ({ route }) => {
-    const { category, questions } = route.params; // Recibe los parámetros de navegación
+    // Cargar las preguntas de la categoría seleccionada
+    useEffect(() => {
+        setQuestions(FakeDataBase.getQuestionsByCategory(category));
+    }, [category]);
 
     return (
         <View style={styles.container}>
-            {/* Lista de preguntas */}
+            {/* 🔹 Lista de preguntas de la categoría seleccionada */}
             <FlatList
-                data={questionCard}
-                keyExtractor={(item) => item.onPress}
+                data={questions}
+                keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <QuestionCard
                         questionNumber={item.questionNumber}
@@ -36,10 +30,13 @@ const Questions = ({ route }) => {
                 showsVerticalScrollIndicator={false}
             />
 
+            {/* 🔹 Botón independiente para agregar preguntas dentro de Questions */}
+            <AddButton onPress={() => navigation.navigate("AddQuestion", { category })} />
         </View>
     );
 };
 
+// 🔹 Estilos
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -48,9 +45,6 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         paddingHorizontal: 15,
         paddingBottom: 80,
-    },
-    separator: {
-        height: 5,
     },
 });
 

@@ -1,120 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, StatusBar, FlatList, TouchableWithoutFeedback } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import CoinsDisplay from '../ui/CoinsDisplay'; // Monedas
-import StreakDisplay from '../ui/StreakDisplay'; // Racha
-import QuestionBankCard from "./components/QuestionBankCard"; // Tarjetas de categorías
-import QuestionCard from "./screens/questions/components/QuestionCard";
-import AddButton from "../ui/AddButton"; // Tarjetas de preguntas
-
-const questionBanks = [
-    { id: '1', category: 'Matemáticas', questions: 5 },
-    { id: '2', category: 'Ciencias', questions: 8 },
-    { id: '3', category: 'Historia', questions: 10 },
-    { id: '4', category: 'Geografía', questions: 6 },
-    { id: '5', category: 'Deportes', questions: 3 },
-];
-
-const questionsList = {
-    Matemáticas: [
-        { id: '1', questionNumber: 1, questionText: "¿Cuánto es 2+2?" },
-        { id: '2', questionNumber: 2, questionText: "¿Cuánto es 5x3?" },
-    ],
-    Ciencias: [
-        { id: '1', questionNumber: 1, questionText: "¿Cuál es la fórmula del agua?" },
-        { id: '2', questionNumber: 2, questionText: "¿Qué planeta es el más grande?" },
-    ],
-    Historia: [
-        { id: '1', questionNumber: 1, questionText: "¿Quién descubrió América?" },
-        { id: '2', questionNumber: 2, questionText: "¿En qué año fue la Revolución Francesa?" },
-    ],
-    Geografia: [
-        { id: '1', questionNumber: 1, questionText: "¿Cuál es la fórmula del agua?" },
-        { id: '2', questionNumber: 2, questionText: "¿Qué planeta es el más grande?" },
-    ],
-    Deportes: [
-        { id: '1', questionNumber: 1, questionText: "¿Quién descubrió América?" },
-        { id: '2', questionNumber: 2, questionText: "¿En qué año fue la Revolución Francesa?" },
-    ],
-};
+import QuestionBankCard from "./components/QuestionBankCard";
+import AddButton from "../ui/components/AddButton";
+import FakeDataBase from '../../fakeDataBase/FakeDataBase';
 
 const HomeScreen = ({ navigation }) => {
-    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [questionBanks, setQuestionBanks] = useState([]);
 
-    // 🚀 Restablece la categoría cuando el usuario regresa a Home
+    // Cargar los bancos de preguntas desde la FakeDataBase
+    useEffect(() => {
+        setQuestionBanks(FakeDataBase.getQuestionBanks());
+    }, []);
+
+    // Si el usuario presiona Home en la barra de navegación, vuelve a los bancos de preguntas
     useFocusEffect(
         React.useCallback(() => {
-            setSelectedCategory(null);
+            setQuestionBanks(FakeDataBase.getQuestionBanks());
         }, [])
     );
 
-    // ✅ Restablecer la vista principal cuando se presiona "Home" en la barra de navegación
-    useEffect(() => {
-        const unsubscribe = navigation.addListener('tabPress', (e) => {
-            setSelectedCategory(null); // Se asegura de que siempre regrese a las tarjetas
-        });
-
-        return unsubscribe;
-    }, [navigation]);
-
     return (
         <View style={styles.container}>
-            {/* Contenedor superior para monedas y racha (Siempre visible) */}
-            <View style={styles.topBar}>
-                <CoinsDisplay coins={100} />
-                <StreakDisplay streak={5} />
-            </View>
+            {/* 🔹 Lista de bancos de preguntas */}
+            <FlatList
+                data={questionBanks}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() => navigation.navigate("Questions", { category: item.category })}>
+                        <QuestionBankCard category={item.category} questions={item.questions} />
+                    </TouchableOpacity>
+                )}
+                contentContainerStyle={styles.listContainer}
+                ItemSeparatorComponent={() => <View style={styles.separator} />}
+                showsVerticalScrollIndicator={false}
+            />
 
-            {/* Mostrar lista de tarjetas o preguntas según el estado */}
-            {selectedCategory === null ? (
-                <FlatList
-                    data={questionBanks}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                        <TouchableWithoutFeedback onPress={() => setSelectedCategory(item.category)}>
-                            <View>
-                                <QuestionBankCard category={item.category} questions={item.questions} />
-                            </View>
-                        </TouchableWithoutFeedback>
-                    )}
-                    contentContainerStyle={styles.listContainer}
-                    ItemSeparatorComponent={() => <View style={styles.separator} />}
-                    showsVerticalScrollIndicator={false}
-                />
-            ) : (
-                <FlatList
-                    data={questionsList[selectedCategory] || []}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                        <QuestionCard
-                            questionNumber={item.questionNumber}
-                            questionText={item.questionText}
-                            onPress={() => {}}
-                        />
-                    )}
-                    contentContainerStyle={styles.listContainer}
-                    ItemSeparatorComponent={() => <View style={styles.separator} />}
-                    showsVerticalScrollIndicator={false}
-                />
-            )}
+            {/* 🔹 Botón independiente para HomeScreen */}
             <AddButton/>
         </View>
     );
 };
 
+// 🔹 Estilos
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    topBar: {
-        flexDirection: 'row',
-        width: '100%',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        marginTop: StatusBar.currentHeight || 10,
-        shadowOffset: { width: 0, height: 2 },
     },
     listContainer: {
         paddingVertical: 20,
