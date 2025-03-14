@@ -45,7 +45,7 @@ const HomeScreen = ({ navigation }) => {
             />
 
             {/* 🔹 Botón independiente para HomeScreen */}
-            <AddButton />
+            <AddButton onPress={() => navigation.navigate("AddQuestionBank")} />
         </View>
     );
 };
