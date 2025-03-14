@@ -8,21 +8,29 @@ import FakeDataBase from '../../fakeDataBase/FakeDataBase';
 const HomeScreen = ({ navigation }) => {
     const [questionBanks, setQuestionBanks] = useState([]);
 
-    // Cargar los bancos de preguntas desde la FakeDataBase
+    // Cargar los bancos de preguntas y contar la cantidad de preguntas en cada uno
     useEffect(() => {
-        setQuestionBanks(FakeDataBase.getQuestionBanks());
+        const banks = FakeDataBase.getQuestionBanks().map(bank => ({
+            ...bank,
+            questions: FakeDataBase.getQuestionsByCategory(bank.category).length
+        }));
+        setQuestionBanks(banks);
     }, []);
 
     // Si el usuario presiona Home en la barra de navegación, vuelve a los bancos de preguntas
     useFocusEffect(
         React.useCallback(() => {
-            setQuestionBanks(FakeDataBase.getQuestionBanks());
+            const banks = FakeDataBase.getQuestionBanks().map(bank => ({
+                ...bank,
+                questions: FakeDataBase.getQuestionsByCategory(bank.category).length
+            }));
+            setQuestionBanks(banks);
         }, [])
     );
 
     return (
         <View style={styles.container}>
-            {/* 🔹 Lista de bancos de preguntas */}
+            {/* 🔹 Lista de bancos de preguntas con número actualizado de preguntas */}
             <FlatList
                 data={questionBanks}
                 keyExtractor={(item) => item.id}
@@ -37,7 +45,7 @@ const HomeScreen = ({ navigation }) => {
             />
 
             {/* 🔹 Botón independiente para HomeScreen */}
-            <AddButton/>
+            <AddButton />
         </View>
     );
 };
