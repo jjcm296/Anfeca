@@ -5,12 +5,14 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Home from "./screens/home/Home";
 import Rewards from './screens/rewards/Rewards';
 import Profile from './screens/profile/Profile';
+import TopBar from "./screens/ui/topBar/TopBar";
 
 const Tab = createBottomTabNavigator();
 
 export default function App() {
     return (
         <NavigationContainer>
+            <TopBar coins={100} streak={5} />
             <Tab.Navigator initialRouteName="Home"
                            screenOptions={({ route }) => ({
                                tabBarIcon: ({ color, size }) => {
