@@ -5,8 +5,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 const StreakDisplay = ({ streak }) => {
     return (
         <View style={styles.container}>
-            <Ionicons name="flame" size={24} color="#FF4500" />
             <Text style={styles.streakText}>{streak}</Text>
+            <Ionicons name="flame" size={24} color="#FF4500" />
         </View>
     );
 };
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     streakText: {
-        fontSize: 16,
+        fontSize: 19,
         fontWeight: 'bold',
         color: '#FF4500',
         marginLeft: 5,

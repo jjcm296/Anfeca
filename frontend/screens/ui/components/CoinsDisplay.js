@@ -1,11 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { View, Text, StyleSheet, Image } from 'react-native';
 
 const CoinsDisplay = ({ coins }) => {
     return (
         <View style={styles.container}>
-            <FontAwesome5 name="coins" size={20} color="#FFD700" />
+            <Image source={require('../../../images/Coins_bueno.png')} style={styles.coinImage} />
             <Text style={styles.coinText}>{coins}</Text>
         </View>
     );
@@ -15,14 +14,19 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
+        justifyContent: 'center',
+        marginHorizontal: 10,
+    },
+    coinImage: {
+        width: 30,
+        height: 30,
+        resizeMode: 'contain',
     },
     coinText: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
-        color: '#555',
-        marginLeft: 5,
+        color: '#000000',
+        marginLeft: 2,
     },
 });
 
