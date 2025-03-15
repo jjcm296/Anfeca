@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import FakeDatabase from '../../../../../../fakeDataBase/FakeDataBase';
+import CustomButton from '../../../../../ui/components/CustomButton'; // Ajusta la ruta según tu estructura
+import CoinIcon from '../../../../../ui/components/CoinIcon'; // Importamos el componente reutilizable de moneda
 
-const AddQuestionScreen = ({ route, navigation }) => {
+const AddQuestion = ({ route, navigation }) => {
     const { category } = route.params;
     const [question, setQuestion] = useState('');
     const [answers, setAnswers] = useState(['', '', '', '']);
@@ -23,7 +24,6 @@ const AddQuestionScreen = ({ route, navigation }) => {
         }
 
         FakeDatabase.addQuestion(category, question);
-
         Alert.alert("Éxito", "Pregunta agregada correctamente.");
         navigation.goBack(); // 🔙 Regresa a la pantalla anterior
     };
@@ -63,19 +63,16 @@ const AddQuestionScreen = ({ route, navigation }) => {
                     <Picker.Item label="2 Coins" value="2" />
                     <Picker.Item label="3 Coins" value="3" />
                 </Picker>
-                <FontAwesome5 name="coins" size={24} color="#FFD700" style={styles.icon} />
+                <CoinIcon size={30} /> {/* Ahora usamos el componente reutilizable */}
             </View>
 
-            {/* Botón para agregar la pregunta */}
-            <TouchableOpacity
-                style={
-                [styles.addButton, (question.trim() === '' || answers.some(ans => ans.trim() === '')) && styles.disabledButton]
-            }
+            {/* Botón reutilizable */}
+            <CustomButton
+                color="#6200EE"
+                text="Agregar Pregunta"
                 onPress={handleSubmit}
                 disabled={question.trim() === '' || answers.some(ans => ans.trim() === '')}
-            >
-                <Text style={styles.addButtonText}>Agregar Pregunta</Text>
-            </TouchableOpacity>
+            />
         </View>
     );
 };
@@ -119,23 +116,6 @@ const styles = StyleSheet.create({
     picker: {
         flex: 1
     },
-    icon: {
-        marginLeft: 10
-    },
-    addButton: {
-        backgroundColor: '#6200EE',
-        padding: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-        marginTop: 20
-    },
-    addButtonText: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 'bold' },
-    disabledButton: {
-        backgroundColor: '#B0B0B0'
-    },
 });
 
-export default AddQuestionScreen;
+export default AddQuestion;

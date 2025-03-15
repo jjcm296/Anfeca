@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import FakeDatabase from '../../../../fakeDataBase/FakeDataBase';
+import CustomButton from '../../../ui/components/CustomButton'; // Importa el botón reutilizable
 
 const AddQuestionBank = ({ navigation }) => {
     const [category, setCategory] = useState('');
@@ -35,17 +36,13 @@ const AddQuestionBank = ({ navigation }) => {
                 onChangeText={setCategory}
             />
 
-            {/* Botón para agregar el banco de preguntas */}
-            <TouchableOpacity
-                style={[
-                    styles.addButton,
-                    (category.trim() === '' || questionCount.trim() === '') && styles.disabledButton
-                ]}
+            {/* Botón reutilizable */}
+            <CustomButton
+                color="#6200EE"
+                text="Agregar Banco"
                 onPress={handleSubmit}
                 disabled={category.trim() === '' || questionCount.trim() === ''}
-            >
-                <Text style={styles.addButtonText}>Agregar Banco</Text>
-            </TouchableOpacity>
+            />
         </View>
     );
 };
@@ -71,21 +68,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         borderWidth: 1,
         borderColor: '#ddd'
-    },
-    addButton: {
-        backgroundColor: '#6200EE',
-        padding: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-        marginTop: 20
-    },
-    addButtonText: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 'bold'
-    },
-    disabledButton: {
-        backgroundColor: '#B0B0B0'
     },
 });
 

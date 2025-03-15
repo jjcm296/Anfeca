@@ -4,6 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import QuestionBankCard from "./components/QuestionBankCard";
 import AddButton from "../ui/components/AddButton";
 import FakeDataBase from '../../fakeDataBase/FakeDataBase';
+import WebButton from "./components/WebButton";
 
 const HomeScreen = ({ navigation }) => {
     const [questionBanks, setQuestionBanks] = useState([]);
@@ -46,11 +47,15 @@ const HomeScreen = ({ navigation }) => {
 
             {/* 🔹 Botón independiente para HomeScreen */}
             <AddButton onPress={() => navigation.navigate("AddQuestionBank")} />
+
+            <WebButton
+                imageSource={require('../../images/Logo-png.png')}
+            />
+
         </View>
     );
 };
 
-// 🔹 Estilos
 const styles = StyleSheet.create({
     container: {
         flex: 1,

@@ -1,17 +1,9 @@
 import React from 'react';
 import { View, StyleSheet, StatusBar, FlatList } from 'react-native';
-import CoinsDisplay from '../ui/CoinsDisplay'; // Importar monedas
-import StreakDisplay from '../ui/StreakDisplay'; // Importar racha
 
 const Profile = () => {
     return (
         <View style={styles.container}>
-            {/* Contenedor superior para monedas y racha */}
-            <View style={styles.topBar}>
-                <CoinsDisplay coins={100} />  {/* Monedas a la izquierda */}
-                <StreakDisplay streak={5} />  {/* Racha a la derecha */}
-            </View>
-
             {/* Lista de tarjetas con separación */}
         </View>
     );

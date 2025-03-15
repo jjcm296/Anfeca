@@ -9,6 +9,7 @@ import AddQuestionScreen from "./screens/home/screens/questions/screens/addQuest
 import RewardsScreen from './screens/rewards/Rewards';
 import ProfileScreen from './screens/profile/Profile';
 import TopBar from "./screens/ui/topBar/TopBar";
+import AddQuestionBank from "./screens/home/screens/AddBankCard/AddQuestionBank";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -18,6 +19,7 @@ function HomeStack() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="HomeMain" component={HomeScreen} />
+            <Stack.Screen name="AddQuestionBank" component={AddQuestionBank}/>
             <Stack.Screen name="Questions" component={QuestionsScreen} />
             <Stack.Screen name="AddQuestion" component={AddQuestionScreen} />
         </Stack.Navigator>
