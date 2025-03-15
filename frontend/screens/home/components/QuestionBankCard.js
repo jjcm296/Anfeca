@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const QuestionBankCard = ({ category, questions }) => {
     return (
@@ -12,8 +11,8 @@ const QuestionBankCard = ({ category, questions }) => {
 
                 {/* Coins (valor fijo) */}
                 <View style={styles.priceContainer}>
-                    <FontAwesome5 name="coins" size={15} color="#FFD700" />
-                    <Text style={styles.priceText}> 1</Text>
+                    <Image source={require('../../../images/Coins_bueno.png')} style={styles.coinImage} />
+                    <Text style={styles.priceText}>1</Text>
                 </View>
 
                 {/* Número de Preguntas dinámico */}
@@ -63,11 +62,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 1, // Mayor separación con "Preguntas"
     },
+    coinImage: {
+        width: 25, // Tamaño reducido de la moneda
+        height: 25,
+        resizeMode: 'contain',
+        marginRight: -5, // Mueve la moneda más a la izquierda
+    },
     priceText: {
         fontSize: 16,
         fontWeight: 'bold',
         color: '#555',
-        marginLeft: 5,
+        marginLeft: 5, // Reduce el espacio entre la moneda y el número
         lineHeight: 20, // Aumenta el espacio entre líneas
     },
     categoryText: {
