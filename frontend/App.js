@@ -4,12 +4,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import HomeScreen from "./screens/home/Home";
-import QuestionsScreen from "./screens/home/screens/questions/Questions";
-import AddQuestionScreen from "./screens/home/screens/questions/screens/addQuestion/AddQuestion";
+import QuestionsScreen from "./screens/home/screens/Questions";
+import AddQuestionScreen from "./screens/home/screens/AddQuestion";
 import RewardsScreen from './screens/rewards/Rewards';
 import ProfileScreen from './screens/profile/Profile';
 import TopBar from "./screens/ui/topBar/TopBar";
-import AddQuestionBank from "./screens/home/screens/AddBankCard/AddQuestionBank";
+import AddQuestionBank from "./screens/home/screens/AddQuestionBank";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

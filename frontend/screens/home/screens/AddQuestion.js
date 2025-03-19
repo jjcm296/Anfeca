@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import FakeDatabase from '../../../../../../fakeDataBase/FakeDataBase';
-import CustomButton from '../../../../../ui/components/CustomButton'; // Ajusta la ruta según tu estructura
-import CoinIcon from '../../../../../ui/components/CoinIcon'; // Importamos el componente reutilizable de moneda
+import FakeDatabase from '../../../fakeDataBase/FakeDataBase';
+import CustomButton from '../../ui/components/CustomButton'; // Botón reutilizable
+import CoinIcon from '../../ui/components/CoinIcon'; // Icono de moneda reutilizable
+import CustomInput from '../../ui/components/CustomInput'; // Nuevo Input
 
 const AddQuestion = ({ route, navigation }) => {
-    const { category } = route.params;
+    const { category } = route.params || {}; // Asegurar que category existe
     const [question, setQuestion] = useState('');
     const [answers, setAnswers] = useState(['', '', '', '']);
     const [difficulty, setDifficulty] = useState('1');
@@ -30,24 +31,26 @@ const AddQuestion = ({ route, navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Agregar Pregunta a {category}</Text>
+            <Text style={styles.title}>
+                Agregar Pregunta a <Text style={styles.categoryText}>{category ? String(category) : 'Sin Categoría'}</Text>
+            </Text>
 
-            {/* Campo para ingresar la pregunta */}
-            <TextInput
-                style={styles.input}
+            {/* Campo para ingresar la pregunta con `CustomInput` */}
+            <CustomInput
                 placeholder="Escribe la pregunta..."
-                value={question}
+                value={question ? String(question) : ''}
                 onChangeText={setQuestion}
+                required={true}
             />
 
-            {/* Campos para ingresar las respuestas */}
+            {/* Campos para ingresar las respuestas con `CustomInput` */}
             {answers.map((answer, index) => (
-                <TextInput
+                <CustomInput
                     key={index}
-                    style={styles.input}
                     placeholder={`Respuesta ${index + 1}`}
-                    value={answer}
+                    value={answer ? String(answer) : ''}
                     onChangeText={(text) => handleAnswerChange(text, index)}
+                    required={true}
                 />
             ))}
 
@@ -55,15 +58,15 @@ const AddQuestion = ({ route, navigation }) => {
             <Text style={styles.label}>Selecciona Dificultad:</Text>
             <View style={styles.pickerContainer}>
                 <Picker
-                    selectedValue={difficulty}
-                    onValueChange={(itemValue) => setDifficulty(itemValue)}
+                    selectedValue={String(difficulty)} // Convertimos a string para evitar errores
+                    onValueChange={(itemValue) => setDifficulty(String(itemValue))}
                     style={styles.picker}
                 >
                     <Picker.Item label="1 Coin" value="1" />
                     <Picker.Item label="2 Coins" value="2" />
                     <Picker.Item label="3 Coins" value="3" />
                 </Picker>
-                <CoinIcon size={30} /> {/* Ahora usamos el componente reutilizable */}
+                <CoinIcon size={30} /> {/* Icono de moneda reutilizable */}
             </View>
 
             {/* Botón reutilizable */}
@@ -89,14 +92,9 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: 'center'
     },
-    input: {
-        backgroundColor: '#fff',
-        padding: 10,
-        borderRadius: 10,
-        fontSize: 16,
-        marginBottom: 10,
-        borderWidth: 1,
-        borderColor: '#ddd'
+    categoryText: {
+        fontWeight: 'bold',
+        color: '#6200EE'
     },
     label: {
         fontSize: 16,

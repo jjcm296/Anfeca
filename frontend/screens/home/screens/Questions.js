@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
-import QuestionCard from "./components/QuestionCard";
-import AddButton from "../../../ui/components/AddButton";
-import FakeDataBase from '../../../../fakeDataBase/FakeDataBase';
+import QuestionCard from "../components/QuestionCard";
+import AddButton from "../../ui/components/AddButton";
+import FakeDataBase from '../../../fakeDataBase/FakeDataBase';
 
 const Questions = ({ route, navigation }) => {
     const { category } = route.params; // Recibe la categoría desde HomeScreen

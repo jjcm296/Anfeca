@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
-import FakeDatabase from '../../../../fakeDataBase/FakeDataBase';
-import CustomButton from '../../../ui/components/CustomButton'; // Importa el botón reutilizable
+import FakeDatabase from '../../../fakeDataBase/FakeDataBase';
+import CustomButton from '../../ui/components/CustomButton'; // Importa el botón reutilizable
 
 const AddQuestionBank = ({ navigation }) => {
     const [category, setCategory] = useState('');

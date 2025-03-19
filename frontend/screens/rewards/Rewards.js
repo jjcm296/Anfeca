@@ -1,6 +1,14 @@
 import React from 'react';
 import { View, StyleSheet, StatusBar, FlatList } from 'react-native';
 
+function RewardsStack() {
+    return (
+        <View style={{ flex: 1 }}>
+            <TopBar coins={100} streak={5} />
+            <RewardsScreen />
+        </View>
+    );
+}
 
 const Rewards = () => {
     return (

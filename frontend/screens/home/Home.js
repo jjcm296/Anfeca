@@ -6,6 +6,14 @@ import AddButton from "../ui/components/AddButton";
 import FakeDataBase from '../../fakeDataBase/FakeDataBase';
 import WebButton from "./components/WebButton";
 
+function RewardsStack() {
+    return (
+        <View style={{ flex: 1 }}>
+            <TopBar coins={100} streak={5} />
+            <RewardsScreen />
+        </View>
+    );
+}
 const HomeScreen = ({ navigation }) => {
     const [questionBanks, setQuestionBanks] = useState([]);
 
