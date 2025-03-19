@@ -39,12 +39,14 @@ const HomeScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            {/* 🔹 Lista de bancos de preguntas con número actualizado de preguntas */}
+            {/* Lista de bancos de preguntas con número actualizado de preguntas */}
             <FlatList
                 data={questionBanks}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => navigation.navigate("Questions", { category: item.category })}>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate("Questions", { category: item.category })}
+                    >
                         <QuestionBankCard category={item.category} questions={item.questions} />
                     </TouchableOpacity>
                 )}
@@ -53,7 +55,7 @@ const HomeScreen = ({ navigation }) => {
                 showsVerticalScrollIndicator={false}
             />
 
-            {/* 🔹 Botón independiente para HomeScreen */}
+            {/* Botón independiente para HomeScreen */}
             <AddButton onPress={() => navigation.navigate("AddQuestionBank")} />
 
             <WebButton

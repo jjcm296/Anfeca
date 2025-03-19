@@ -10,67 +10,88 @@ class FakeDataBase {
 
         this.questionsList = {
             Matemáticas: [
-                { id: '1', questionNumber: 1, questionText: "¿Cuánto es 2+2?" },
-                { id: '2', questionNumber: 2, questionText: "¿Cuánto es 5x3?" },
+                { id: '1', questionNumber: 1, questionText: "¿Cuánto es 2+2?", answers: ["4", "5", "3", "6"] },
+                { id: '2', questionNumber: 2, questionText: "¿Cuánto es 5x3?", answers: ["15", "10", "20", "25"] },
             ],
             Ciencias: [
-                { id: '3', questionNumber: 1, questionText: "¿Cuál es la fórmula del agua?" },
-                { id: '4', questionNumber: 2, questionText: "¿Qué planeta es el más grande?" },
+                { id: '3', questionNumber: 1, questionText: "¿Cuál es la fórmula del agua?", answers: ["H2O", "O2", "CO2", "H2"] },
+                { id: '4', questionNumber: 2, questionText: "¿Qué planeta es el más grande?", answers: ["Júpiter", "Tierra", "Marte", "Saturno"] },
             ],
             Historia: [
-                { id: '5', questionNumber: 1, questionText: "¿Quién descubrió América?" },
-                { id: '6', questionNumber: 2, questionText: "¿En qué año fue la Revolución Francesa?" },
+                { id: '5', questionNumber: 1, questionText: "¿Quién descubrió América?", answers: ["Cristóbal Colón", "Hernán Cortés", "Simón Bolívar", "Napoleón"] },
+                { id: '6', questionNumber: 2, questionText: "¿En qué año fue la Revolución Francesa?", answers: ["1789", "1804", "1492", "1917"] },
             ],
             Geografía: [
-                { id: '7', questionNumber: 1, questionText: "¿Cuál es el país más grande del mundo?" },
-                { id: '8', questionNumber: 2, questionText: "¿Cuántos continentes existen?" },
+                { id: '7', questionNumber: 1, questionText: "¿Cuál es el país más grande del mundo?", answers: ["Rusia", "China", "EE.UU.", "Canadá"] },
+                { id: '8', questionNumber: 2, questionText: "¿Cuántos continentes existen?", answers: ["7", "5", "6", "8"] },
             ],
             Deportes: [
-                { id: '9', questionNumber: 1, questionText: "¿Cuántos jugadores tiene un equipo de fútbol?" },
-                { id: '10', questionNumber: 2, questionText: "¿Quién ha ganado más mundiales de fútbol?" },
+                { id: '9', questionNumber: 1, questionText: "¿Cuántos jugadores tiene un equipo de fútbol?", answers: ["11", "9", "10", "12"] },
+                { id: '10', questionNumber: 2, questionText: "¿Quién ha ganado más mundiales de fútbol?", answers: ["Brasil", "Alemania", "Argentina", "Italia"] },
             ]
         };
     }
 
-    // Método para obtener todas las categorías (bancos de preguntas)
+    // Obtener todas las categorías de preguntas
     getQuestionBanks() {
         return this.questionBanks;
     }
 
-    // Método para obtener preguntas de una categoría específica
+    // Obtener preguntas de una categoría específica
     getQuestionsByCategory(category) {
         return this.questionsList[category] || [];
     }
 
-    // Método para agregar una nueva pregunta a una categoría existente
-    addQuestion(category, questionText) {
-        const newQuestion = {
-            id: (Object.keys(this.questionsList).length + 1).toString(),
-            questionNumber: this.questionsList[category]?.length + 1 || 1,
-            questionText
-        };
+    // Obtener una pregunta específica por su ID
+    getQuestionById(questionId) {
+        for (const category in this.questionsList) {
+            const question = this.questionsList[category].find(q => q.id === questionId);
+            if (question) return question;
+        }
+        return null;
+    }
 
-        if (this.questionsList[category]) {
-            this.questionsList[category].push(newQuestion);
-        } else {
-            this.questionsList[category] = [newQuestion];
-            this.questionBanks.push({ id: (this.questionBanks.length + 1).toString(), category, questions: 1 });
+    // Actualizar el texto y las respuestas de una pregunta
+    updateQuestion(category, questionId, newQuestionText, newAnswers) {
+        if (!this.questionsList[category]) return false;
+        const questionIndex = this.questionsList[category].findIndex(q => q.id === questionId);
+        if (questionIndex !== -1) {
+            this.questionsList[category][questionIndex].questionText = newQuestionText;
+            this.questionsList[category][questionIndex].answers = newAnswers;
+            return true;
+        }
+        return false;
+    }
+
+    // Agregar una nueva pregunta con respuestas por defecto
+    addQuestion(category, questionText) {
+        if (!this.questionsList[category]) {
+            this.questionsList[category] = [];
         }
 
+        const newQuestion = {
+            id: (this.questionsList[category].length + 1).toString(),
+            questionNumber: this.questionsList[category].length + 1,
+            questionText,
+            answers: ["", "", "", ""] // Se agregan respuestas vacías para ser editadas luego
+        };
+
+        this.questionsList[category].push(newQuestion);
         return newQuestion;
     }
 
-    // Método para agregar una nueva categoría de banco de preguntas
+    // Agregar una nueva categoría de preguntas
     addQuestionBank(category, initialQuestions = 0) {
         const newBank = {
             id: (this.questionBanks.length + 1).toString(),
             category,
             questions: initialQuestions
         };
+
         this.questionBanks.push(newBank);
-        this.questionsList[category] = []; // Crea una nueva categoría vacía en la lista de preguntas
+        this.questionsList[category] = []; // Crea una nueva categoría vacía
     }
 }
 
-// Exportamos la base de datos simulada para usarla en nuestras pantallas
+// Exportamos la base de datos simulada
 export default new FakeDataBase();
