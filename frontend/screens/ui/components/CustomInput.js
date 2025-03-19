@@ -1,16 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TextInput, View, Text, StyleSheet } from 'react-native';
 
-const CustomInput = ({ placeholder, value, onChangeText, required = false }) => {
+const CustomInput = ({ placeholder, value, onChangeText, required = false, customStyle = {} }) => {
+    const [touched, setTouched] = useState(false); // Estado para detectar si el usuario tocó el input
+
     return (
         <View style={styles.container}>
             <TextInput
-                style={styles.input}
+                style={[styles.input, customStyle]} // Aplicamos estilos personalizados si existen
                 placeholder={placeholder}
                 value={value}
                 onChangeText={onChangeText}
+                onFocus={() => setTouched(true)} // Marca el campo como tocado cuando recibe el foco
+                onBlur={() => setTouched(true)} // Mantiene el estado de "tocado" al perder el foco
             />
-            {required && !value.trim() && <Text style={styles.errorText}>* Campo obligatorio</Text>}
+            {required && touched && !value.trim() && (
+                <Text style={styles.errorText}>* Campo obligatorio</Text>
+            )}
         </View>
     );
 };

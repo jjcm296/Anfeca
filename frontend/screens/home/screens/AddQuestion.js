@@ -43,14 +43,26 @@ const AddQuestion = ({ route, navigation }) => {
                 required={true}
             />
 
-            {/* Campos para ingresar las respuestas con `CustomInput` */}
-            {answers.map((answer, index) => (
+            {/* Respuesta correcta */}
+            <Text style={styles.correctLabel}>Respuesta Correcta:</Text>
+            <CustomInput
+                placeholder="Respuesta Correcta"
+                value={answers[0] ? String(answers[0]) : ''}
+                onChangeText={(text) => handleAnswerChange(text, 0)}
+                required={true}
+                customStyle={styles.correctAnswer}
+            />
+
+            {/* Respuestas incorrectas */}
+            <Text style={styles.incorrectLabel}>Respuestas Incorrectas:</Text>
+            {answers.slice(1).map((answer, index) => (
                 <CustomInput
-                    key={index}
-                    placeholder={`Respuesta ${index + 1}`}
+                    key={index + 1}
+                    placeholder={`Respuesta Incorrecta ${index + 1}`}
                     value={answer ? String(answer) : ''}
-                    onChangeText={(text) => handleAnswerChange(text, index)}
+                    onChangeText={(text) => handleAnswerChange(text, index + 1)}
                     required={true}
+                    customStyle={styles.incorrectAnswer}
                 />
             ))}
 
@@ -100,6 +112,26 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginTop: 10
+    },
+    correctLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: 'green',
+        marginTop: 15
+    },
+    incorrectLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: 'red',
+        marginTop: 15
+    },
+    correctAnswer: {
+        backgroundColor: '#DFFFD6', // Verde claro para indicar respuesta correcta
+        borderColor: 'green',
+    },
+    incorrectAnswer: {
+        backgroundColor: '#FFD6D6', // Rojo claro para indicar respuestas incorrectas
+        borderColor: 'red',
     },
     pickerContainer: {
         flexDirection: 'row',
