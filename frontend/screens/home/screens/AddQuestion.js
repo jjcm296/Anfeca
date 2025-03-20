@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import FakeDatabase from '../../../fakeDataBase/FakeDataBase';
-import CustomButton from '../../ui/components/CustomButton'; // Botón reutilizable
-import CoinIcon from '../../ui/components/CoinIcon'; // Icono de moneda reutilizable
-import CustomInput from '../../ui/components/CustomInput'; // Nuevo Input
+import CustomButton from '../../ui/components/CustomButton';
+import CoinIcon from '../../ui/components/CoinIcon';
+import CustomInput from '../../ui/components/CustomInput';
 
 const AddQuestion = ({ route, navigation }) => {
-    const { category } = route.params || {}; // Asegurar que category existe
+    const { category } = route.params || {};
     const [question, setQuestion] = useState('');
     const [answers, setAnswers] = useState(['', '', '', '']);
     const [difficulty, setDifficulty] = useState('1');
@@ -26,51 +26,47 @@ const AddQuestion = ({ route, navigation }) => {
 
         FakeDatabase.addQuestion(category, question);
         Alert.alert("Éxito", "Pregunta agregada correctamente.");
-        navigation.goBack(); // 🔙 Regresa a la pantalla anterior
+        navigation.goBack();
     };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>
-                Agregar Pregunta a <Text style={styles.categoryText}>{category ? String(category) : 'Sin Categoría'}</Text>
+                Agregar Pregunta a <Text style={styles.categoryText}>{String(category) || 'Sin Categoría'}</Text>
             </Text>
 
-            {/* Campo para ingresar la pregunta con `CustomInput` */}
             <CustomInput
                 placeholder="Escribe la pregunta..."
-                value={question ? String(question) : ''}
+                value={String(question)}
                 onChangeText={setQuestion}
                 required={true}
             />
 
-            {/* Respuesta correcta */}
             <Text style={styles.correctLabel}>Respuesta Correcta:</Text>
             <CustomInput
                 placeholder="Respuesta Correcta"
-                value={answers[0] ? String(answers[0]) : ''}
+                value={String(answers[0])}
                 onChangeText={(text) => handleAnswerChange(text, 0)}
                 required={true}
                 customStyle={styles.correctAnswer}
             />
 
-            {/* Respuestas incorrectas */}
             <Text style={styles.incorrectLabel}>Respuestas Incorrectas:</Text>
             {answers.slice(1).map((answer, index) => (
                 <CustomInput
                     key={index + 1}
                     placeholder={`Respuesta Incorrecta ${index + 1}`}
-                    value={answer ? String(answer) : ''}
+                    value={String(answer)}
                     onChangeText={(text) => handleAnswerChange(text, index + 1)}
                     required={true}
                     customStyle={styles.incorrectAnswer}
                 />
             ))}
 
-            {/* Selector de dificultad */}
             <Text style={styles.label}>Selecciona Dificultad:</Text>
             <View style={styles.pickerContainer}>
                 <Picker
-                    selectedValue={String(difficulty)} // Convertimos a string para evitar errores
+                    selectedValue={String(difficulty)}
                     onValueChange={(itemValue) => setDifficulty(String(itemValue))}
                     style={styles.picker}
                 >
@@ -78,10 +74,9 @@ const AddQuestion = ({ route, navigation }) => {
                     <Picker.Item label="2 Coins" value="2" />
                     <Picker.Item label="3 Coins" value="3" />
                 </Picker>
-                <CoinIcon size={30} /> {/* Icono de moneda reutilizable */}
+                <CoinIcon size={30} />
             </View>
 
-            {/* Botón reutilizable */}
             <CustomButton
                 color="#6200EE"
                 text="Agregar Pregunta"
@@ -126,11 +121,11 @@ const styles = StyleSheet.create({
         marginTop: 15
     },
     correctAnswer: {
-        backgroundColor: '#DFFFD6', // Verde claro para indicar respuesta correcta
+        backgroundColor: '#DFFFD6',
         borderColor: 'green',
     },
     incorrectAnswer: {
-        backgroundColor: '#FFD6D6', // Rojo claro para indicar respuestas incorrectas
+        backgroundColor: '#FFD6D6',
         borderColor: 'red',
     },
     pickerContainer: {
