@@ -6,11 +6,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import HomeScreen from "./screens/home/Home";
 import QuestionsScreen from "./screens/home/screens/Questions";
 import AddQuestionScreen from "./screens/home/screens/AddQuestion";
-import EditQuestionScreen from "./screens/home/screens/EditQuestion"; // IMPORTARLO AQUÍ
 import RewardsScreen from './screens/rewards/Rewards';
 import ProfileScreen from './screens/profile/Profile';
 import TopBar from "./screens/ui/topBar/TopBar";
 import AddQuestionBank from "./screens/home/screens/AddQuestionBank";
+import EditQuestion from "./screens/home/screens/EditQuestion";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -23,7 +23,7 @@ function HomeStack() {
             <Stack.Screen name="AddQuestionBank" component={AddQuestionBank} />
             <Stack.Screen name="Questions" component={QuestionsScreen} />
             <Stack.Screen name="AddQuestion" component={AddQuestionScreen} />
-            <Stack.Screen name="EditQuestion" component={EditQuestionScreen} />
+            <Stack.Screen name="EditQuestion" component={EditQuestion} />
         </Stack.Navigator>
     );
 }

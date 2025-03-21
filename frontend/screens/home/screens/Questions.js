@@ -9,34 +9,13 @@ const Questions = ({ route, navigation }) => {
     const { category } = route.params;
     const [questions, setQuestions] = useState([]);
 
-    // Función para cargar preguntas correctamente
-    const loadQuestions = () => {
-        const fetchedQuestions = FakeDataBase.getQuestionsByCategory(category);
-        setQuestions([...fetchedQuestions]);
-    };
-
     // Cargar preguntas cuando la pantalla se enfoque
     useFocusEffect(
         React.useCallback(() => {
             console.log(`Recargando preguntas para la categoría: ${category}`);
-            loadQuestions();
+            setQuestions([...FakeDataBase.getQuestionsByCategory(category)]);
         }, [category])
     );
-
-    // Función para manejar la navegación
-    const handlePress = (questionId) => {
-        if (!questionId) {
-            console.warn("Intento de navegación sin ID válido.");
-            return;
-        }
-
-        console.log(`Navegando a EditQuestion con ID: ${questionId}, Categoría: ${category}`);
-
-        // Usamos setTimeout para asegurar la ejecución inmediata de la navegación
-        setTimeout(() => {
-            navigation.navigate("EditQuestion", { category, questionId });
-        }, 100);
-    };
 
     return (
         <View style={styles.container}>
@@ -45,8 +24,8 @@ const Questions = ({ route, navigation }) => {
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                     <TouchableOpacity
-                        onPress={() => handlePress(item.id)}
                         activeOpacity={0.7}
+                        onPress={() => navigation.navigate("EditQuestion", { questionId: item.id })}
                     >
                         <QuestionCard
                             questionNumber={item.questionNumber}
@@ -58,7 +37,6 @@ const Questions = ({ route, navigation }) => {
                 showsVerticalScrollIndicator={false}
             />
 
-            {/* Botón para agregar preguntas dentro de Questions */}
             <AddButton onPress={() => navigation.navigate("AddQuestion", { category })} />
         </View>
     );
@@ -72,6 +50,7 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         paddingHorizontal: 15,
         paddingBottom: 80,
+
     },
 });
 
