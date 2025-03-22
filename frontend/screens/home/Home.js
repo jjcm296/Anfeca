@@ -14,6 +14,7 @@ function RewardsStack() {
         </View>
     );
 }
+
 const HomeScreen = ({ navigation }) => {
     const [questionBanks, setQuestionBanks] = useState([]);
 
@@ -46,6 +47,7 @@ const HomeScreen = ({ navigation }) => {
                 renderItem={({ item }) => (
                     <TouchableOpacity
                         onPress={() => navigation.navigate("Questions", { category: item.category })}
+                        onLongPress={() => navigation.navigate("EditQuestionBank", { bankId: item.id })} // 🔹 Agregado: Mantener presionado para editar
                     >
                         <QuestionBankCard category={item.category} questions={item.questions} />
                     </TouchableOpacity>
@@ -61,7 +63,6 @@ const HomeScreen = ({ navigation }) => {
             <WebButton
                 imageSource={require('../../images/Logo-png.png')}
             />
-
         </View>
     );
 };

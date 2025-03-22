@@ -11,6 +11,7 @@ import ProfileScreen from './screens/profile/Profile';
 import TopBar from "./screens/ui/topBar/TopBar";
 import AddQuestionBank from "./screens/home/screens/AddQuestionBank";
 import EditQuestion from "./screens/home/screens/EditQuestion";
+import EditQuestionBank from "./screens/home/screens/EditQuestionBank";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -21,6 +22,7 @@ function HomeStack() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="HomeMain" component={HomeScreen} />
             <Stack.Screen name="AddQuestionBank" component={AddQuestionBank} />
+            <Stack.Screen name="EditQuestionBank" component={EditQuestionBank} />
             <Stack.Screen name="Questions" component={QuestionsScreen} />
             <Stack.Screen name="AddQuestion" component={AddQuestionScreen} />
             <Stack.Screen name="EditQuestion" component={EditQuestion} />

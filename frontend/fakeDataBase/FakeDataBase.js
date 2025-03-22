@@ -13,6 +13,10 @@ class FakeDataBase {
                 { id: '1', questionNumber: 1, questionText: "¿Cuánto es 2+2?", answers: ["4", "5", "3", "6"] },
                 { id: '2', questionNumber: 2, questionText: "¿Cuánto es 5x3?", answers: ["15", "10", "20", "25"] },
             ],
+            Matemáticass: [
+                { id: '1', questionNumber: 1, questionText: "¿Cuánto es 2+2?", answers: ["4", "5", "3", "6"] },
+                { id: '2', questionNumber: 2, questionText: "¿Cuánto es 5x3?", answers: ["15", "10", "20", "25"] },
+            ],
             Ciencias: [
                 { id: '3', questionNumber: 1, questionText: "¿Cuál es la fórmula del agua?", answers: ["H2O", "O2", "CO2", "H2"] },
                 { id: '4', questionNumber: 2, questionText: "¿Qué planeta es el más grande?", answers: ["Júpiter", "Tierra", "Marte", "Saturno"] },
@@ -119,6 +123,7 @@ class FakeDataBase {
         return false;
     }
 
+    // Eliminar una pregunta por su ID
     deleteQuestion(questionId) {
         for (const category in this.questionsList) {
             const questionIndex = this.questionsList[category].findIndex(q => q.id === questionId);
@@ -147,7 +152,7 @@ class FakeDataBase {
         return newQuestion;
     }
 
-    // Agregar una nueva categoría de preguntas
+    // Agregar un banco de preguntas
     addQuestionBank(category, initialQuestions = 0) {
         const newBank = {
             id: (this.questionBanks.length + 1).toString(),
@@ -157,6 +162,27 @@ class FakeDataBase {
 
         this.questionBanks.push(newBank);
         this.questionsList[category] = []; // Crea una nueva categoría vacía
+    }
+    //Editar banco de preguntas
+    updateQuestionBank(bankId, newCategory, newQuestions) {
+        const index = this.questionBanks.findIndex(bank => bank.id === bankId);
+        if (index !== -1) {
+            this.questionBanks[index].category = newCategory;
+            this.questionBanks[index].questions = newQuestions;
+            return true;
+        }
+        return false;
+    }
+
+
+    // Eliminar un banco de preguntas por su ID
+    deleteQuestionBank(bankId) {
+        const index = this.questionBanks.findIndex(bank => bank.id === bankId);
+        if (index !== -1) {
+            this.questionBanks.splice(index, 1);
+            return true;
+        }
+        return false;
     }
 }
 
