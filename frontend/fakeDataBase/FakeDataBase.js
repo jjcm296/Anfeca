@@ -163,6 +163,7 @@ class FakeDataBase {
         this.questionBanks.push(newBank);
         this.questionsList[category] = []; // Crea una nueva categoría vacía
     }
+    
     //Editar banco de preguntas
     updateQuestionBank(bankId, newCategory, newQuestions) {
         const index = this.questionBanks.findIndex(bank => bank.id === bankId);
@@ -173,7 +174,6 @@ class FakeDataBase {
         }
         return false;
     }
-
 
     // Eliminar un banco de preguntas por su ID
     deleteQuestionBank(bankId) {

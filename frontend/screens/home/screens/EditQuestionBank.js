@@ -7,6 +7,7 @@ const EditQuestionBank = ({ route, navigation }) => {
     const { bankId } = route.params;
     const [category, setCategory] = useState('');
 
+    // Cargar el nombre del banco de preguntas
     useEffect(() => {
         const bank = FakeDatabase.getQuestionBanks().find(b => b.id === bankId);
         if (bank) {
@@ -17,6 +18,7 @@ const EditQuestionBank = ({ route, navigation }) => {
         }
     }, [bankId]);
 
+    // Función para actualizar el banco de preguntas
     const handleUpdate = () => {
         if (category.trim() === '') {
             Alert.alert("Error", "El nombre de la categoría no puede estar vacío.");
@@ -28,6 +30,30 @@ const EditQuestionBank = ({ route, navigation }) => {
         navigation.goBack();
     };
 
+    // Función para eliminar el banco de preguntas
+    const handleDelete = () => {
+        Alert.alert(
+            "Confirmar eliminación",
+            "¿Estás seguro de que deseas eliminar este banco de preguntas?",
+            [
+                { text: "Cancelar", style: "cancel" },
+                {
+                    text: "Eliminar",
+                    style: "destructive",
+                    onPress: () => {
+                        const deleted = FakeDatabase.deleteQuestionBank(bankId);
+                        if (deleted) {
+                            Alert.alert("Éxito", "Banco de preguntas eliminado correctamente.");
+                            navigation.goBack();
+                        } else {
+                            Alert.alert("Error", "No se pudo eliminar el banco de preguntas.");
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Editar Banco de Preguntas</Text>
@@ -37,6 +63,8 @@ const EditQuestionBank = ({ route, navigation }) => {
                 value={category}
                 onChangeText={setCategory}
             />
+            <CustomButton
+                color={'#FF0000'} text={"Eliminar"} textColor={'#FFFFFF'} onPress={handleDelete}/>
             <CustomButton color="#6200EE" text="Actualizar" textColor={'#FFFFFF'} onPress={handleUpdate} />
         </View>
     );
