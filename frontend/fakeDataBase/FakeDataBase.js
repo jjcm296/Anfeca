@@ -36,8 +36,8 @@ class FakeDataBase {
                 id: '1',
                 name: 'JordaIn',
                 type: 'Tutor',
-                image: '246810',
-                password: 'securePass123',
+                image: 'path_to_image1',
+                password: '246810',
                 children: [
                     { id: '1-1', name: 'Niño 1', type: 'Niño', image: 'path_to_child_image1' },
                 ],
@@ -56,9 +56,10 @@ class FakeDataBase {
 
     }
 
-    // Obtener todos los perfiles
-    getProfiles() {
-        return this.profiles;
+    getProfilesByTutor(tutorId) {
+        const tutor = this.profiles.find(profile => profile.id === tutorId && profile.type === 'Tutor');
+        if (!tutor) return [];
+        return [tutor, ...tutor.children];
     }
 
     // Obtener un perfil por ID
