@@ -31,11 +31,29 @@ class FakeDataBase {
             ]
         };
 
-        // Inicialización de perfiles (por defecto)
         this.profiles = [
-            { id: '1', name: 'JordaIn', type:'Tutor', image: 'path_to_image1' },
-            { id: '2', name: 'Zuzzet', type:'Niño', image: 'path_to_image2' },
+            {
+                id: '1',
+                name: 'JordaIn',
+                type: 'Tutor',
+                image: '246810',
+                password: 'securePass123',
+                children: [
+                    { id: '1-1', name: 'Niño 1', type: 'Niño', image: 'path_to_child_image1' },
+                ],
+            },
+            {
+                id: '2',
+                name: 'María',
+                type: 'Tutor',
+                image: 'path_to_image2',
+                password: '246810',
+                children: [
+                    { id: '2-1', name: 'Niño 3', type: 'Niño', image: 'path_to_child_image3' },
+                ],
+            },
         ];
+
     }
 
     // Obtener todos los perfiles
