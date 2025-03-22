@@ -6,6 +6,7 @@ import FakeDataBase from '../../fakeDataBase/FakeDataBase'; // Simulando la base
 
 const Profile = () => {
     const [modalVisible, setModalVisible] = useState(false);
+    const [selectedProfile, setSelectedProfile] = useState(FakeDataBase.getProfiles()[0]); // Selección por defecto: primer perfil
     const profiles = FakeDataBase.getProfiles();
 
     const options = [
@@ -17,7 +18,8 @@ const Profile = () => {
 
     const handleSelectProfile = (profile) => {
         console.log('Perfil seleccionado: ', profile.name);
-        setModalVisible(false);
+        setSelectedProfile(profile); // Actualiza el perfil seleccionado
+        setModalVisible(false); // Cierra el modal
     };
 
     return (
@@ -27,7 +29,11 @@ const Profile = () => {
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
                     <ProfileImage width={100} height={100} />
                 </TouchableOpacity>
-                <Text style={styles.profileName}>Name</Text>
+
+                {/* Mostrar el tipo de perfil encima del nombre */}
+                <Text style={styles.profileType}>{selectedProfile ? selectedProfile.type : 'Select profile'}</Text>
+
+                <Text style={styles.profileName}>{selectedProfile ? selectedProfile.name : 'Name'}</Text>
             </View>
 
             {/* Modal para cambiar el perfil */}
@@ -49,6 +55,7 @@ const Profile = () => {
                                         onPress={() => handleSelectProfile(item)}
                                     >
                                         <ProfileImage width={80} height={80} />
+                                        {/* Muestra el tipo de perfil */}
                                         <Text style={styles.profileName}>{item.name}</Text>
                                     </TouchableOpacity>
                                 )}
@@ -68,14 +75,13 @@ const Profile = () => {
                 </TouchableWithoutFeedback>
             </Modal>
 
-            {/* Los botones debajo de la imagen de perfil */}
             <FlatList
                 data={options}
                 renderItem={({ item }) => (
                     <CustomButton
                         text={item.title}
                         color={item.color}
-                        onPress={() => console.log(item.title)} // Acción por ahora, cambiar según necesidad
+                        onPress={() => console.log(item.title)}
                         disabled={item.disabled}
                         textColor={item.textColor}
                     />
@@ -95,10 +101,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginVertical: 20,
     },
+    profileType: {
+        fontSize: 16,
+        color: '#777',
+        marginTop: 5,
+    },
     profileName: {
         fontSize: 22,
         fontWeight: 'bold',
-        marginTop: 10,
     },
     title: {
         fontSize: 22,
@@ -108,16 +118,16 @@ const styles = StyleSheet.create({
     },
     modalOverlay: {
         flex: 1,
-        justifyContent: 'center', // Centra el modal verticalmente
-        alignItems: 'center', // Centra el modal horizontalmente
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo semitransparente
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: {
         backgroundColor: '#fff',
         borderRadius: 20,
         padding: 20,
         width: '80%',
-        maxHeight: '50%', // Controla el tamaño máximo del modal
+        maxHeight: '50%',
     },
     profileItem: {
         alignItems: 'center',
