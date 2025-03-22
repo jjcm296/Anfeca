@@ -1,37 +1,60 @@
 import React from 'react';
-import { View, StyleSheet, StatusBar, FlatList } from 'react-native';
-function RewardsStack() {
-    return (
-        <View style={{ flex: 1 }}>
-            <TopBar coins={100} streak={5} />
-            <RewardsScreen />
-        </View>
-    );
-}
+import { View, Text, StyleSheet, FlatList, StatusBar } from 'react-native';
+import ProfileImage from '../ui/components/ProfileImage'; // Importa el componente ProfileImage
+import CustomButton from '../ui/components/CustomButton'; // Importa el componente CustomButton
 
 const Profile = () => {
+    const options = [
+        { id: '1', title: 'Cambiar perfil', color: '#FFFFFF' },
+        { id: '2', title: 'Ir a la página web', color: '#FFFFFF' },
+        { id: '3', title: 'Cerrar sesión', color: '#FFFFFF' },
+        { id: '4', title: 'Eliminar cuenta', color: '#FF0000', textColor: '#FFFFFF' },
+    ];
+
     return (
         <View style={styles.container}>
-            {/* Lista de tarjetas con separación */}
+            <View style={styles.profileContainer}>
+                {/* Componente para la imagen de perfil */}
+                <ProfileImage width={100} height={100} />
+                <Text style={styles.profileName}>Name</Text>
+            </View>
+            <FlatList
+                data={options}
+                renderItem={({ item }) => (
+                    // Usamos el CustomButton aquí para cada opción
+                    <CustomButton
+                        text={item.title}
+                        color={item.color}
+                        onPress={() => handleOptionPress(item.title)}
+                        disabled={item.disabled}
+                        textColor={item.textColor}
+                    />
+                )}
+                keyExtractor={item => item.id}
+            />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1, // Se ajusta a la pantalla
+        flex: 1,
+        padding: 20,
     },
-    topBar: {
-        flexDirection: 'row',
-        width: '100%',
-        justifyContent: 'space-between',
+    profileContainer: {
         alignItems: 'center',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        marginTop: StatusBar.currentHeight || 10, // Ajuste para la barra de estado sin que se desborde
-        shadowOffset: { width: 0, height: 2 },
+        marginVertical: 20,
     },
-
+    profileName: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginTop: 10,
+    },
+    profileRole: {
+        fontSize: 16,
+        color: '#777',
+        marginTop: 5,
+    },
 });
 
 export default Profile;
