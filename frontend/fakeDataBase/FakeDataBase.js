@@ -119,6 +119,17 @@ class FakeDataBase {
         return false;
     }
 
+    deleteQuestion(questionId) {
+        for (const category in this.questionsList) {
+            const questionIndex = this.questionsList[category].findIndex(q => q.id === questionId);
+            if (questionIndex !== -1) {
+                this.questionsList[category].splice(questionIndex, 1);
+                return true;
+            }
+        }
+        return false; // Si no se encontró la pregunta
+    }
+
     // Agregar una nueva pregunta con respuestas por defecto
     addQuestion(category, questionText) {
         if (!this.questionsList[category]) {

@@ -46,6 +46,30 @@ const EditQuestion = ({ route, navigation }) => {
         navigation.goBack();
     };
 
+    const handleDelete = () => {
+        Alert.alert(
+            "Confirmar eliminación",
+            "¿Estás seguro de que deseas eliminar esta pregunta?",
+            [
+                { text: "Cancelar", style: "cancel" },
+                {
+                    text: "Eliminar",
+                    style: "destructive",
+                    onPress: () => {
+                        const deleted = FakeDatabase.deleteQuestion(questionId);
+                        if (deleted) {
+                            Alert.alert("Éxito", "Pregunta eliminada correctamente.");
+                            navigation.goBack();
+                        } else {
+                            Alert.alert("Error", "No se encontró la pregunta.");
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Editar Pregunta</Text>
@@ -89,7 +113,19 @@ const EditQuestion = ({ route, navigation }) => {
                 <Picker.Item label="3 Coins" value="3" />
             </Picker>
 
-            <CustomButton color="#6200EE" text="Actualizar Pregunta" onPress={handleUpdate} />
+            <CustomButton
+                color={'#FF0000'}
+                text={"Eliminar"}
+                textColor={'#FFFFFF'}
+                onPress={handleDelete}
+            />
+
+            <CustomButton
+                color={'#6200EE'}
+                text="Aceptar"
+                textColor={'#FFFFFF'}
+                onPress={handleUpdate}
+            />
         </View>
     );
 };
