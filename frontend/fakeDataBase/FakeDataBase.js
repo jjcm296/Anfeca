@@ -30,6 +30,43 @@ class FakeDataBase {
                 { id: '10', questionNumber: 2, questionText: "¿Quién ha ganado más mundiales de fútbol?", answers: ["Brasil", "Alemania", "Argentina", "Italia"] },
             ]
         };
+
+        // Inicialización de perfiles (por defecto)
+        this.profiles = [
+            { id: '1', name: 'Tutor', image: 'path_to_image1' },
+            { id: '2', name: 'Niño', image: 'path_to_image2' },
+        ];
+    }
+
+    // Obtener todos los perfiles
+    getProfiles() {
+        return this.profiles;
+    }
+
+    // Obtener un perfil por ID
+    getProfileById(profileId) {
+        return this.profiles.find(profile => profile.id === profileId);
+    }
+
+    // Agregar un nuevo perfil
+    addProfile(name, image) {
+        const newProfile = {
+            id: (this.profiles.length + 1).toString(),
+            name,
+            image
+        };
+        this.profiles.push(newProfile);
+        return newProfile;
+    }
+
+    // Eliminar un perfil por ID
+    deleteProfile(profileId) {
+        const index = this.profiles.findIndex(profile => profile.id === profileId);
+        if (index !== -1) {
+            this.profiles.splice(index, 1);
+            return true;
+        }
+        return false;
     }
 
     // Obtener todas las categorías de preguntas
