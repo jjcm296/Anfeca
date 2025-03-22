@@ -28,29 +28,39 @@ function HomeStack() {
     );
 }
 
+// Navegación dentro de Profile
+function ProfileStack() {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="ProfileMain" component={ProfileScreen}/>
+        </Stack.Navigator>
+    );
+}
+
 // Navegación principal
 export default function App() {
     return (
         <NavigationContainer>
             <TopBar coins={100} streak={5} />
-            <Tab.Navigator initialRouteName="Home"
-                           screenOptions={({ route }) => ({
-                               tabBarIcon: ({ color, size }) => {
-                                   let iconName;
-                                   if (route.name === 'Home') iconName = 'home';
-                                   else if (route.name === 'Rewards') iconName = 'trophy';
-                                   else if (route.name === 'Profile') iconName = 'person';
-                                   return <Ionicons name={iconName} size={size} color={color} />;
-                               },
-                               tabBarActiveTintColor: '#6200EE',
-                               tabBarInactiveTintColor: 'gray',
-                               tabBarStyle: { backgroundColor: '#f8f8f8', paddingBottom: 5 },
-                               headerShown: false,
-                           })}
+            <Tab.Navigator
+                initialRouteName="Home"
+                screenOptions={({ route }) => ({
+                    tabBarIcon: ({ color, size }) => {
+                        let iconName;
+                        if (route.name === 'Home') iconName = 'home';
+                        else if (route.name === 'Rewards') iconName = 'trophy';
+                        else if (route.name === 'Profile') iconName = 'person';
+                        return <Ionicons name={iconName} size={size} color={color} />;
+                    },
+                    tabBarActiveTintColor: '#6200EE',
+                    tabBarInactiveTintColor: 'gray',
+                    tabBarStyle: { backgroundColor: '#f8f8f8', paddingBottom: 5 },
+                    headerShown: false,
+                })}
             >
                 <Tab.Screen name="Rewards" component={RewardsScreen} options={{ unmountOnBlur: true }} />
                 <Tab.Screen name="Home" component={HomeStack} options={{ unmountOnBlur: true }} />
-                <Tab.Screen name="Profile" component={ProfileScreen} options={{ unmountOnBlur: true }} />
+                <Tab.Screen name="Profile" component={ProfileStack} options={{ unmountOnBlur: true }} />
             </Tab.Navigator>
         </NavigationContainer>
     );
