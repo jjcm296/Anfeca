@@ -33,8 +33,8 @@ class FakeDataBase {
 
         // Inicialización de perfiles (por defecto)
         this.profiles = [
-            { id: '1', name: 'Tutor', image: 'path_to_image1' },
-            { id: '2', name: 'Niño', image: 'path_to_image2' },
+            { id: '1', name: 'JordaIn', type:'Tutor', image: 'path_to_image1' },
+            { id: '2', name: 'Zuzzet', type:'Niño', image: 'path_to_image2' },
         ];
     }
 
