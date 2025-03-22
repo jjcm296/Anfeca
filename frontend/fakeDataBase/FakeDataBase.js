@@ -58,7 +58,31 @@ class FakeDataBase {
             },
         ];
 
+        this.rewars = [
+            {
+                name: 'Comer helado',
+                coins: 30,
+                expiration: 10,
+            },
+            {
+                name: 'Ver una película',
+                coins: 50,
+                expiration: 5,
+            },
+            {
+                name: 'Jugar videojuegos',
+                coins: 100,
+                expiration: 3,
+            },
+            {
+                name: 'Día de campo',
+                coins: 200,
+                expiration: 1,
+            }
+        ];
+
     }
+
 
     getProfilesByTutor(tutorId) {
         const tutor = this.profiles.find(profile => profile.id === tutorId && profile.type === 'Tutor');
@@ -163,7 +187,7 @@ class FakeDataBase {
         this.questionBanks.push(newBank);
         this.questionsList[category] = []; // Crea una nueva categoría vacía
     }
-    
+
     //Editar banco de preguntas
     updateQuestionBank(bankId, newCategory, newQuestions) {
         const index = this.questionBanks.findIndex(bank => bank.id === bankId);
@@ -180,6 +204,41 @@ class FakeDataBase {
         const index = this.questionBanks.findIndex(bank => bank.id === bankId);
         if (index !== -1) {
             this.questionBanks.splice(index, 1);
+            return true;
+        }
+        return false;
+    }
+
+    // Obtener todas las recompensas
+    getRewards() {
+        return this.rewars;
+    }
+
+    // Agregar una nueva recompensa
+    addReward(name, coins, expiration) {
+        const newReward = {
+            name,
+            coins,
+            expiration
+        };
+        this.rewars.push(newReward);
+        return newReward;
+    }
+    // Eliminar una recompensa por su nombre
+    deleteReward(name) {
+        const index = this.rewars.findIndex(reward => reward.name === name);
+        if (index !== -1) {
+            this.rewars.splice(index, 1);
+            return true;
+        }
+        return false;
+    }
+    // Actualizar una recompensa
+    updateReward(name, newCoins, newExpiration) {
+        const index = this.rewars.findIndex(reward => reward.name === name);
+        if (index !== -1) {
+            this.rewars[index].coins = newCoins;
+            this.rewars[index].expiration = newExpiration;
             return true;
         }
         return false;
