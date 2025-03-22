@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 
-const CustomButton = ({ color, text, onPress, disabled = false, textColor = '#000000' }) => {
+const CustomButton = ({ color = '#FFFFFF', text, onPress, disabled = false, textColor = '#000000' }) => {
     return (
         <TouchableOpacity
             style={[styles.button, { backgroundColor: disabled ? '#B0B0B0' : color }]}
