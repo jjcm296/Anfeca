@@ -5,7 +5,7 @@ const ProfileImage = ({ source, width = 80, height = 80 }) => {
     return (
         <Image
             source={source}
-            style={[styles.profileImage, { width, height}]} // Aplicamos borderRadius para redondear
+            style={[styles.profileImage, { width, height}]}
         />
     );
 };
