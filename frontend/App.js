@@ -7,7 +7,7 @@ import HomeScreen from "./screens/home/Home";
 import QuestionsScreen from "./screens/home/screens/Questions";
 import AddQuestionScreen from "./screens/home/screens/AddQuestion";
 import RewardsScreen from './screens/rewards/Rewards';
-import ProfileScreen from './screens/profile/Profile';
+import PremiumScreen from './screens/premium/Premium'; // Nueva pantalla Premium
 import TopBar from "./screens/ui/topBar/TopBar";
 import AddQuestionBank from "./screens/home/screens/AddQuestionBank";
 import EditQuestion from "./screens/home/screens/EditQuestion";
@@ -30,20 +30,11 @@ function HomeStack() {
     );
 }
 
-// Navegación dentro de Profile
-function ProfileStack() {
-    return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="ProfileMain" component={ProfileScreen}/>
-        </Stack.Navigator>
-    );
-}
-
 // Navegación principal
 export default function App() {
     return (
         <NavigationContainer>
-            <TopBar coins={100} streak={5} />
+            <TopBar coins={100} />
             <Tab.Navigator
                 initialRouteName="Home"
                 screenOptions={({ route }) => ({
@@ -51,7 +42,7 @@ export default function App() {
                         let iconName;
                         if (route.name === 'Home') iconName = 'home';
                         else if (route.name === 'Rewards') iconName = 'trophy';
-                        else if (route.name === 'Profile') iconName = 'person';
+                        else if (route.name === 'Premium') iconName = 'star';
                         return <Ionicons name={iconName} size={size} color={color} />;
                     },
                     tabBarActiveTintColor: '#6200EE',
@@ -62,7 +53,7 @@ export default function App() {
             >
                 <Tab.Screen name="Rewards" component={RewardsScreen} options={{ unmountOnBlur: true }} />
                 <Tab.Screen name="Home" component={HomeStack} options={{ unmountOnBlur: true }} />
-                <Tab.Screen name="Profile" component={ProfileStack} options={{ unmountOnBlur: true }} />
+                <Tab.Screen name="Premium" component={PremiumScreen} options={{ unmountOnBlur: true }} />
             </Tab.Navigator>
         </NavigationContainer>
     );

@@ -17,10 +17,10 @@ const NavBar = ({ navigation }) => {
                 <Text style={styles.navText}>Home</Text>
             </TouchableOpacity>
 
-            {/* Botón Profile */}
-            <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Profile")}>
-                <Ionicons name="person" size={24} color="gray" />
-                <Text style={styles.navText}>Profile</Text>
+            {/* Botón Premium */}
+            <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Premium")}>
+                <Ionicons name="star" size={24} color="gray" />
+                <Text style={styles.navText}>Premium</Text>
             </TouchableOpacity>
         </View>
     );
