@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
-const defaultProfileImage = require('../../../assets/sinPerfil.png'); // Ruta de la imagen predeterminada
+const defaultProfileImage = require('../../../images/sinPerfil.png'); // Ruta de la imagen predeterminada
 
 const ProfileImage = ({ source, width = 80, height = 80, borderRadius = 20, style }) => {
     return (
@@ -10,13 +10,12 @@ const ProfileImage = ({ source, width = 80, height = 80, borderRadius = 20, styl
                 source={source || defaultProfileImage}
                 style={[
                     styles.profileImage,
-                    { width: width * 0.8, height: height * 0.8, borderRadius: borderRadius * 0.8 } // Hace la imagen un 80% más chica
+                    { width: width * 0.6, height: height * 0.6, borderRadius: borderRadius * 0.6 } // Reduce al 60% del tamaño original
                 ]}
             />
         </View>
     );
 };
-
 
 const styles = StyleSheet.create({
     container: {
@@ -28,8 +27,6 @@ const styles = StyleSheet.create({
     profileImage: {
         resizeMode: 'cover',
         backgroundColor: 'transparent',
-        width:40,
-        
     },
 });
 
