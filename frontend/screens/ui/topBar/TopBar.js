@@ -5,7 +5,7 @@ import CoinsDisplay from '../components/CoinsDisplay';
 import ProfileImage from "../components/ProfileImage";
 
 const TopBar = ({ coins }) => {
-    const navigation = useNavigation(); // Obtiene el objeto de navegación
+    const navigation = useNavigation();
 
     return (
         <View style={styles.topBar}>
@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
     topBar: {
         flexDirection: 'row',
         width: '100%',
+        backgroundColor: '#FFFFFF',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 10,
