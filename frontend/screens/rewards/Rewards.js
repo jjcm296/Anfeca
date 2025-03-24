@@ -1,10 +1,13 @@
 import React from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import RewardCard from './compoonents/RewardCard';
 import FakeDataBase from '../../fakeDataBase/FakeDataBase';
-import AddButton from "../ui/components/AddButton";
+import AddButton from '../ui/components/AddButton';
+import AddReward from "./screens/AddReward";
 
 const Rewards = () => {
+    const navigation = useNavigation(); // 👈 Solución para usar navigation
     const rewards = FakeDataBase.getRewards();
 
     return (
@@ -17,18 +20,11 @@ const Rewards = () => {
                 )}
                 contentContainerStyle={styles.list}
             />
-            <AddButton />
+            <AddButton onPress={() => navigation.navigate('AddReward')} />
         </View>
     );
 };
 
-function RewardsStack() {
-    return (
-        <View style={{ flex: 1 }}>
-            <Rewards />
-        </View>
-    );
-}
 
 const styles = StyleSheet.create({
     container: {
@@ -41,4 +37,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default RewardsStack;
+export default Rewards;

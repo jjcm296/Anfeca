@@ -32,14 +32,6 @@ const AddReward = ({ navigation }) => {
             return;
         }
 
-        const reward = {
-            id: Date.now().toString(), // ID único basado en el tiempo
-            name,
-            points: parseInt(coins, 10),
-            redemptions: redemptionType === "custom" ? parseInt(redemptions, 10) : redemptionType,
-        };
-
-        FakeDataBase.addReward(reward);
         Alert.alert("Éxito", "Recompensa agregada correctamente");
         navigation.goBack();
     };
@@ -68,17 +60,17 @@ const AddReward = ({ navigation }) => {
             <Text style={styles.label}>Opciones de Canje:</Text>
             <View style={styles.redemptionOptions}>
                 <RedemptionOptionButton
-                    text="🔄"
+                    text="Una vez"
                     selected={redemptionType === "1"}
                     onPress={() => setRedemptionType("1")}
                 />
                 <RedemptionOptionButton
-                    text="♾️"
+                    text="Siempre"
                     selected={redemptionType === "∞"}
                     onPress={() => setRedemptionType("∞")}
                 />
                 <RedemptionOptionButton
-                    text="✏️"
+                    text="Personalizado"
                     selected={redemptionType === "custom"}
                     onPress={() => setRedemptionType("custom")}
                 />

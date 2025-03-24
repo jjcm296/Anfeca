@@ -22,12 +22,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     optionButtonSelected: {
-        backgroundColor: '#6200EE',
+        backgroundColor: '#FFFFFF',
     },
     optionText: {
         fontSize: 14,
         fontWeight: 'bold',
-        color: '#333',
+        color: '#000000',
     },
 });
 
