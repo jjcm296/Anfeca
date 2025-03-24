@@ -4,7 +4,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const QuestionCard = ({ questionNumber, questionText, onPress }) => {
     return (
-        <TouchableOpacity style={styles.card} onPress={onPress}>
+        <View style={styles.card} onPress={onPress}>
             {/* Contenedor del texto */}
             <View style={styles.textContainer}>
                 <Text style={styles.questionNumber}>Question {questionNumber}</Text>
@@ -13,7 +13,7 @@ const QuestionCard = ({ questionNumber, questionText, onPress }) => {
 
             {/* Icono de navegación */}
             <Ionicons name="chevron-forward" size={24} color="#6200EE" />
-        </TouchableOpacity>
+        </View>
     );
 };
 
