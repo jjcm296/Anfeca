@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import RewardCard from '../rewards/compoonents/RewarCard'; // Asegúrate de que la ruta es correcta
+import RewardCard from './compoonents/RewardCard';
 import FakeDataBase from '../../fakeDataBase/FakeDataBase';
 import AddButton from "../ui/components/AddButton";
 
 const Rewards = () => {
-    const rewards = FakeDataBase.getRewards(); // Obtener las recompensas desde la base de datos
+    const rewards = FakeDataBase.getRewards();
 
     return (
         <View style={styles.container}>
