@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -14,6 +13,7 @@ import TopBar from "./screens/ui/topBar/TopBar";
 import AddQuestionBank from "./screens/home/screens/AddQuestionBank";
 import EditQuestion from "./screens/home/screens/EditQuestion";
 import EditQuestionBank from "./screens/home/screens/EditQuestionBank";
+import AddReward from "./screens/rewards/screens/AddReward";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -27,6 +27,15 @@ function HomeStack() {
             <Stack.Screen name="Questions" component={QuestionsScreen} />
             <Stack.Screen name="AddQuestion" component={AddQuestionScreen} />
             <Stack.Screen name="EditQuestion" component={EditQuestion} />
+        </Stack.Navigator>
+    );
+}
+
+function RewardsStack() {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="RewardsMain" component={RewardsScreen} />
+            <Stack.Screen name="AddReward" component={AddReward} />
         </Stack.Navigator>
     );
 }
@@ -58,7 +67,7 @@ function MainTabs() {
                 headerShown: false,
             })}
         >
-            <Tab.Screen name="Rewards" component={RewardsScreen} options={{ unmountOnBlur: true }} />
+            <Tab.Screen name="Rewards" component={RewardsStack} options={{ unmountOnBlur: true }} />
             <Tab.Screen name="Home" component={HomeStack} options={{ unmountOnBlur: true }} />
             <Tab.Screen name="Premium" component={PremiumScreen} options={{ unmountOnBlur: true }} />
         </Tab.Navigator>
