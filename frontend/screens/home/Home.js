@@ -62,6 +62,7 @@ const HomeScreen = ({ navigation }) => {
 
             <WebButton
                 imageSource={require('../../images/Logo-png.png')}
+                url={'https://concentra-tda-kavv6se6a-jjcm296s-projects.vercel.app'}
             />
         </View>
     );
