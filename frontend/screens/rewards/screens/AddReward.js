@@ -10,7 +10,7 @@ const AddReward = ({ navigation }) => {
     const [name, setName] = useState('');
     const [coins, setCoins] = useState('');
     const [redemptions, setRedemptions] = useState('');
-    const [redemptionType, setRedemptionType] = useState('1'); // "1" (una vez), "∞" (siempre), "custom" (personalizado)
+    const [redemptionType, setRedemptionType] = useState('1');
     const [coinError, setCoinError] = useState('');
     const [redemptionsError, setRedemptionsError] = useState('');
 
@@ -31,6 +31,10 @@ const AddReward = ({ navigation }) => {
             Alert.alert("Error", "Todos los campos son obligatorios");
             return;
         }
+
+        const redemptionValue = redemptionType === 'custom' ? redemptions : redemptionType;
+
+        FakeDataBase.addReward(name, parseInt(coins), redemptionValue);
 
         Alert.alert("Éxito", "Recompensa agregada correctamente");
         navigation.goBack();
@@ -66,8 +70,8 @@ const AddReward = ({ navigation }) => {
                 />
                 <RedemptionOptionButton
                     text="Siempre"
-                    selected={redemptionType === "∞"}
-                    onPress={() => setRedemptionType("∞")}
+                    selected={redemptionType === ""}
+                    onPress={() => setRedemptionType("")}
                 />
                 <RedemptionOptionButton
                     text="Personalizado"
@@ -114,7 +118,6 @@ const styles = StyleSheet.create({
         color: '#333',
     },
     input: {
-        marginBottom: 15,
         backgroundColor: '#FFF',
         borderRadius: 12,
         paddingHorizontal: 15,

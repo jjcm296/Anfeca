@@ -6,7 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import HomeScreen from "./screens/home/Home";
 import QuestionsScreen from "./screens/home/screens/Questions";
 import AddQuestionScreen from "./screens/home/screens/AddQuestion";
-import RewardsScreen from './screens/rewards/Rewards';
+import Rewards from './screens/rewards/Rewards';
 import PremiumScreen from './screens/premium/Premium';
 import ProfileScreen from "./screens/profile/Profile";
 import TopBar from "./screens/ui/topBar/TopBar";
@@ -14,6 +14,7 @@ import AddQuestionBank from "./screens/home/screens/AddQuestionBank";
 import EditQuestion from "./screens/home/screens/EditQuestion";
 import EditQuestionBank from "./screens/home/screens/EditQuestionBank";
 import AddReward from "./screens/rewards/screens/AddReward";
+import EditReward from "./screens/rewards/screens/EditReward";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -34,8 +35,9 @@ function HomeStack() {
 function RewardsStack() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="RewardsMain" component={RewardsScreen} />
+            <Stack.Screen name="RewardsMain" component={Rewards} />
             <Stack.Screen name="AddReward" component={AddReward} />
+            <Stack.Screen name="EditReward" component={EditReward} />
         </Stack.Navigator>
     );
 }

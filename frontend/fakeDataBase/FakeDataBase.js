@@ -58,7 +58,7 @@ class FakeDataBase {
             },
         ];
 
-        this.rewars = [
+        this.rewards = [
             {
                 name: 'Comer helado',
                 coins: 30,
@@ -211,34 +211,37 @@ class FakeDataBase {
 
     // Obtener todas las recompensas
     getRewards() {
-        return this.rewars;
+        return this.rewards;
     }
 
     // Agregar una nueva recompensa
     addReward(name, coins, expiration) {
-        const newReward = {
-            name,
-            coins,
-            expiration
-        };
-        this.rewars.push(newReward);
+        if (!name.trim() || coins <= 0) {
+            throw new Error("Los valores de la recompensa no son válidos.");
+        }
+
+        const newReward = { name, coins, expiration };
+        this.rewards.push(newReward);
         return newReward;
     }
+
     // Eliminar una recompensa por su nombre
-    deleteReward(name) {
-        const index = this.rewars.findIndex(reward => reward.name === name);
+    updateReward(id, updatedData) {
+        const index = this.rewards.findIndex(reward => reward.id === id);
         if (index !== -1) {
-            this.rewars.splice(index, 1);
+            this.rewards[index] = { ...this.rewards[index], ...updatedData };
+            console.log("Recompensa actualizada:", this.rewards[index]);
             return true;
         }
         return false;
     }
+
     // Actualizar una recompensa
-    updateReward(name, newCoins, newExpiration) {
-        const index = this.rewars.findIndex(reward => reward.name === name);
+    deleteReward(id) {
+        const index = this.rewards.findIndex(reward => reward.id === id);
         if (index !== -1) {
-            this.rewars[index].coins = newCoins;
-            this.rewars[index].expiration = newExpiration;
+            this.rewards.splice(index, 1);
+            console.log("Recompensa eliminada:", id);
             return true;
         }
         return false;
