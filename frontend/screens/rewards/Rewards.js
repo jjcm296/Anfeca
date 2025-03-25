@@ -1,13 +1,12 @@
 import React from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import RewardCard from './compoonents/RewardCard';
 import FakeDataBase from '../../fakeDataBase/FakeDataBase';
 import AddButton from '../ui/components/AddButton';
-import AddReward from "./screens/AddReward";
 
 const Rewards = () => {
-    const navigation = useNavigation(); // 👈 Solución para usar navigation
+    const navigation = useNavigation();
     const rewards = FakeDataBase.getRewards();
 
     return (
@@ -16,7 +15,9 @@ const Rewards = () => {
                 data={rewards}
                 keyExtractor={(item) => item.name}
                 renderItem={({ item }) => (
-                    <RewardCard name={item.name} coins={item.coins} expiration={item.expiration} />
+                    <TouchableOpacity onPress={() => navigation.navigate('EditReward', { reward: item })}>
+                        <RewardCard name={item.name} coins={item.coins} expiration={item.expiration} />
+                    </TouchableOpacity>
                 )}
                 contentContainerStyle={styles.list}
             />
@@ -24,7 +25,6 @@ const Rewards = () => {
         </View>
     );
 };
-
 
 const styles = StyleSheet.create({
     container: {
