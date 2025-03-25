@@ -25,7 +25,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 10,
-        marginTop: StatusBar.currentHeight || 10,
         paddingVertical: 5,
     },
     profileContainer: {

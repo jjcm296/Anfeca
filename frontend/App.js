@@ -1,4 +1,5 @@
 import React from 'react';
+import { StatusBar } from 'react-native'; // Importa StatusBar
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -79,6 +80,10 @@ function MainTabs() {
 export default function App() {
     return (
         <NavigationContainer>
+            <StatusBar
+                barStyle="light-content" // Cambia los iconos y texto a blanco
+                backgroundColor="black"  // Establece el fondo negro en la barra de estado
+            />
             <TopBar coins={100} />
             <MainStack />
         </NavigationContainer>
