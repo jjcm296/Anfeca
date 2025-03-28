@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import {useNavigation} from "@react-navigation/native";
 import {
     View,
     Text,
@@ -6,9 +7,12 @@ import {
     TextInput,
     TouchableOpacity,
 } from 'react-native';
+
 import CustomButton from '../../ui/components/CustomButton';
 
 const VerificationCode = () => {
+    const navigation = useNavigation();
+
     const [code, setCode] = useState(['', '', '', '', '', '']);
     const inputs = useRef([]);
 
@@ -52,7 +56,11 @@ const VerificationCode = () => {
                 </View>
 
                 <View style={styles.buttonContainer}>
-                    <CustomButton text="Verificar código" color="#000" textColor="#FFF" />
+                    <CustomButton
+                        onPress={() => navigation.navigate("CreateChildAccount")}
+                        text="Verificar código"
+                        color="#000"
+                        textColor="#FFF" />
                 </View>
 
                 <TouchableOpacity onPress={() => console.log('Reenviar código')}>
