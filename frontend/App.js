@@ -21,7 +21,7 @@ import PremiumScreen from './screens/premium/Premium';
 import ProfileScreen from './screens/profile/Profile';
 
 // Autenticación
-import Authentication from './screens/authentication/authentication';
+import Authentication from './screens/authentication/Authentication';
 import RegisterAccount from './screens/authentication/screen/RegisterAccount';
 import VerificationCode from './screens/authentication/screen/VerificationCode';
 import CreateChildAccount from './screens/authentication/screen/CreateChildAccount';

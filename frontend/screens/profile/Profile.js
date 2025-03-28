@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
+import {useNavigation} from "@react-navigation/native";
 import {
     View, Text, StyleSheet, FlatList, TouchableOpacity, Modal,
     TouchableWithoutFeedback, Keyboard, TextInput, Alert
 } from 'react-native';
+
+import FakeDataBase from '../../fakeDataBase/FakeDataBase';
+
 import ProfileImage from '../ui/components/ProfileImage';
 import CustomButton from '../ui/components/CustomButton';
-import FakeDataBase from '../../fakeDataBase/FakeDataBase';
 import CloseButton from '../ui/components/CloseButton';
 import EyeToggleButton from '../ui/components/EyeToggleButton';
 
+
 const Profile = () => {
+    const navigate = useNavigation();
     const [modalVisible, setModalVisible] = useState(false);
     const [passwordModalVisible, setPasswordModalVisible] = useState(false);
     const [password, setPassword] = useState('');
@@ -24,7 +29,7 @@ const Profile = () => {
     const options = [
         { id: '1', title: 'Cambiar perfil' },
         { id: '2', title: 'Ir a la página web' },
-        { id: '3', title: 'Cerrar sesión' },
+        { id: '3', title: 'Cerrar sesión', onPress: () => navigate.navigate("Authentication") },
         { id: '4', title: 'Eliminar cuenta', color: '#FF0000', textColor: '#FFFFFF' },
     ];
 
@@ -131,7 +136,7 @@ const Profile = () => {
                     <CustomButton
                         text={item.title}
                         color={item.color}
-                        onPress={() => console.log(item.title)}
+                        onPress={item.onPress}
                         disabled={item.disabled}
                         textColor={item.textColor}
                     />
