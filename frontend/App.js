@@ -25,6 +25,7 @@ import Authentication from './screens/authentication/authentication';
 import RegisterAccount from './screens/authentication/screen/RegisterAccount';
 import VerificationCode from './screens/authentication/screen/VerificationCode';
 import CreateChildAccount from './screens/authentication/screen/CreateChildAccount';
+import Login from "./screens/authentication/screen/Login";
 
 // Componentes
 import TopBar from './screens/ui/topBar/TopBar';
@@ -93,6 +94,7 @@ function MainStack() {
             <Stack.Screen name="RegisterAccount" component={RegisterAccount} />
             <Stack.Screen name="CreateChildAccount" component={CreateChildAccount} />
             <Stack.Screen name="VerificationCode" component={VerificationCode} />
+            <Stack.Screen name={"Login"} component={Login}/>
             <Stack.Screen name="MainTabs" component={MainTabs} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
         </Stack.Navigator>
