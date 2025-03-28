@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {useNavigation} from "@react-navigation/native";
 import {
     View,
     Text,
@@ -13,6 +14,8 @@ import CustomButton from '../../ui/components/CustomButton';
 import EyeToggleButton from '../../ui/components/EyeToggleButton';
 
 const RegisterAccount = () => {
+    const navigation = useNavigation();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -65,7 +68,11 @@ const RegisterAccount = () => {
                     />
                 </View>
 
-                <CustomButton text="Crear Cuenta" textColor={'#FFFFFF'} color={'#000000'} />
+                <CustomButton
+                    onPress={()=> navigation.navigate("VerificationCode")}
+                    text="Crear Cuenta"
+                    textColor={'#FFFFFF'}
+                    color={'#000000'} />
 
                 <TouchableOpacity>
                     <Text style={styles.registerText}>
