@@ -16,6 +16,7 @@ const Authentication = () => {
                     text={"Iniciar Sesión"}
                     color={'#000000'}
                     textColor={'#FFFFFF'}
+                    onPress={() => navigation.navigate("Login")}
                 />
                 <CustonButton
                     text={"Registrarse"}

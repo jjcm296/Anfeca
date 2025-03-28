@@ -74,7 +74,7 @@ const RegisterAccount = () => {
                     textColor={'#FFFFFF'}
                     color={'#000000'} />
 
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                     <Text style={styles.registerText}>
                         ¿Ya tienes cuenta? <Text style={{ textDecorationLine: 'underline' }}>Inicia sesión</Text>
                     </Text>
