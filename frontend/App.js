@@ -18,6 +18,8 @@ import AddReward from "./screens/rewards/screens/AddReward";
 import EditReward from "./screens/rewards/screens/EditReward";
 import RegisterAccount from "./screens/authentication/screen/RegisterAccount";
 import Authentication from "./screens/authentication/authentication";
+import VerificationCode from "./screens/authentication/screen/VerificationCode";
+import CreateChildAccount from "./screens/authentication/screen/CreateChildAccount";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -54,16 +56,13 @@ function MainStack() {
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Authentication">
             <Stack.Screen name="Authentication" component={Authentication} />
             <Stack.Screen name="RegisterAccount" component={RegisterAccount} />
+            <Stack.Screen name={"CreateChildAccount"} component={CreateChildAccount}/>
+            <Stack.Screen name={"VerificationCode"} component={VerificationCode}/>
             <Stack.Screen name="MainTabs" component={MainTabs} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
         </Stack.Navigator>
     );
 }
-
-
-
-
-
 
 function MainTabs() {
     return (
