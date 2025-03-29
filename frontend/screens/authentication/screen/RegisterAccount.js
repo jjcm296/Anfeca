@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import {useNavigation} from "@react-navigation/native";
 import {
     View,
     Text,
@@ -8,8 +7,9 @@ import {
     TouchableOpacity,
     TextInput,
 } from 'react-native';
+import { useNavigation } from "@react-navigation/native";
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import CustomInput from '../../ui/components/CustomInput';
 import CustomButton from '../../ui/components/CustomButton';
 import EyeToggleButton from '../../ui/components/EyeToggleButton';
 
@@ -25,27 +25,64 @@ const RegisterAccount = () => {
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={styles.card}>
-                <View style={styles.titleContainer}>
-                    <Text style={styles.title}>Crear cuenta</Text>
+                <Text style={styles.title}>Crear cuenta</Text>
+
+                <View style={styles.inputWrapper}>
+                    <Ionicons name="person-outline" size={20} color="#555" style={styles.icon} />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Nombre(s)"
+                        autoCapitalize="words"
+                        placeholderTextColor="#999"
+                    />
                 </View>
 
-                <CustomInput placeholder="Nombre" />
-                <CustomInput placeholder="Apellido Paterno" />
-                <CustomInput placeholder="Apellido Materno" />
-                <CustomInput
-                    placeholder="Correo electrónico"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                />
+                <View style={styles.rowContainer}>
+                    <View style={styles.inputWrapperHalf}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Apellido Paterno"
+                            autoCapitalize="words"
+                            placeholderTextColor="#999"
+                        />
+                    </View>
+                    <View style={styles.inputWrapperHalf}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Apellido Materno"
+                            autoCapitalize="words"
+                            placeholderTextColor="#999"
+                        />
+                    </View>
+                </View>
 
-                <View style={styles.passwordContainer}>
+                <View style={styles.inputWrapper}>
+                    <Ionicons name="mail-outline" size={20} color="#555" style={styles.icon} />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Correo electrónico"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        placeholderTextColor="#999"
+                    />
+                </View>
+
+                <View style={styles.inputWrapper}>
+                    <Ionicons
+                        name={showPassword ? 'lock-open-outline' : 'lock-closed-outline'}
+                        size={20}
+                        color="#555"
+                        style={styles.icon}
+                    />
                     <TextInput
                         style={styles.input}
                         placeholder="Contraseña"
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry={!showPassword}
+                        placeholderTextColor="#999"
                     />
                     <EyeToggleButton
                         isVisible={showPassword}
@@ -53,14 +90,20 @@ const RegisterAccount = () => {
                     />
                 </View>
 
-                {/* Confirmar contraseña */}
-                <View style={styles.passwordContainer}>
+                <View style={styles.inputWrapper}>
+                    <Ionicons
+                        name={showConfirmPassword ? 'lock-open-outline' : 'lock-closed-outline'}
+                        size={20}
+                        color="#555"
+                        style={styles.icon}
+                    />
                     <TextInput
                         style={styles.input}
                         placeholder="Confirmar contraseña"
                         value={confirmPassword}
                         onChangeText={setConfirmPassword}
                         secureTextEntry={!showConfirmPassword}
+                        placeholderTextColor="#999"
                     />
                     <EyeToggleButton
                         isVisible={showConfirmPassword}
@@ -69,10 +112,11 @@ const RegisterAccount = () => {
                 </View>
 
                 <CustomButton
-                    onPress={()=> navigation.navigate("VerificationCode")}
+                    onPress={() => navigation.navigate("VerificationCode")}
                     text="Crear Cuenta"
                     textColor={'#FFFFFF'}
-                    color={'#000000'} />
+                    color={'#000000'}
+                />
 
                 <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                     <Text style={styles.registerText}>
@@ -96,38 +140,58 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         width: '100%',
         maxWidth: 400,
+        alignSelf: 'center',
+        alignItems: 'center',
         shadowColor: '#000',
         shadowOpacity: 0.1,
         shadowRadius: 10,
         elevation: 4,
     },
-    titleContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     title: {
         fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 20,
+        textAlign: 'center',
     },
-    passwordContainer: {
-        height: 43,
+    inputWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        marginBottom: 10,
+        width: '100%',
+        height: 45,
         borderWidth: 1,
         borderColor: '#ccc',
+    },
+    inputWrapperHalf: {
         borderRadius: 10,
-        paddingHorizontal: 5,
-        marginBottom: 8,
+        paddingHorizontal: 10,
+        flex: 1,
+        height: 45,
+        borderWidth: 1,
+        borderColor: '#ccc',
+    },
+    rowContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 10,
+        marginBottom: 10,
+        width: '100%',
     },
     input: {
         flex: 1,
         fontSize: 15,
+        color: '#333',
+    },
+    icon: {
+        marginRight: 8,
     },
     registerText: {
-        alignSelf: 'center',
         marginTop: 20,
         fontSize: 14,
+        textAlign: 'center',
+        color: '#333',
     },
 });
 
