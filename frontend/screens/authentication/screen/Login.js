@@ -8,8 +8,8 @@ import {
     TextInput
 } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import CustomInput from '../../ui/components/CustomInput';
 import CustomButton from '../../ui/components/CustomButton';
 import EyeToggleButton from '../../ui/components/EyeToggleButton';
 
@@ -25,16 +25,26 @@ const Login = () => {
             <View style={styles.card}>
                 <Text style={styles.title}>Iniciar Sesión</Text>
 
-                <CustomInput
-                    placeholder="Correo electrónico"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                />
-
-                <View style={styles.passwordContainer}>
+                <View style={styles.inputContainer}>
+                    <Ionicons name="mail-outline" size={20} color="#555" style={styles.icon} />
                     <TextInput
-                        style={styles.input}
+                        style={styles.flexInput}
+                        placeholder="Correo electrónico"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                    />
+                </View>
+
+                <View style={styles.inputContainer}>
+                    <Ionicons
+                        name={showPassword ? 'lock-open-outline' : 'lock-closed-outline'}
+                        size={20}
+                        color="#555"
+                        style={styles.icon} />
+                    <TextInput
+                        style={styles.flexInput}
                         placeholder="Contraseña"
                         value={password}
                         onChangeText={setPassword}
@@ -92,25 +102,28 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         textAlign: 'center',
     },
-    passwordContainer: {
-        height: 43,
+    inputContainer: {
+        height: 45,
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 10,
-        paddingHorizontal: 5,
-        marginBottom: 8,
+        paddingHorizontal: 10,
+        marginBottom: 10,
     },
-    input: {
+    icon: {
+        marginRight: 8,
+    },
+    flexInput: {
         flex: 1,
         fontSize: 15,
     },
     forgotText: {
         alignSelf: 'flex-end',
         fontSize: 13,
-        color: '#333',
         textDecorationLine: 'underline',
+        color: '#333',
     },
     registerText: {
         fontSize: 14,
