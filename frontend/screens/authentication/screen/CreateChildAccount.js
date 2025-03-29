@@ -1,28 +1,35 @@
 import React, { useState } from 'react';
-import {useNavigation} from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import {
     ScrollView,
     View,
     Text,
-    StyleSheet,
-    Alert
+    StyleSheet
 } from 'react-native';
 
 import CustomInput from '../../ui/components/CustomInput';
 import CustomButton from '../../ui/components/CustomButton';
-import HomeScreen from "../../home/Home";
+import DB from '../../../fakeDataBase/FakeDataBase';
 
 const CreateChildAccount = () => {
     const navigation = useNavigation();
 
     const [childName, setChildName] = useState('');
+    const [error, setError] = useState(false);
 
     const handleSubmit = () => {
         if (childName.trim() === '') {
-            Alert.alert('Error', 'Por favor ingresa el nombre del niño');
+            setError(true);
             return;
         }
-        Alert.alert('¡Éxito!', `Nombre registrado: ${childName}`);
+
+        const result = DB.confirmAccount(childName);
+        if (result) {
+            console.log("Cuenta creada correctamente de : " + childName + "con tutor de: " + result.name);
+            navigation.navigate("MainTabs");
+        } else {
+            setError(true);
+        }
     };
 
     return (
@@ -39,11 +46,13 @@ const CreateChildAccount = () => {
                     placeholder="Ej. Daniel"
                     value={childName}
                     onChangeText={setChildName}
+                    style={error ? styles.inputError : null}
                 />
+                {error && <Text style={styles.errorText}>Este campo es obligatorio</Text>}
 
                 <CustomButton
                     text="Confirmar"
-                    onPress={() => navigation.navigate("MainTabs")}
+                    onPress={handleSubmit}
                     color="#000"
                     textColor="#FFF"
                     style={styles.button}
@@ -89,6 +98,17 @@ const styles = StyleSheet.create({
     button: {
         width: '100%',
         marginTop: 10,
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 12,
+        marginBottom: 5,
+        marginTop: -5,
+        marginLeft: 5,
+    },
+    inputError: {
+        borderColor: 'red',
+        borderWidth: 1,
     },
 });
 

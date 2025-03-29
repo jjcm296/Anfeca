@@ -13,10 +13,6 @@ class FakeDataBase {
                 { id: '1', questionNumber: 1, questionText: "¿Cuánto es 2+2?", answers: ["4", "5", "3", "6"] },
                 { id: '2', questionNumber: 2, questionText: "¿Cuánto es 5x3?", answers: ["15", "10", "20", "25"] },
             ],
-            Matemáticass: [
-                { id: '1', questionNumber: 1, questionText: "¿Cuánto es 2+2?", answers: ["4", "5", "3", "6"] },
-                { id: '2', questionNumber: 2, questionText: "¿Cuánto es 5x3?", answers: ["15", "10", "20", "25"] },
-            ],
             Ciencias: [
                 { id: '3', questionNumber: 1, questionText: "¿Cuál es la fórmula del agua?", answers: ["H2O", "O2", "CO2", "H2"] },
                 { id: '4', questionNumber: 2, questionText: "¿Qué planeta es el más grande?", answers: ["Júpiter", "Tierra", "Marte", "Saturno"] },
@@ -37,65 +33,68 @@ class FakeDataBase {
 
         this.profiles = [
             {
-                id: '1',
+                idTutor: '1',
                 name: 'JordaIn',
+                lastName: 'González Pérez',
                 type: 'Tutor',
-                image: 'path_to_image1',
-                password: '246810',
                 children: [
-                    { id: '1-1', name: 'Niño 1', type: 'Niño', image: 'path_to_child_image1' },
+                    { id: '1-1', name: 'jordi', type: 'Niño' },
                 ],
+                idAccount: '1',
             },
             {
-                id: '2',
-                name: 'María',
+                idTutor: '2',
+                name: 'Zuri Sadai',
+                lastName: 'Santos Mazaba',
                 type: 'Tutor',
-                image: 'path_to_image2',
-                password: '246810',
                 children: [
-                    { id: '2-1', name: 'Niño 3', type: 'Niño', image: 'path_to_child_image3' },
+                    { id: '2-1', name: 'Z', type: 'Niño' },
                 ],
-            },
-        ];
-
-        this.rewards = [
-            {
-                name: 'Comer helado',
-                coins: 30,
-                expiration: 10,
-            },
-            {
-                name: 'Ver una película',
-                coins: 50,
-                expiration: 5,
-            },
-            {
-                name: 'Jugar videojuegos',
-                coins: 100,
-                expiration: 3,
-            },
-            {
-                name: 'Día de campo',
-                coins: 200,
-                expiration: 1,
+                idAccount: '2',
             }
         ];
 
+        this.accounts = [
+            {
+                idAccount: '1',
+                email: 'jordan@gmail.com',
+                password: '12345',
+            },
+            {
+                idAccount: '2',
+                email:'zuzi@gmail.com',
+                password: '12345',
+            }
+        ];
+
+        this.rewards = [
+            { name: 'Comer helado', coins: 30, expiration: 10 },
+            { name: 'Ver una película', coins: 50, expiration: 5 },
+            { name: 'Jugar videojuegos', coins: 100, expiration: 3 },
+            { name: 'Día de campo', coins: 200, expiration: 1 }
+        ];
+
+        this.verificationCode = '123456'; // Puedes cambiarlo después
+
+        this.tempAccount = null;
     }
 
+    // ------------------ PERFILES ------------------
 
     getProfilesByTutor(tutorId) {
-        const tutor = this.profiles.find(profile => profile.id === tutorId && profile.type === 'Tutor');
+        const tutor = this.profiles.find(profile => profile.idTutor === tutorId && profile.type === 'Tutor');
         if (!tutor) return [];
         return [tutor, ...tutor.children];
     }
 
-    // Obtener un perfil por ID
     getProfileById(profileId) {
-        return this.profiles.find(profile => profile.id === profileId);
+        return this.profiles.find(profile => profile.idTutor === profileId);
     }
 
-    // Agregar un nuevo perfil
+    getProfileByAccountId(accountId) {
+        return this.profiles.find(profile => profile.idAccount === accountId);
+    }
+
     addProfile(name, image) {
         const newProfile = {
             id: (this.profiles.length + 1).toString(),
@@ -106,9 +105,8 @@ class FakeDataBase {
         return newProfile;
     }
 
-    // Eliminar un perfil por ID
     deleteProfile(profileId) {
-        const index = this.profiles.findIndex(profile => profile.id === profileId);
+        const index = this.profiles.findIndex(profile => profile.idTutor === profileId);
         if (index !== -1) {
             this.profiles.splice(index, 1);
             return true;
@@ -116,17 +114,49 @@ class FakeDataBase {
         return false;
     }
 
-    // Obtener todas las categorías de preguntas
+    addChildToTutor(tutorId, childName) {
+        const tutor = this.profiles.find(profile => profile.idTutor === tutorId);
+        if (!tutor) return null;
+
+        const newChild = {
+            id: `${tutorId}-${tutor.children.length + 1}`,
+            name: childName,
+            type: 'Niño'
+        };
+
+        tutor.children.push(newChild);
+        return newChild;
+    }
+
+    deleteChild(tutorId, childId) {
+        const tutor = this.profiles.find(profile => profile.idTutor === tutorId);
+        if (!tutor) return false;
+
+        const index = tutor.children.findIndex(child => child.id === childId);
+        if (index !== -1) {
+            tutor.children.splice(index, 1);
+            return true;
+        }
+
+        return false;
+    }
+
+    // ------------------ CUENTAS ------------------
+
+    getAccountByEmail(email) {
+        return this.accounts.find(account => account.email === email);
+    }
+
+    // ------------------ BANCOS Y PREGUNTAS ------------------
+
     getQuestionBanks() {
         return this.questionBanks;
     }
 
-    // Obtener preguntas de una categoría específica
     getQuestionsByCategory(category) {
         return this.questionsList[category] || [];
     }
 
-    // Obtener una pregunta específica por su ID
     getQuestionById(questionId) {
         for (const category in this.questionsList) {
             const question = this.questionsList[category].find(q => q.id === questionId);
@@ -135,7 +165,33 @@ class FakeDataBase {
         return null;
     }
 
-    // Actualizar el texto y las respuestas de una pregunta
+    getCategories() {
+        return Object.keys(this.questionsList);
+    }
+
+    getRandomQuestion(category) {
+        const list = this.questionsList[category];
+        if (!list || list.length === 0) return null;
+        const randomIndex = Math.floor(Math.random() * list.length);
+        return list[randomIndex];
+    }
+
+    addQuestion(category, questionText) {
+        if (!this.questionsList[category]) {
+            this.questionsList[category] = [];
+        }
+
+        const newQuestion = {
+            id: (this.questionsList[category].length + 1).toString(),
+            questionNumber: this.questionsList[category].length + 1,
+            questionText,
+            answers: ["", "", "", ""]
+        };
+
+        this.questionsList[category].push(newQuestion);
+        return newQuestion;
+    }
+
     updateQuestion(category, questionId, newQuestionText, newAnswers) {
         if (!this.questionsList[category]) return false;
         const questionIndex = this.questionsList[category].findIndex(q => q.id === questionId);
@@ -147,7 +203,6 @@ class FakeDataBase {
         return false;
     }
 
-    // Eliminar una pregunta por su ID
     deleteQuestion(questionId) {
         for (const category in this.questionsList) {
             const questionIndex = this.questionsList[category].findIndex(q => q.id === questionId);
@@ -156,27 +211,9 @@ class FakeDataBase {
                 return true;
             }
         }
-        return false; // Si no se encontró la pregunta
+        return false;
     }
 
-    // Agregar una nueva pregunta con respuestas por defecto
-    addQuestion(category, questionText) {
-        if (!this.questionsList[category]) {
-            this.questionsList[category] = [];
-        }
-
-        const newQuestion = {
-            id: (this.questionsList[category].length + 1).toString(),
-            questionNumber: this.questionsList[category].length + 1,
-            questionText,
-            answers: ["", "", "", ""] // Se agregan respuestas vacías para ser editadas luego
-        };
-
-        this.questionsList[category].push(newQuestion);
-        return newQuestion;
-    }
-
-    // Agregar un banco de preguntas
     addQuestionBank(category, initialQuestions = 0) {
         const newBank = {
             id: (this.questionBanks.length + 1).toString(),
@@ -185,10 +222,9 @@ class FakeDataBase {
         };
 
         this.questionBanks.push(newBank);
-        this.questionsList[category] = []; // Crea una nueva categoría vacía
+        this.questionsList[category] = [];
     }
 
-    //Editar banco de preguntas
     updateQuestionBank(bankId, newCategory, newQuestions) {
         const index = this.questionBanks.findIndex(bank => bank.id === bankId);
         if (index !== -1) {
@@ -199,7 +235,6 @@ class FakeDataBase {
         return false;
     }
 
-    // Eliminar un banco de preguntas por su ID
     deleteQuestionBank(bankId) {
         const index = this.questionBanks.findIndex(bank => bank.id === bankId);
         if (index !== -1) {
@@ -209,12 +244,20 @@ class FakeDataBase {
         return false;
     }
 
-    // Obtener todas las recompensas
+    // ------------------ RECOMPENSAS ------------------
+
     getRewards() {
         return this.rewards;
     }
 
-    // Agregar una nueva recompensa
+    getRewardByName(name) {
+        return this.rewards.find(reward => reward.name === name);
+    }
+
+    getAvailableRewards(maxCoins) {
+        return this.rewards.filter(reward => reward.coins <= maxCoins);
+    }
+
     addReward(name, coins, expiration) {
         if (!name.trim() || coins <= 0) {
             throw new Error("Los valores de la recompensa no son válidos.");
@@ -225,7 +268,6 @@ class FakeDataBase {
         return newReward;
     }
 
-    // Eliminar una recompensa por su nombre
     updateReward(id, updatedData) {
         const index = this.rewards.findIndex(reward => reward.id === id);
         if (index !== -1) {
@@ -236,7 +278,6 @@ class FakeDataBase {
         return false;
     }
 
-    // Actualizar una recompensa
     deleteReward(id) {
         const index = this.rewards.findIndex(reward => reward.id === id);
         if (index !== -1) {
@@ -245,6 +286,61 @@ class FakeDataBase {
             return true;
         }
         return false;
+    }
+
+    // Verificar si un correo ya existe
+    emailExists(email) {
+        return this.accounts.some(account => account.email === email);
+    }
+
+    // Generar ID
+    generateId(collection) {
+        return (this[collection].length + 1).toString();
+    }
+
+    // Guardar temporalmente datos antes de verificar
+    saveTempAccount(data) {
+        this.tempAccount = data;
+    }
+
+    // Verificar código
+    verifyCode(code) {
+        return code === this.verificationCode;
+    }
+
+    // Confirmar creación de cuenta
+    confirmAccount(childName) {
+        if (!this.tempAccount) return null;
+
+        const idAccount = this.generateId('accounts');
+        const idTutor = this.generateId('profiles');
+
+        const account = {
+            idAccount,
+            email: this.tempAccount.email,
+            password: this.tempAccount.password,
+        };
+
+        const profile = {
+            idTutor,
+            name: this.tempAccount.name,
+            lastName: this.tempAccount.lastName,
+            type: 'Tutor',
+            idAccount,
+            children: [
+                {
+                    id: `${idTutor}-1`,
+                    name: childName,
+                    type: 'Niño',
+                }
+            ]
+        };
+
+        this.accounts.push(account);
+        this.profiles.push(profile);
+
+        this.tempAccount = null;
+        return { account, profile };
     }
 }
 

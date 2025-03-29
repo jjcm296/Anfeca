@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import {useNavigation} from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import {
     View,
     Text,
@@ -9,11 +9,13 @@ import {
 } from 'react-native';
 
 import CustomButton from '../../ui/components/CustomButton';
+import DB from '../../../fakeDataBase/FakeDataBase';
 
 const VerificationCode = () => {
     const navigation = useNavigation();
 
     const [code, setCode] = useState(['', '', '', '', '', '']);
+    const [error, setError] = useState(false);
     const inputs = useRef([]);
 
     const handleChange = (text, index) => {
@@ -33,6 +35,16 @@ const VerificationCode = () => {
         }
     };
 
+    const handleVerify = () => {
+        const enteredCode = code.join('');
+        if (DB.verifyCode(enteredCode)) {
+            console.log("Código verificado correctamente");
+            navigation.navigate("CreateChildAccount");
+        } else {
+            setError(true);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.card}>
@@ -47,20 +59,22 @@ const VerificationCode = () => {
                             value={value}
                             onChangeText={(text) => handleChange(text, index)}
                             onKeyPress={(e) => handleBackspace(e, index)}
-                            style={styles.codeInput}
+                            style={[styles.codeInput, error && styles.codeInputError]}
                             keyboardType="numeric"
                             maxLength={1}
                             autoFocus={index === 0}
                         />
                     ))}
                 </View>
+                {error && <Text style={styles.errorText}>Código incorrecto. Intenta nuevamente.</Text>}
 
                 <View style={styles.buttonContainer}>
                     <CustomButton
-                        onPress={() => navigation.navigate("CreateChildAccount")}
+                        onPress={handleVerify}
                         text="Verificar código"
                         color="#000"
-                        textColor="#FFF" />
+                        textColor="#FFF"
+                    />
                 </View>
 
                 <TouchableOpacity onPress={() => console.log('Reenviar código')}>
@@ -117,6 +131,13 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         textAlign: 'center',
         fontSize: 18,
+    },
+    codeInputError: {
+        borderColor: 'red',
+    },
+    errorText: {
+        color: 'red',
+        marginTop: 10,
     },
     resendText: {
         marginTop: 20,

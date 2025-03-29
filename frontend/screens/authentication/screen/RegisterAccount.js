@@ -13,6 +13,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import CustomButton from '../../ui/components/CustomButton';
 import EyeToggleButton from '../../ui/components/EyeToggleButton';
 
+import DB from '../../../fakeDataBase/FakeDataBase';
+
 const RegisterAccount = () => {
     const navigation = useNavigation();
 
@@ -21,42 +23,74 @@ const RegisterAccount = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [name, setName] = useState('');
+    const [lastName, setLastName] = useState('');
+
+    const [errors, setErrors] = useState({});
+
+    const handleRegister = () => {
+        const newErrors = {};
+        if (!name) newErrors.name = true;
+        if (!lastName) newErrors.lastName = true;
+        if (!email) newErrors.email = true;
+        if (!password) newErrors.password = true;
+        if (!confirmPassword) newErrors.confirmPassword = true;
+
+        if (password !== confirmPassword) newErrors.confirmPassword = true;
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+
+        if (DB.emailExists(email)) {
+            alert("Este correo ya está registrado.");
+            return;
+        }
+
+        DB.saveTempAccount({
+            email,
+            password,
+            name,
+            lastName
+        });
+
+        setErrors({});
+        console.log("Cuenta creada correctamente desde el formulario");
+        navigation.navigate("VerificationCode");
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={styles.card}>
                 <Text style={styles.title}>Crear cuenta</Text>
 
-                <View style={styles.inputWrapper}>
+                <View style={[styles.inputWrapper, errors.name && styles.inputWrapperError]}>
                     <Ionicons name="person-outline" size={20} color="#555" style={styles.icon} />
                     <TextInput
                         style={styles.input}
                         placeholder="Nombre(s)"
+                        value={name}
+                        onChangeText={setName}
                         autoCapitalize="words"
                         placeholderTextColor="#999"
                     />
                 </View>
+                {errors.name && <Text style={styles.errorText}>Este campo es obligatorio</Text>}
 
-                <View style={styles.rowContainer}>
-                    <View style={styles.inputWrapperHalf}>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Apellido Paterno"
-                            autoCapitalize="words"
-                            placeholderTextColor="#999"
-                        />
-                    </View>
-                    <View style={styles.inputWrapperHalf}>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Apellido Materno"
-                            autoCapitalize="words"
-                            placeholderTextColor="#999"
-                        />
-                    </View>
+                <View style={[styles.inputWrapper, errors.lastName && styles.inputWrapperError]}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Apellido(s)"
+                        value={lastName}
+                        onChangeText={setLastName}
+                        autoCapitalize="words"
+                        placeholderTextColor="#999"
+                    />
                 </View>
+                {errors.lastName && <Text style={styles.errorText}>Este campo es obligatorio</Text>}
 
-                <View style={styles.inputWrapper}>
+                <View style={[styles.inputWrapper, errors.email && styles.inputWrapperError]}>
                     <Ionicons name="mail-outline" size={20} color="#555" style={styles.icon} />
                     <TextInput
                         style={styles.input}
@@ -68,8 +102,9 @@ const RegisterAccount = () => {
                         placeholderTextColor="#999"
                     />
                 </View>
+                {errors.email && <Text style={styles.errorText}>Este campo es obligatorio</Text>}
 
-                <View style={styles.inputWrapper}>
+                <View style={[styles.inputWrapper, errors.password && styles.inputWrapperError]}>
                     <Ionicons
                         name={showPassword ? 'lock-open-outline' : 'lock-closed-outline'}
                         size={20}
@@ -89,8 +124,9 @@ const RegisterAccount = () => {
                         onPress={() => setShowPassword(!showPassword)}
                     />
                 </View>
+                {errors.password && <Text style={styles.errorText}>Este campo es obligatorio</Text>}
 
-                <View style={styles.inputWrapper}>
+                <View style={[styles.inputWrapper, errors.confirmPassword && styles.inputWrapperError]}>
                     <Ionicons
                         name={showConfirmPassword ? 'lock-open-outline' : 'lock-closed-outline'}
                         size={20}
@@ -110,9 +146,10 @@ const RegisterAccount = () => {
                         onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                     />
                 </View>
+                {errors.confirmPassword && <Text style={styles.errorText}>Las contraseñas no coinciden o está vacío</Text>}
 
                 <CustomButton
-                    onPress={() => navigation.navigate("VerificationCode")}
+                    onPress={handleRegister}
                     text="Crear Cuenta"
                     textColor={'#FFFFFF'}
                     color={'#000000'}
@@ -164,6 +201,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ccc',
     },
+    inputWrapperError: {
+        borderColor: 'red',
+    },
     inputWrapperHalf: {
         borderRadius: 10,
         paddingHorizontal: 10,
@@ -192,6 +232,13 @@ const styles = StyleSheet.create({
         fontSize: 14,
         textAlign: 'center',
         color: '#333',
+    },
+    errorText: {
+        alignSelf: 'flex-start',
+        color: 'red',
+        fontSize: 12,
+        marginBottom: 5,
+        marginLeft: 5,
     },
 });
 
