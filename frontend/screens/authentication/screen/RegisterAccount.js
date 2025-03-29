@@ -148,12 +148,15 @@ const RegisterAccount = () => {
                 </View>
                 {errors.confirmPassword && <Text style={styles.errorText}>Las contraseñas no coinciden o está vacío</Text>}
 
-                <CustomButton
-                    onPress={handleRegister}
-                    text="Crear Cuenta"
-                    textColor={'#FFFFFF'}
-                    color={'#000000'}
-                />
+                <View style={{ width: '100%' }}>
+                    <CustomButton
+                        onPress={handleRegister}
+                        text="Crear Cuenta"
+                        textColor="#FFFFFF"
+                        color="#000000"
+                    />
+                </View>
+
 
                 <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                     <Text style={styles.registerText}>
@@ -222,7 +225,6 @@ const styles = StyleSheet.create({
     input: {
         flex: 1,
         fontSize: 15,
-        color: '#333',
     },
     icon: {
         marginRight: 8,
@@ -239,6 +241,10 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginBottom: 5,
         marginLeft: 5,
+    },
+    fullWidthButton: {
+        width: '100%',
+        marginTop: 10,
     },
 });
 
