@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
-const {ObjectId} = require("mongodb");
+const { Schema } = mongoose;
 
-const QuestionsBankSchema = new mongoose.Schema({
+const questionsBankSchema = Schema({
     name:  { type: String, required: true },
-    questions: [{ type: ObjectId }]
+    guardianId: { type: Schema.Types.ObjectId, ref: 'Guardian', required: true }
 });
 
-module.exports = mongoose.model('QuestionsBank', QuestionsBankSchema);
+module.exports = mongoose.model('QuestionsBank', questionsBankSchema);

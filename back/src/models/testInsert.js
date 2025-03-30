@@ -1,18 +1,18 @@
 const mongoose = require('mongoose');
 const connectToDB = require('../lib/dbConnection.js');
-const QuestionsBank = require('./QuestionsBank');
+const rewards = require('./Reward');
+const { ObjectId } = require("mongodb");
 
-const insertQuestionsBanks = async () => {
+const insert = async () => {
     await connectToDB();
 
-    /*
-    const banks = [
-        { name: 'Math Basics', questions: [] },
-        { name: 'Reading Skills', questions: [] },
-    ];
+    const document = {
+        name: 'Watch TikTok for 30 mins'
+    };
+
 
     try {
-        const result = await QuestionsBank.insertMany(banks);
+        const result = await rewards.create(document);
         console.log('Inserted:', result);
     } catch (err) {
         console.error('Insert error:', err);
@@ -20,7 +20,6 @@ const insertQuestionsBanks = async () => {
         mongoose.disconnect();
     }
 
-     */
 };
 
-insertQuestionsBanks();
+insert();
