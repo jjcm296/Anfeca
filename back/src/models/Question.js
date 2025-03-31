@@ -1,19 +1,21 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-
-function requiredNumberOfAnswers(answersArray) {
-    // min 2 answers, max 4 answers
-    if (answersArray.length < 2 || answersArray.length > 4) return false;
-
-    // at least 1 correct answer and 1 incorrect answer
-    const numberOfCorrects = answersArray.filter( a => a.isCorrect ).length;
-    const numberOfIncorrects = answersArray.filter(a => !a.isCorrect).length;
-
-    return numberOfCorrects >= 1 && numberOfIncorrects >= 1;
-}
+const {
+    isStringLengthGreaterThanZero,
+    messageStringLengthGreaterThanZero,
+    validateNumberOfAnswers,
+    messageNumberOfAnswers
+    } = require('../lib/validatorFunctions.js');
 
 const questionSchema = Schema({
-    textQuestion: { type: String, required: true },
+    textQuestion: {
+        type: String,
+        required: true,
+        validate: {
+            validator: isStringLengthGreaterThanZero,
+            message: messageStringLengthGreaterThanZero
+        }
+    },
     answers: {
         type: [
             {
@@ -22,8 +24,8 @@ const questionSchema = Schema({
             }
         ],
         validate: {
-            validator: requiredNumberOfAnswers,
-            message: 'Answers must include at least one correct and one incorrect answer (2–4 total).'
+            validator: validateNumberOfAnswers,
+            message: messageNumberOfAnswers
         },
         _id: false
     },
