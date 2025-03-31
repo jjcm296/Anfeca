@@ -7,7 +7,7 @@ const guardianSchema = Schema({
         type: String,
         required: true,
         validate: {
-            validator: isStringLengthGreaterThanZero(),
+            validator: isStringLengthGreaterThanZero,
             message: messageStringLengthGreaterThanZero
         }
     },

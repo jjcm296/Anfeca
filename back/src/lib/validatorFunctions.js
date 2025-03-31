@@ -1,5 +1,5 @@
 function isStringLengthGreaterThanZero(text) {
-    return text.trim().length > 0
+    return typeof text === 'string' && text.trim().length > 0
 }
 const messageStringLengthGreaterThanZero = "string length must be greater than zero";
 

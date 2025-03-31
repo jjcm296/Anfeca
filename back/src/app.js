@@ -3,6 +3,7 @@ const http = require('http');
 const cors = require('cors');
 const connectToDB = require('./lib/dbConnection.js');
 const mongoose = require("mongoose");
+const authRoutes = require('./routes/authRoutes.js');
 require('dotenv').config({ path: '../.env' });
 
 const app = express();
@@ -11,7 +12,10 @@ const initializeApp = async () => {
     try {
         const dbConnection = await connectToDB();
 
+        app.use(cors());
         app.use(express.json());
+
+        app.use('/api/auth', authRoutes);
 
         app.get('/', (req, res) => {
             const state = mongoose.connection.readyState;
