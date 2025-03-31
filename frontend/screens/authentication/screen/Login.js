@@ -13,12 +13,34 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import CustomButton from '../../ui/components/CustomButton';
 import EyeToggleButton from '../../ui/components/EyeToggleButton';
 
+import { ApiLogin } from '../../../api/ApiLogin';
+
 const Login = () => {
     const navigation = useNavigation();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+
+    const handleLogin = async () => {
+        if (!email || !password) {
+            console.log('Por favor ingresa el correo y la contraseña');
+            return;
+        }
+
+        try {
+            const response = await ApiLogin(email, password);
+
+            if (response.error) {
+                console.log('Error:', response.error);
+            } else {
+                console.log(response.message);
+                navigation.navigate('MainTabs');
+            }
+        } catch (error) {
+            console.error('Error inesperado al iniciar sesión:', error.message);
+        }
+    }
 
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -64,7 +86,7 @@ const Login = () => {
                     text="Iniciar sesión"
                     color="#000"
                     textColor="#FFF"
-                    onPress={() => navigation.navigate('MainTabs')}
+                    onPress={() => handleLogin()}
                 />
 
                 <TouchableOpacity style={{ marginTop: 20 }} onPress={() => navigation.navigate('RegisterAccount')}>
