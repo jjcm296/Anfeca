@@ -1,8 +1,9 @@
 import axios from 'axios';
+import {API_BASE_URL} from '../config/Config';
 
 export const ApiLogin = async (email, password) => {
     try {
-        const response = await axios.post('http://148.226.202.182:3000/api/auth/login', { email, password });
+        const response = await axios.post(`${API_BASE_URL}/api/auth/login`, { email, password });
         return response.data;
     } catch (error) {
         return error.response.data;
