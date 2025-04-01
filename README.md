@@ -1,5 +1,5 @@
 # Anfeca
-npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose 
+npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose nodemailer @getbrevo/brevo
 
 ## Technologies used
 - Node.js
@@ -7,6 +7,7 @@ npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose
 - MongoDB + Mongoose
 - JWT
 - joi
+- Brevo
 
 ## docs I've been using
 - Mongoose 
@@ -17,3 +18,5 @@ npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose
   https://developers.brevo.com/reference/sendtransacemail
 - Express
   https://expressjs.com/
+- crypto https://nodejs.org/api/crypto.html#cryptorandomintmin-max-callback
+- express-rate-limit https://www.npmjs.com/package/express-rate-limit

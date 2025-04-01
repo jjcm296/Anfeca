@@ -34,3 +34,13 @@ exports.login =  async ({ email, password }) => {
 
     return token;
 }
+
+exports.sendVerificationCode = async (email) => {
+
+}
+
+exports.verifyEmailCode = async (email,code) => {
+
+}
+
+
