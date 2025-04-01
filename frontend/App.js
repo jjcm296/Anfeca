@@ -103,9 +103,14 @@ function MainStack() {
 
 export default function App() {
     return (
-        <NavigationContainer>
-            <StatusBar barStyle="light-content" backgroundColor="black" />
-            <MainStack />
-        </NavigationContainer>
+        <AccountProvider>
+            <GuardianProvider>
+                <NavigationContainer>
+                    <StatusBar barStyle="light-content" backgroundColor="black" />
+                    <MainStack />
+                </NavigationContainer>
+            </GuardianProvider>
+        </AccountProvider>
+
     );
 }

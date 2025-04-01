@@ -13,7 +13,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import CustomButton from '../../ui/components/CustomButton';
 import EyeToggleButton from '../../ui/components/EyeToggleButton';
 
-import DB from '../../../fakeDataBase/FakeDataBase';
+import {useContext} from 'react';
+
+import { AccountContext } from '../../../context/AccountContext';
+import { GuardianContext } from '../../../context/GuardianContext';
 
 const RegisterAccount = () => {
     const navigation = useNavigation();
@@ -27,6 +30,9 @@ const RegisterAccount = () => {
     const [lastName, setLastName] = useState('');
 
     const [errors, setErrors] = useState({});
+
+    const { setAccount } = useContext(AccountContext);
+    const { setGuardian } = useContext(GuardianContext);
 
     const handleRegister = () => {
         const newErrors = {};
@@ -43,18 +49,16 @@ const RegisterAccount = () => {
             return;
         }
 
-        if (DB.emailExists(email)) {
-            alert("Este correo ya está registrado.");
-            return;
-        }
-
-        DB.saveTempAccount({
+        setAccount({
             email,
             password,
-            name,
-            lastName
         });
 
+        setGuardian({
+            name,
+            lastName,
+        });
+x
         setErrors({});
         console.log("Cuenta creada correctamente desde el formulario");
         navigation.navigate("VerificationCode");
