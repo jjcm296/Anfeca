@@ -30,6 +30,9 @@ import Login from "./screens/authentication/screen/Login";
 // Componentes
 import TopBar from './screens/ui/topBar/TopBar';
 
+import { AccountProvider } from './context/AccountContext';
+import { GuardianProvider } from './context/GuardianContext';
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
