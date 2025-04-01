@@ -9,10 +9,11 @@ npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose
 - joi
 
 ## docs I've been using
-- Mongoose
+- Mongoose 
   https://mongoosejs.com/docs/validation.html#custom-validators
-- Nodemailer
+- Nodemailer 
   https://www.nodemailer.com/
-- Brevo
+- Brevo 
   https://developers.brevo.com/reference/sendtransacemail
-
+- Express
+  https://expressjs.com/
