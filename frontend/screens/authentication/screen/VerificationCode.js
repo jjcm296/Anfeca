@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useContext } from 'react';
 import { useNavigation } from "@react-navigation/native";
 import {
     View,
@@ -10,6 +10,10 @@ import {
 
 import CustomButton from '../../ui/components/CustomButton';
 import DB from '../../../fakeDataBase/FakeDataBase';
+import { AccountContext } from '../../../context/AccountContext';
+import { GuardianContext } from '../../../context/GuardianContext';
+import {ApiAccount} from "../../../api/ApiAccount";
+
 
 const VerificationCode = () => {
     const navigation = useNavigation();
@@ -17,6 +21,18 @@ const VerificationCode = () => {
     const [code, setCode] = useState(['', '', '', '', '', '']);
     const [error, setError] = useState(false);
     const inputs = useRef([]);
+
+    //importamos el guardian y la cuenta que exportamos de registerAccount
+    const { guardian } =useContext(GuardianContext);
+    const { account } = useContext(AccountContext);
+
+    //crearmos el objeto a enviar
+    const body = {
+        name: guardian.name,
+        lastName: guardian.lastName,
+        email: account.email,
+        password: account.password,
+    }
 
     const handleChange = (text, index) => {
         const newCode = [...code];
@@ -35,11 +51,26 @@ const VerificationCode = () => {
         }
     };
 
-    const handleVerify = () => {
+    const handleVerify = async () => {
         const enteredCode = code.join('');
+
+       console.log("body", body);
         if (DB.verifyCode(enteredCode)) {
+            const response = await ApiAccount(body);
             console.log("Código verificado correctamente");
-            navigation.navigate("CreateChildAccount");
+
+            try {
+                console.log("Respuesta del backend:", response);
+                if (response.error) {
+                    console.error("Error al crear la cuenta:", response.error);
+                    return;
+                }else {
+                    navigation.navigate("CreateChildAccount");
+                }
+            } catch (error) {
+                console.error("Error al crear la cuenta:", error);
+            }
+
         } else {
             setError(true);
         }

@@ -58,9 +58,8 @@ const RegisterAccount = () => {
             name,
             lastName,
         });
-x
+
         setErrors({});
-        console.log("Cuenta creada correctamente desde el formulario");
         navigation.navigate("VerificationCode");
     };
 
