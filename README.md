@@ -1,6 +1,10 @@
 # Anfeca
 npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose nodemailer @getbrevo/brevo
 
+## Account registered
+hola@example.com  
+Hola1234567*
+
 ## Technologies used
 - Node.js
 - Express
