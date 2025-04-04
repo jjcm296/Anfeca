@@ -2,6 +2,7 @@ const Account = require('../models/Account.js');
 const Guardian = require('../models/Guardian.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { sendVerficationCode, verificationCode } = require('../lib/verificationCodeSender.js')
 
 exports.registerAccount = async (data) => {
     const { name, lastName, email, password } = data;
@@ -35,12 +36,16 @@ exports.login =  async ({ email, password }) => {
     return token;
 }
 
-exports.sendVerificationCode = async (email) => {
 
+exports.sendVerificationCodeToGuardian = async (email) => {
+    let code= verificationCode();
+
+    sendVerficationCode(email,code);
+    return code;
 }
 
-exports.verifyEmailCode = async (email,code) => {
-
+exports.verifyEmailCode = async (email, codeSended, codeGiven) => {
+    return codeSended === codeGiven && email;
 }
 
 
