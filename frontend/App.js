@@ -32,6 +32,7 @@ import TopBar from './screens/ui/topBar/TopBar';
 
 import { AccountProvider } from './context/AccountContext';
 import { GuardianProvider } from './context/GuardianContext';
+import Profile from "./screens/profile/Profile";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -75,6 +76,7 @@ function MainTabs() {
                     if (route.name === 'Home') iconName = 'home';
                     else if (route.name === 'Rewards') iconName = 'trophy';
                     else if (route.name === 'Premium') iconName = 'star';
+                    else if (route.name === 'Profile') iconName = 'person';
                     return <Ionicons name={iconName} size={size} color={color} />;
                 },
                 tabBarActiveTintColor: '#6200EE',
@@ -86,6 +88,7 @@ function MainTabs() {
             <Tab.Screen name="Rewards" component={RewardsStack} options={{ unmountOnBlur: true }} />
             <Tab.Screen name="Home" component={HomeStack} options={{ unmountOnBlur: true }} />
             <Tab.Screen name="Premium" component={PremiumScreen} options={{ unmountOnBlur: true }} />
+            <Tab.Screen name={"Profile"} component={ProfileScreen} options={{ unmountOnBlur: true }} />
         </Tab.Navigator>
     );
 }

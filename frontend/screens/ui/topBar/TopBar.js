@@ -3,6 +3,7 @@ import { View, StyleSheet, StatusBar, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import CoinsDisplay from '../components/CoinsDisplay';
 import ProfileImage from "../components/ProfileImage";
+import StreakDisplay from "../components/StreakDisplay";
 
 const TopBar = ({ coins }) => {
     const navigation = useNavigation();
@@ -10,9 +11,7 @@ const TopBar = ({ coins }) => {
     return (
         <View style={styles.topBar}>
             <CoinsDisplay coins={coins} />
-            <TouchableOpacity style={styles.profileContainer} onPress={() => navigation.navigate("Profile")}>
-                <ProfileImage width={45} height={45} borderRadius={40} />
-            </TouchableOpacity>
+            <StreakDisplay streak={5}/>
         </View>
     );
 };
