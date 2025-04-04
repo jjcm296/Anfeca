@@ -25,5 +25,20 @@ exports.login = async (req, res) => {
 // verify if that email already exists in the database
 
 exports.sendCode = async (req,res) => {
+    try {
+        await authService.sendVerificationCodeToGuardian();
+        res.status(200).json({
+           message: 'code succesfully sent'
+        });
+    } catch (error) {
+        res.status(401).json({ error: error.message });
+    }
+}
 
+exports.validateEmail = async (req,res) => {
+    try {
+
+    } catch (error) {
+        res.status(401).json({ error: error.message });
+    }
 }
