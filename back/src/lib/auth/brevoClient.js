@@ -1,7 +1,6 @@
 const SibApiV3Sdk  = require('sib-api-v3-sdk');
 const path = require('path');
 
-
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
 let defaultClient = SibApiV3Sdk .ApiClient.instance;

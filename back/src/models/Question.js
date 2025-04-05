@@ -5,7 +5,7 @@ const {
     messageStringLengthGreaterThanZero,
     validateNumberOfAnswers,
     messageNumberOfAnswers
-    } = require('../lib/validatorFunctions.js');
+    } = require('../lib/db/validatorFunctions.js');
 
 const questionSchema = Schema({
     textQuestion: {

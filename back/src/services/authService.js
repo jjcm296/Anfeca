@@ -3,12 +3,33 @@ const Guardian = require('../models/Guardian.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const VerificationCode = require('../models/VerificationCode.js');
-const { sendVerficationCode, verificationCode } = require('../lib/verificationCodeSender.js')
+const { sendVerficationCode } = require('../lib/auth/verificationCodeSender.js')
 const crypto = require('node:crypto');
 
 
 exports.registerAccount = async (data) => {
+
+    // destructured fields
     const { name, lastName, email, password } = data;
+
+    const existingEmail = await Account.findOne({ email });
+
+    if (existingEmail) {
+        throw new Error("Email already in use");
+    }
+
+    // querying if the code is verfied
+    const emailWithValidatedCode = await VerificationCode.findOne({
+        email,
+        isVerified: true
+    });
+
+    // if it's not verified, then throw an error, if it is, then delete the document
+    if (!emailWithValidatedCode) {
+        throw new Error("Email not verified with a valid code");
+    } else {
+        await VerificationCode.deleteOne({ email });
+    }
 
     // create data guardian
     const guardian = await Guardian.create({ name, lastName });
@@ -52,17 +73,14 @@ exports.sendVerificationCodeToGuardian = async (email) => {
 };
 
 // ⬇ Check code and create Guardian + Account
-exports.validateAndCreateAccount = async ({ name, lastName, email, password, code }) => {
+exports.validateVerificationCode = async ({ email, code }) => {
     const stored = await VerificationCode.findOne({ email });
 
     if (!stored || stored.code !== code) {
         throw new Error('Invalid code or expired');
+    } else {
+        await VerificationCode.updateOne({ email }, { isVerified: true });
     }
 
-    const guardian = await Guardian.create({ name, lastName });
-    const account = await Account.create({ email, password, guardianId: guardian._id });
-
-    await VerificationCode.deleteOne({ email });
-
-    return { guardian, account };
+    return true;
 };

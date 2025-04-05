@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const connectToDB = require('../lib/dbConnection.js');
+const connectToDB = require('../lib/db/dbConnection.js');
 const questioBank = require('../models/QuestionsBank')
 const { ObjectId } = require("mongodb");
 

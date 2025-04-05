@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = require('mongoose');
-const { isStringLengthGreaterThanZero, messageStringLengthGreaterThanZero } = require('../lib/validatorFunctions.js')
+const { isStringLengthGreaterThanZero, messageStringLengthGreaterThanZero } = require('../lib/db/validatorFunctions.js')
 
 const guardianSchema = Schema({
     name: {

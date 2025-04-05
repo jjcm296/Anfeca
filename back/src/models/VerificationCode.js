@@ -14,6 +14,10 @@ const verificationCodeSchema = new Schema({
         type: Date,
         required: true,
         default: () => new Date(Date.now() + 10 * 60 * 1000) // 10 mins
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
     }
 });
 

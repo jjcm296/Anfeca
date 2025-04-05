@@ -1,0 +1,2 @@
+create a unique index to ensure only one instance of each email exists in the database
+

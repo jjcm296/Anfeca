@@ -5,7 +5,7 @@ const {
     messageStringLengthGreaterThanZero,
     isZeroOnInsertOnly,
     messageMustBeZeroOnInsert
-    } = require('../lib/validatorFunctions.js');
+    } = require('../lib/db/validatorFunctions.js');
 
 const kidSchema = Schema({
     name:{

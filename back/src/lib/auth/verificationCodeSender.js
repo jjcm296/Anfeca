@@ -1,5 +1,3 @@
-const crypto = require('node:crypto');
-
 const { apiInstance, createEmailInstance  } = require('./brevoClient');
 
 const sendVerficationCode = async (email, randomCode) => {
@@ -35,10 +33,6 @@ const sendVerficationCode = async (email, randomCode) => {
 
 }
 
-function verificationCode () {
-    return crypto.randomInt(100000,999999);
-}
-
 module.exports = {
-    sendVerficationCode, verificationCode
+    sendVerficationCode
 }

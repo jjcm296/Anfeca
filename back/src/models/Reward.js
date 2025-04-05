@@ -6,7 +6,7 @@ const { isStringLengthGreaterThanZero,
     messageGreaterThanZero,
     isZeroOnInsertOnly,
     messageMustBeZeroOnInsert
-    } = require('../lib/validatorFunctions.js')
+    } = require('../lib/db/validatorFunctions.js')
 
 
 const rewardSchema = Schema({

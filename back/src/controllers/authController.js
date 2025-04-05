@@ -34,10 +34,10 @@ exports.sendCode = async (req, res) => {
     }
 };
 
-exports.validateEmail = async (req, res) => {
+exports.verifyCode = async (req, res) => {
     try {
-        const result = await authService.validateAndCreateAccount(req.body);
-        res.status(201).json({ message: 'Cuenta creada exitosamente', ...result });
+        await authService.validateVerificationCode(req.body);
+        res.status(201).json({ message: 'Verification code is valid' });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const { Schema } = require('mongoose');
+const { Schema, Model} = require('mongoose');
 const bcrypt = require('bcrypt');
 const { isValidEmail,
     messageInvalidEmail,
     isStrongPassword,
-    messageWeakPassword } = require('../lib/validatorFunctions.js')
+    messageWeakPassword } = require('../lib/db/validatorFunctions.js')
 
 const accountSchema = Schema({
     email: {
@@ -14,7 +14,8 @@ const accountSchema = Schema({
         validate: {
             validator: isValidEmail,
             message: messageInvalidEmail
-        }
+        },
+        unique: true
     },
     password: {
         type: String,
