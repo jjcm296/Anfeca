@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import FakeDatabase from '../../../fakeDataBase/FakeDataBase';
-import CustomButton from '../../ui/components/CustomButton'; // Importa el botón reutilizable
+import CustomButton from '../../ui/components/CustomButton';
+import CloseButton from "../../ui/components/CloseButton"; // Importa el botón reutilizable
 
 const AddQuestionBank = ({ navigation }) => {
     const [category, setCategory] = useState('');
@@ -26,6 +27,7 @@ const AddQuestionBank = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <CloseButton/>
             <Text style={styles.title}>Agregar Nuevo Banco de Preguntas</Text>
 
             {/* Campo para ingresar el nombre del banco de preguntas */}
@@ -36,18 +38,18 @@ const AddQuestionBank = ({ navigation }) => {
                 onChangeText={setCategory}
             />
 
-            {/* Botón reutilizable */}
-            <CustomButton
-                color="#6200EE"
-                text="Agregar Banco"
-                onPress={handleSubmit}
-                disabled={category.trim() === '' || questionCount.trim() === ''}
-            />
+            <View style={styles.buttons}>
+                <CustomButton
+                    color="#000000"
+                    text="Agregar Banco"
+                    onPress={handleSubmit}
+                    disabled={category.trim() === '' || questionCount.trim() === ''}
+                />
+            </View>
         </View>
     );
 };
 
-// 🔹 Estilos
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -68,6 +70,13 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         borderWidth: 1,
         borderColor: '#ddd'
+    },
+    buttons: {
+        marginTop: 20,
+        position: 'absolute',
+        bottom: 20,
+        left: 20,
+        right: 20,
     },
 });
 
