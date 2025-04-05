@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const connectToDB = require('../lib/dbConnection.js');
-const questioBank = require('./QuestionsBank')
+const questioBank = require('../models/QuestionsBank')
 const { ObjectId } = require("mongodb");
 
 const insert = async () => {
