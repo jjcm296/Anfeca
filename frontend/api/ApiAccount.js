@@ -10,3 +10,23 @@ export const ApiAccount = async (body) => {
         return error.response?.data || { error: "Error desconocido al crear la cuenta." };
     }
 };
+
+export const ApiSendCode = async (body) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/api/auth/send-code`, body);
+        return response.data;
+    } catch (error) {
+        console.error("Error en ApiSendCode:", error);
+        return error.response?.data || { error: "Error desconocido al enviar el código." };
+    }
+}
+
+export const ApiVerifyCode = async (body) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/api/auth/verify-code`, body);
+        return response.data;
+    } catch (error) {
+        console.error("Error en ApiVerifyCode:", error);
+        return error.response?.data || { error: "Error desconocido al verificar el código." };
+    }
+}

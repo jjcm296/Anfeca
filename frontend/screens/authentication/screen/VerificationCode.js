@@ -12,7 +12,7 @@ import CustomButton from '../../ui/components/CustomButton';
 import DB from '../../../fakeDataBase/FakeDataBase';
 import { AccountContext } from '../../../context/AccountContext';
 import { GuardianContext } from '../../../context/GuardianContext';
-import {ApiAccount} from "../../../api/ApiAccount";
+import {ApiAccount, ApiVerifyCode} from "../../../api/ApiAccount";
 
 
 const VerificationCode = () => {
@@ -34,6 +34,12 @@ const VerificationCode = () => {
         password: account.password,
     }
 
+    // doby para la confirmacion del código
+    const bodyCode = {
+        email: account.email,
+        code: code.join(''),
+    }
+
     const handleChange = (text, index) => {
         const newCode = [...code];
         newCode[index] = text.slice(-1);
@@ -52,27 +58,37 @@ const VerificationCode = () => {
     };
 
     const handleVerify = async () => {
-        const enteredCode = code.join('');
-
-       console.log("body", body);
-        if (DB.verifyCode(enteredCode)) {
-            const response = await ApiAccount(body);
-            console.log("Código verificado correctamente");
-
-            try {
-                console.log("Respuesta del backend:", response);
-                if (response.error) {
-                    console.error("Error al crear la cuenta:", response.error);
-                    return;
-                }else {
-                    navigation.navigate("CreateChildAccount");
-                }
-            } catch (error) {
-                console.error("Error al crear la cuenta:", error);
+        try {
+            const response = await ApiVerifyCode(bodyCode);
+            if (response.error) {
+                console.log("Error al verificar el código:", response.error);
+                return;
             }
 
-        } else {
-            setError(true);
+            console.log("Código verificado correctamente");
+            await handleCreateAccount(); // ✅ llamada separada
+
+        } catch (error) {
+            console.error("Error en la verificación del código:", error);
+        }
+    };
+
+    const handleCreateAccount = async () => {
+        try {
+            const response = await ApiAccount(body);
+            if (response.error) {
+                console.log("Error al crear la cuenta:", response.error);
+                return;
+            }
+
+            console.log("Cuenta creada correctamente");
+            console.log("Guardian:", response.guardian);
+            console.log("Account:", response.account);
+
+            navigation.navigate("CreateChildAccount");
+
+        } catch (error) {
+            console.error("Error en la creación de la cuenta:", error);
         }
     };
 

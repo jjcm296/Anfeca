@@ -17,6 +17,7 @@ import {useContext} from 'react';
 
 import { AccountContext } from '../../../context/AccountContext';
 import { GuardianContext } from '../../../context/GuardianContext';
+import {ApiSendCode} from "../../../api/ApiAccount";
 
 const RegisterAccount = () => {
     const navigation = useNavigation();
@@ -34,7 +35,7 @@ const RegisterAccount = () => {
     const { setAccount } = useContext(AccountContext);
     const { setGuardian } = useContext(GuardianContext);
 
-    const handleRegister = () => {
+    const handleRegister = async () => {
         const newErrors = {};
         if (!name) newErrors.name = true;
         if (!lastName) newErrors.lastName = true;
@@ -60,6 +61,21 @@ const RegisterAccount = () => {
         });
 
         setErrors({});
+
+        try {
+            const response = await ApiSendCode({email});
+
+            if (response.error) {
+                console.log("Error al enviar el código:", response.error);
+                return;
+            }else {
+                console.log("Código enviado correctamente");
+            }
+        } catch (error) {
+            console.error("Error en la respuesta del backend:", error);
+            return;
+        }
+
         navigation.navigate("VerificationCode");
     };
 
