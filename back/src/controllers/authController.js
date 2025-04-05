@@ -1,5 +1,7 @@
 const Account = require('../models/Account.js');
 const authService = require('../services/authService.js');
+const jwtUtils = require('../lib/auth/jwtUtils.js');
+const Session = require('../models/Session.js');
 
 exports.register = async (req, res) => {
     try {
@@ -42,3 +44,28 @@ exports.verifyCode = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+exports.refresh = async (req, res) => {
+    const { refreshToken } = req.body;
+    if(!refreshToken) {
+        return res.status(400).json({ error: 'No refresh token provided' });
+    }
+
+    try {
+        const decoded = jwtUtils.verifyToken(refreshToken, process.env.JWT_REFRESH_SECRET);
+        const session = await Session.findOne({
+            guardianId: decoded.guardianId, refreshToken
+        });
+        if (!session) throw new Error();
+
+        const newAccessToken = jwtUtils.generateAccesToken({
+            guardianId: decoded.guardianId
+        });
+
+        return res.status(200).json({ accessToken: newAccessToken });
+
+    } catch {
+        return res.status(403).json({ error: 'Invalid refresh token' });
+
+    }
+}
