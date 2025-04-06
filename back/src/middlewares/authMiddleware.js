@@ -1,10 +1,15 @@
 const jwt = require('jsonwebtoken');
 
 exports.authMiddleware = (req, res, next) => {
-    const token = req.headers['authorization'];
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
+        return res.status(401).json({ error: 'Access token required' });
+    }
+
+    const token = authHeader.split(' ')[1]; // split "Bearer <token>" into ["Bearer", "<token>"]
     if (!token) {
         return res.status(401).json({
-           error: 'Access token required'
+           error: 'Malformed authorization header'
         });
     }
 

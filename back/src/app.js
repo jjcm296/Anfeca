@@ -4,6 +4,7 @@ const cors = require('cors');
 const connectToDB = require('./lib/db/dbConnection.js');
 const mongoose = require("mongoose");
 const authRoutes = require('./routes/authRoutes.js');
+const kidRoutes = require('./routes/kidRoutes.js')
 require('dotenv').config({ path: '../.env' });
 
 const app = express();
@@ -16,6 +17,7 @@ const initializeApp = async () => {
         app.use(express.json());
 
         app.use('/api/auth', authRoutes);
+        app.use('/api/kid', kidRoutes);
 
         app.get('/', (req, res) => {
             const state = mongoose.connection.readyState;

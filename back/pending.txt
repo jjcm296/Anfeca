@@ -1,3 +1,9 @@
 create a unique index to ensure only one instance of each email exists in the database
 
 create kid's profile right after guardian profile creation
+
+implements refresh rotation. when the refresh token expires, the user have to loging again
+so i need to implement refresh rotation:
+1. Generate a new refresh token in /refresh-token route.
+2. Replace the old one in the DB.
+3. Send both new access + refresh tokens to the frontend.
