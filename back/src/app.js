@@ -18,7 +18,7 @@ const initializeApp = async () => {
         app.use(express.json());
 
         app.use('/api/auth', authRoutes);
-        app.use('/api/kid', kidRoutes);
+        app.use('/api/kids', kidRoutes);
         app.use('/api/questions-bank', questionsBankRoutes);
 
         app.get('/', (req, res) => {

@@ -43,7 +43,7 @@ exports.registerAccount = async (data) => {
     // create data account linked to the guardian
     const account = await Account.create({ email, password, guardianId: guardian._id });
 
-    return  { guardian, account };
+    return  { guardian, account }; // returns mongoose documents
 }
 
 // return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });

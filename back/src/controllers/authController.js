@@ -10,6 +10,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 exports.register = async (req, res) => {
     try {
         const { guardian, account } = await authService.registerAccount(req.body);
+        // mongoose objects are now json
         res.status(201).json({ message: "Guardian registered succesfully", guardian, account });
     } catch (error) {
         res.status(400).json({ error: error.message });

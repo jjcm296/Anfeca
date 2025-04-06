@@ -4,8 +4,8 @@ const { login, register, sendCode, verifyCode, refresh } = require('../controlle
 
 router.post('/login', login);
 router.post('/register', register);
-router.post('/send-code', sendCode);
-router.post('/verify-code', verifyCode);
-router.post('/refresh-token', refresh);
+router.post('/verification-code', sendCode);
+router.post('/verification-code/verify', verifyCode);
+router.post('/token/refresh', refresh);
 
 module.exports = router;
