@@ -2,6 +2,8 @@ create a unique index to ensure only one instance of each email exists in the da
 
 create kid's profile right after guardian profile creation
 
+integrate joi validation
+
 implements refresh rotation. when the refresh token expires, the user have to loging again
 so i need to implement refresh rotation:
 1. Generate a new refresh token in /refresh-token route.

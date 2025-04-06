@@ -34,9 +34,9 @@ const questionSchema = Schema({
         enum: [1, 2, 3],
         required: true
     },
-    questionBankId: {
+    bankId: {
         type: Schema.Types.ObjectId,
-        ref: 'QuestionBank',
+        ref: 'QuestionsBank',
         required:true
     }
 });
