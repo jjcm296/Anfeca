@@ -7,6 +7,10 @@ const jwtUtils = require('../lib/auth/jwtUtils.js');
 const VerificationCode = require('../models/VerificationCode.js');
 const { sendVerficationCode } = require('../lib/auth/verificationCodeSender.js')
 const crypto = require('node:crypto');
+const path = require('path');
+
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+
 
 
 exports.registerAccount = async (data) => {
@@ -71,7 +75,7 @@ exports.login =  async ({ email, password }) => {
 
 }
 
-// ⬇ Send + save code in DB
+// Send + save code in DB
 exports.sendVerificationCodeToGuardian = async (email) => {
     const code = crypto.randomInt(100000, 999999).toString();
 
@@ -83,7 +87,7 @@ exports.sendVerificationCodeToGuardian = async (email) => {
     return code;
 };
 
-// ⬇ Check code and create Guardian + Account
+// Check code and create Guardian + Account
 exports.validateVerificationCode = async ({ email, code }) => {
     const stored = await VerificationCode.findOne({ email });
 
