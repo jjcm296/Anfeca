@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as SecureStore from 'expo-secure-store';
 import {
     ScrollView,
     View,
@@ -35,12 +36,17 @@ const Login = () => {
                 console.log('Error:', response.error);
             } else {
                 console.log(response.message);
+                // Guardar el token en el almacenamiento seguro
+                await SecureStore.setItemAsync('accessToken', response.accessToken);
+                console.log('Token de acceso guardado:', response.accessToken);
+                await SecureStore.setItemAsync('refreshToken', response.refreshToken);
+                console.log('Token de actualización guardado:', response.refreshToken);
                 navigation.navigate('MainTabs');
             }
         } catch (error) {
             console.error('Error inesperado al iniciar sesión:', error.message);
         }
-    }
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>

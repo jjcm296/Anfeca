@@ -13,6 +13,8 @@ import DB from '../../../fakeDataBase/FakeDataBase';
 import { AccountContext } from '../../../context/AccountContext';
 import { GuardianContext } from '../../../context/GuardianContext';
 import {ApiAccount, ApiVerifyCode} from "../../../api/ApiAccount";
+import {ApiLogin} from "../../../api/ApiLogin";
+import * as SecureStore from "expo-secure-store";
 
 
 const VerificationCode = () => {
@@ -59,14 +61,16 @@ const VerificationCode = () => {
 
     const handleVerify = async () => {
         try {
+            console.log("Verificando código:", bodyCode);
             const response = await ApiVerifyCode(bodyCode);
             if (response.error) {
                 console.log("Error al verificar el código:", response.error);
                 return;
+            } else {
+                console.log("Código verificado correctamente");
+                // Si el código es correcto, proceder a crear la cuenta
+                await handleCreateAccount();
             }
-
-            console.log("Código verificado correctamente");
-            await handleCreateAccount(); // ✅ llamada separada
 
         } catch (error) {
             console.error("Error en la verificación del código:", error);
@@ -84,6 +88,12 @@ const VerificationCode = () => {
             console.log("Cuenta creada correctamente");
             console.log("Guardian:", response.guardian);
             console.log("Account:", response.account);
+
+            const responseLogin = await ApiLogin(account.email, account.password);
+            await SecureStore.setItemAsync('accessToken', responseLogin.accessToken);
+            console.log('Token de acceso guardado:', responseLogin.accessToken);
+            await SecureStore.setItemAsync('refreshToken', responseLogin.refreshToken);
+            console.log('Token de actualización guardado:', responseLogin.refreshToken);
 
             navigation.navigate("CreateChildAccount");
 
