@@ -2,9 +2,15 @@ const Account = require('../models/Account.js');
 const Guardian = require('../models/Guardian.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const Session = require('../models/Session.js');
+const jwtUtils = require('../lib/auth/jwtUtils.js');
 const VerificationCode = require('../models/VerificationCode.js');
 const { sendVerficationCode } = require('../lib/auth/verificationCodeSender.js')
 const crypto = require('node:crypto');
+const path = require('path');
+
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+
 
 
 exports.registerAccount = async (data) => {
@@ -52,15 +58,24 @@ exports.login =  async ({ email, password }) => {
     const isPasswordValid = await bcrypt.compare(password, account.password);
     if (!isPasswordValid) throw new Error('Incorrect password');
 
-    // generate token JWT
     const payload = { id: account._id, guardianId: account.guardianId._id };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
+    const accessToken = jwtUtils.generateAccesToken(payload);
+    const refreshToken = jwtUtils.generateRefreshToken(payload);
 
-    return token;
+    await Session.create({
+       accountId: account._id,
+        refreshToken,
+        expiresAt: new Date(
+            Date.now() + jwtUtils.parseExpiration(process.env.JWT_REFRESH_EXPIRES_IN)
+        )
+    });
+
+    return { accessToken, refreshToken };
+
 }
 
-// ⬇ Send + save code in DB
+// Send + save code in DB
 exports.sendVerificationCodeToGuardian = async (email) => {
     const code = crypto.randomInt(100000, 999999).toString();
 
@@ -72,7 +87,7 @@ exports.sendVerificationCodeToGuardian = async (email) => {
     return code;
 };
 
-// ⬇ Check code and create Guardian + Account
+// Check code and create Guardian + Account
 exports.validateVerificationCode = async ({ email, code }) => {
     const stored = await VerificationCode.findOne({ email });
 

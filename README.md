@@ -1,5 +1,5 @@
 # Anfeca
-npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose nodemailer @getbrevo/brevo
+npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose sib-api-v3-sdk
 
 ## Account registered
 zuzzet.hs14@gmail.com
@@ -11,7 +11,7 @@ Hola123*
 - MongoDB + Mongoose
 - JWT
 - joi
-- Brevo
+- Brevo API
 
 ## docs I've been using
 - Mongoose 
@@ -24,3 +24,7 @@ Hola123*
   https://expressjs.com/
 - crypto https://nodejs.org/api/crypto.html#cryptorandomintmin-max-callback
 - express-rate-limit https://www.npmjs.com/package/express-rate-limit
+- JSON Web Token https://jwt.io/introduction
+- Auth0 https://auth0.com/blog/refresh-tokens-what-are-they-and-when-to-use-them/
+- JWT & Refresh tokens https://dev.to/jeanvittory/jwt-refresh-tokens-2g3d 
+  - refresh tokens https://auth0.com/docs/secure/tokens/refresh-tokens

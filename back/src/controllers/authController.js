@@ -1,5 +1,11 @@
 const Account = require('../models/Account.js');
 const authService = require('../services/authService.js');
+const jwtUtils = require('../lib/auth/jwtUtils.js');
+const Session = require('../models/Session.js');
+
+const path = require('path');
+
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
 exports.register = async (req, res) => {
     try {
@@ -12,10 +18,11 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const { token, guardian } = await authService.login(req.body);
+        const { accessToken, refreshToken } = await authService.login(req.body);
         res.status(200).json({
             message: 'Login successful',
-            token
+            accessToken,
+            refreshToken
         });
     } catch (error) {
         res.status(401).json({ error: error.message });
@@ -42,3 +49,30 @@ exports.verifyCode = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+exports.refresh = async (req, res) => {
+    const { refreshToken } = req.body;
+    if(!refreshToken) {
+        return res.status(400).json({ error: 'No refresh token provided' });
+    }
+
+    try {
+        const decoded = jwtUtils.verifyToken(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+        const session = await Session.findOne({
+            accountId: decoded.id, refreshToken
+        });
+        if (!session) throw new Error();
+
+        const newAccessToken = jwtUtils.generateAccesToken({
+            id: decoded.id,
+            guardianId: decoded.guardianId
+        });
+
+        return res.status(200).json({ accessToken: newAccessToken });
+
+    } catch {
+        return res.status(403).json({ error: 'Invalid refresh token' });
+
+    }
+}
