@@ -1,4 +1,10 @@
 # Anfeca
+
+## ConcentraTDA Google acc
+- anfecaconcentratda@gmail.com  
+- giPassword321
+
+## command to run the API
 npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose sib-api-v3-sdk
 
 ## Account registered
