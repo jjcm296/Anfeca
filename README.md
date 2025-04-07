@@ -16,26 +16,29 @@
 | Create kid profile     | POST   | `/api/kids/` | JSON Object `{ name }`           | JSON Kid profile object |
 
 ### Questions bank
-| Purpose           | Method | Route                           | Consumes                                          | Returns                                      |
-|-------------------|--------|---------------------------------|---------------------------------------------------|----------------------------------------------|
-| Get all banks     | GET    | `/api/banks/`                   | Nothing                                           | Success message, Array of JSON banks objects |
-| Create a bank     | POST   | `/api/banks/`                   | JSON Object `{ name }`                            | Success message, JSON bank object            |
-| Get a bank        | GET    | `/api/banks/:bankId`            | Nothing                                           | Success message, JSON bank object            | 
-| Delete a bank     | DELETE | `/api/banks/:bankId`            | Nothing                                           | Success message                              |
-| Create a question | POST   | `/api/banks/:bankId/questions/` | JSON Object `{ textQuestion, answers, priority }` | Success message, JSON question object        |
-
+| Purpose           | Method | Route                                      | Consumes                                          | Returns                                        |
+|-------------------|--------|--------------------------------------------|---------------------------------------------------|------------------------------------------------|
+| Get all banks     | GET    | `/api/banks/`                              | Nothing                                           | Success message, Array of JSON banks objects   |
+| Create a bank     | POST   | `/api/banks/`                              | JSON Object `{ name }`                            | Success message, JSON bank object              |
+| Get a bank        | GET    | `/api/banks/:bankId`                       | Nothing                                           | Success message, JSON bank object              | 
+| Delete a bank     | DELETE | `/api/banks/:bankId`                       | Nothing                                           | Success message                                |
+| Get all questions | GET    | `/api/banks/:bankId/questions/`            | Nothing                                           | Success message, Array of JSON question object |
+| Create a question | POST   | `/api/banks/:bankId/questions/`            | JSON Object `{ textQuestion, answers, priority }` | Success message, JSON question object          |
+| Get a question    | GET    | `/api/banks/:bankId/questions/:questionId` | Nothing                                           | Success message, JSON question object          |
+| Delete a question | GET    | `/api/banks/:bankId/questions/:questionId` | Nothing                                           | Success message                                |
 - `:bankId` is the questions bank ID
-- `answers` in JSON Object must be an array of objects
+- `answers` in JSON Object must be an array of objects, max of 4 answers, at least one corrrect and one incorrect
 
 ![img.png](img.png)
 
 
 ### Reward
-| Purpose         | Method | Route                    | Consumes                                                                                  | Returns                             |
-|-----------------|--------|--------------------------|-------------------------------------------------------------------------------------------|-------------------------------------|
-| Create reward   | POST   | `/api/rewards/`          | JSON Object `{ name, price, type }` or `{ name, price, type, redemptionLimit }` if needed | JSON Reward object                  |
-| Get a reward    | GET    | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message, JSON Reward object |
-| Delete a reward | DELETE | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message                     |
+| Purpose         | Method | Route                    | Consumes                                                                                  | Returns                                      |
+|-----------------|--------|--------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------|
+| Get all rewards | GET    | `/api/rewards/`          | Nothing                                                                                   | Success message, Array of JSON banks objects |
+| Create reward   | POST   | `/api/rewards/`          | JSON Object `{ name, price, type }` or `{ name, price, type, redemptionLimit }` if needed | Success message, JSON Reward object          |
+| Get a reward    | GET    | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message, JSON Reward object          |
+| Delete a reward | DELETE | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message                              |
 - `type` is an enum `[once, forever, custom]`, if the user selects `custom` then the front must send `redemptionLimit`
 
 Without `redemptionLimit`
