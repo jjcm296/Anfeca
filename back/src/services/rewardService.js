@@ -1,5 +1,11 @@
 const Reward = require('../models/Reward.js');
 
+exports.getAllRewards = async (guardianId) => {
+    const rewards = await Reward.find({ guardianId });
+
+    return rewards;
+}
+
 exports.createReward = async ({ name, price, type, redemptionLimit, guardianId }) => {
 
     const reward = await Reward.create({

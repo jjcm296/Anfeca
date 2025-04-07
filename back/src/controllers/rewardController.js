@@ -1,5 +1,19 @@
 const rewardService = require('../services/rewardService.js');
 
+exports.getAllRewards = async (req, res) => {
+    try {
+
+        const guardianId = req.user.guardianId;
+
+        const rewardsArray = await rewardService.getAllRewards(guardianId);
+
+        res.status(200).json({ message: 'Rewards fetched successfully', rewardsArray });
+
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
 exports.createReward = async (req, res) => {
 
     try {

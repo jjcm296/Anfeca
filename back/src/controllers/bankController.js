@@ -2,12 +2,12 @@ const bankService = require('../services/bankService.js');
 
 exports.getAllBanks = async (req, res) => {
     try {
-        const guardianId = req.user.guardianId;
-        console.log(`controller ${guardianId}`)
 
-        const questionsArray = await bankService.getAllBanks(guardianId);
-        console.log(`controller ${questionsArray}`)
-        res.status(200).json({ message: "Banks fetched successfully", questionsArray });
+        const guardianId = req.user.guardianId;
+
+        const banksArray = await bankService.getAllBanks(guardianId);
+
+        res.status(200).json({ message: "Banks fetched successfully", banksArray });
 
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -38,7 +38,7 @@ exports.getBank = async (req, res) => {
             return res.status(404).json({ error: 'Bank not found' })
         }
 
-        res.status(200).json({ message: 'Bank fetched successfully', questionsBank: bank });
+        res.status(200).json({ message: 'Bank fetched successfully', bank });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

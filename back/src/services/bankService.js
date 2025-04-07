@@ -1,11 +1,8 @@
 const Bank = require('../models/Bank.js');
 
 exports.getAllBanks = async ( guardianId ) => {
-    console.log(`service: ${guardianId}`)
 
     const banks = await Bank.find({ guardianId });
-
-    console.log(banks)
 
     return banks;
 

@@ -1,5 +1,9 @@
 const Question = require('../models/Question.js');
 
+exports.getAllQuestions = async (bankId) => {
+    return Question.find({bankId});
+};
+
 exports.createQuestion = async ({ textQuestion, answers, priority, bankId }) => {
 
     const question = await Question.create({
