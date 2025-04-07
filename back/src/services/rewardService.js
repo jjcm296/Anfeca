@@ -13,12 +13,15 @@ exports.createReward = async ({ name, price, type, redemptionLimit, guardianId }
     return reward;
 }
 
+exports.getReward = async (rewardId) => {
+    const reward = Reward.findById(rewardId);
+
+    return reward;
+}
+
 exports.deleteReward = async (rewardId) => {
 
-    const reward = await Reward.findById(rewardId);
-
-    console.log(`from the service ${rewardId}`);
-    console.log(reward);
+    await Reward.findByIdAndDelete(rewardId);
 
 
 }

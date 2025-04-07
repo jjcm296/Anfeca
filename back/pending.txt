@@ -9,3 +9,6 @@ so i need to implement refresh rotation:
 1. Generate a new refresh token in /refresh-token route.
 2. Replace the old one in the DB.
 3. Send both new access + refresh tokens to the frontend.
+
+Add authorization logic to delete and get, const reward = await Reward.findOne({ _id: rewardId, guardianId });, ensuring
+just the owner of that reward can delete it or fetch it

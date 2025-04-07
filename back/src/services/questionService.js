@@ -9,6 +9,19 @@ exports.createQuestion = async ({ textQuestion, answers, priority, bankId }) => 
         bankId
     });
 
-    return { question };
+    return question ;
 
+}
+
+exports.getQuestion = async (questionId) => {
+
+    const question = Question.findById(questionId);
+
+    return question;
+
+}
+
+exports.deleteQuestion = async (questionId) => {
+
+    await Question.findByIdAndDelete(questionId);
 }

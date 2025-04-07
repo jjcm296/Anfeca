@@ -15,3 +15,18 @@ exports.createQuestion = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 }
+
+exports.getQuestion = async (req, res) => {
+    try {
+
+        const questionId = req.params;
+
+        const question = await questionService.getQuestion(questionId);
+
+
+
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+
+}

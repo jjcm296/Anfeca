@@ -1,10 +1,17 @@
 const express = require('express');
-const { createReward, deleteReward } = require('../controllers/rewardController.js');
+const { createReward, getReward, deleteReward } = require('../controllers/rewardController.js');
 const { authMiddleware } = require('../middlewares/authMiddleware');
 const router = express.Router();
+const { checkOwnership } = require('../middlewares/ownershipMiddleware.js');
+const Reward = require('../models/Reward.js');
 
-router.post('/', authMiddleware, createReward);
-router.delete('/:rewardId', authMiddleware, deleteReward);
+router.use(authMiddleware);
+router.param('rewardId', checkOwnership(Reward, 'rewardId', 'Reward'));
+
+
+router.post('/', createReward);
+router.get('/:rewardId', getReward);
+router.delete('/:rewardId', deleteReward);
 
 module.exports = router;
 

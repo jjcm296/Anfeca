@@ -4,5 +4,5 @@ exports.createKidProfile = async ({ name, guardianId }) => {
 
     const kid = await Kid.create({ name, guardianId});
 
-    return { kid };
+    return kid;
 }

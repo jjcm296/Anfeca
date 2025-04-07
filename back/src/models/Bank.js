@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const { isStringLengthGreaterThanZero, messageStringLengthGreaterThanZero } = require('../lib/db/validatorFunctions.js')
 
-const questionsBankSchema = Schema({
+const bankSchema = Schema({
     name:  {
         type: String,
         required: true,
@@ -14,4 +14,4 @@ const questionsBankSchema = Schema({
     guardianId: { type: Schema.Types.ObjectId, ref: 'Guardian', required: true }
 });
 
-module.exports = mongoose.model('QuestionsBank', questionsBankSchema);
+module.exports = mongoose.model('Bank', bankSchema);

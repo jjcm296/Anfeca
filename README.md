@@ -15,21 +15,27 @@
 |------------------------|--------|--------------|----------------------------------|-------------------------|
 | Create kid profile     | POST   | `/api/kids/` | JSON Object `{ name }`           | JSON Kid profile object |
 
-## Questions bank
-| Purpose                 | Method | Route                                  | Consumes                                          | Returns                               |
-|-------------------------|--------|----------------------------------------|---------------------------------------------------|---------------------------------------|
-| Create a questions bank | POST   | `/api/questions-banks/`                | JSON Object `{ name }`                            | Success message                       |
-| Create a question       | POST   | `/api/question-banks/:bankId/question` | JSON Object `{ textQuestion, answers, priority }` | Success message, JSON question object |
+### Questions bank
+| Purpose           | Method | Route                           | Consumes                                          | Returns                                      |
+|-------------------|--------|---------------------------------|---------------------------------------------------|----------------------------------------------|
+| Get all banks     | GET    | `/api/banks/`                   | Nothing                                           | Success message, Array of JSON banks objects |
+| Create a bank     | POST   | `/api/banks/`                   | JSON Object `{ name }`                            | Success message, JSON bank object            |
+| Get a bank        | GET    | `/api/banks/:bankId`            | Nothing                                           | Success message, JSON bank object            | 
+| Delete a bank     | DELETE | `/api/banks/:bankId`            | Nothing                                           | Success message                              |
+| Create a question | POST   | `/api/banks/:bankId/questions/` | JSON Object `{ textQuestion, answers, priority }` | Success message, JSON question object        |
+
 - `:bankId` is the questions bank ID
 - `answers` in JSON Object must be an array of objects
 
 ![img.png](img.png)
 
 
-## Reward
-| Purpose       | Method | Route           | Consumes                                                                                  | Returns            |
-|---------------|--------|-----------------|-------------------------------------------------------------------------------------------|--------------------|
-| Create reward | POST   | `/api/rewards/` | JSON Object `{ name, price, type }` or `{ name, price, type, redemptionLimit }` if needed | JSON Reward object |
+### Reward
+| Purpose         | Method | Route                    | Consumes                                                                                  | Returns                             |
+|-----------------|--------|--------------------------|-------------------------------------------------------------------------------------------|-------------------------------------|
+| Create reward   | POST   | `/api/rewards/`          | JSON Object `{ name, price, type }` or `{ name, price, type, redemptionLimit }` if needed | JSON Reward object                  |
+| Get a reward    | GET    | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message, JSON Reward object |
+| Delete a reward | DELETE | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message                     |
 - `type` is an enum `[once, forever, custom]`, if the user selects `custom` then the front must send `redemptionLimit`
 
 Without `redemptionLimit`
@@ -43,8 +49,11 @@ With `redemptionLimit`
 - anfecaconcentratda@gmail.com  
 - Password321
 
-## command to run the API
+## command to install dependencies 
 `npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose sib-api-v3-sdk`
+
+## command to run the API
+`node /back/src/app.js`
 
 ## Account registered
 zuzzet.hs14@gmail.com
@@ -69,3 +78,5 @@ Hola123*
 - [Auth0](https://auth0.com/blog/refresh-tokens-what-are-they-and-when-to-use-them/) 
 - [JWT & Refresh tokens](https://dev.to/jeanvittory/jwt-refresh-tokens-2g3d)  
 - [refresh tokens](https://auth0.com/docs/secure/tokens/refresh-tokens)
+- [REST API URI Naming Conventions](https://restfulapi.net/resource-naming/)
+- [HTTP response codes in RESTful APIs](https://medium.com/@jamala.zawia/understanding-http-response-codes-in-restful-apis-57ab332c13f3)
