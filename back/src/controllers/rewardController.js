@@ -20,3 +20,17 @@ exports.createReward = async (req, res) => {
     }
 
 }
+
+exports.deleteReward = async (req, res) => {
+    try {
+        const { rewardId } = req.params
+
+        console.log(`from the controller ${rewardId}`);
+
+        await rewardService.deleteReward(rewardId);
+
+        res.status(201).json({ message: 'Reward deleted successfully' })
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
