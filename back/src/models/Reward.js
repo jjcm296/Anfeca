@@ -18,6 +18,14 @@ const rewardSchema = Schema({
             message: messageStringLengthGreaterThanZero
         }
     },
+    price: {
+        type: Number,
+        required: true,
+        validate: {
+            validator: isGreaterThanZero,
+            message: messageGreaterThanZero
+        }
+    },
     type: {
         type: String,
         enum: ['forever', 'once', 'custom'],

@@ -3,11 +3,12 @@ const rewardService = require('../services/rewardService.js');
 exports.createReward = async (req, res) => {
 
     try {
-        const { name, type, redemptionLimit } = req.body;
+        const { name, price, type, redemptionLimit } = req.body;
         const guardianId  = req.user.guardianId; // extracted from the token
 
         const reward = await rewardService.createReward({
             name,
+            price,
             type,
             redemptionLimit,
             guardianId

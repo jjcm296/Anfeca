@@ -11,14 +11,33 @@
 | Refresh access token   | POST   | `/api/auth/token/refresh`            | JSON object `{ refreshToken }`                    | New access token                                   |
 
 ### Kid
-| Purpose                | Method | Route                                | Consumes                         | Returns                 |
-|------------------------|--------|--------------------------------------|----------------------------------|-------------------------|
-| Create kid profile     | POST   | `/api/kids`                          | JSON Object `{ name }`           | JSON Kid profile object |
+| Purpose                | Method | Route        | Consumes                         | Returns                 |
+|------------------------|--------|--------------|----------------------------------|-------------------------|
+| Create kid profile     | POST   | `/api/kids/` | JSON Object `{ name }`           | JSON Kid profile object |
 
-## Questions banks
-| Purpose                | Method | Route                                | Consumes               | Returns         |
-|------------------------|--------|--------------------------------------|------------------------|-----------------|
-| Create questions bank  | POST   | `/api/question-banks`                | JSON Object `{ name }` | Success message |
+## Questions bank
+| Purpose                 | Method | Route                                  | Consumes                                          | Returns                               |
+|-------------------------|--------|----------------------------------------|---------------------------------------------------|---------------------------------------|
+| Create a questions bank | POST   | `/api/questions-banks/`                | JSON Object `{ name }`                            | Success message                       |
+| Create a question       | POST   | `/api/question-banks/:bankId/question` | JSON Object `{ textQuestion, answers, priority }` | Success message, JSON question object |
+- `:bankId` is the questions bank ID
+- `answers` in JSON Object must be an array of objects
+
+![img.png](img.png)
+
+
+## Reward
+| Purpose       | Method | Route           | Consumes                                                                                  | Returns            |
+|---------------|--------|-----------------|-------------------------------------------------------------------------------------------|--------------------|
+| Create reward | POST   | `/api/rewards/` | JSON Object `{ name, price, type }` or `{ name, price, type, redemptionLimit }` if needed | JSON Reward object |
+- `type` is an enum `[once, forever, custom]`, if the user selects `custom` then the front must send `redemptionLimit`
+
+Without `redemptionLimit`
+![img_1.png](img_1.png)
+
+With `redemptionLimit`
+![img_2.png](img_2.png)
+
 
 ## ConcentraTDA Google acc
 - anfecaconcentratda@gmail.com  
