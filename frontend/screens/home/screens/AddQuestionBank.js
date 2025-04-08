@@ -2,27 +2,25 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import FakeDatabase from '../../../fakeDataBase/FakeDataBase';
 import CustomButton from '../../ui/components/CustomButton';
-import CloseButton from "../../ui/components/CloseButton"; // Importa el botón reutilizable
+import CloseButton from "../../ui/components/CloseButton";
+import {createBank} from "../../../api/ApiBank"; // Importa el botón reutilizable
 
 const AddQuestionBank = ({ navigation }) => {
     const [category, setCategory] = useState('');
-    const [questionCount, setQuestionCount] = useState('0');
 
     const handleSubmit = () => {
-        if (category.trim() === '' || questionCount.trim() === '') {
+        if (category.trim() === '') {
             Alert.alert("Error", "Todos los campos son obligatorios.");
             return;
         }
 
-        if (isNaN(questionCount) || parseInt(questionCount) < 0) {
-            Alert.alert("Error", "Ingrese un número válido para la cantidad de preguntas.");
-            return;
+        try {
+            const response = createBank({name: category});
+            Alert.alert("Éxito", "Banco de preguntas agregado correctamente.");
+            navigation.goBack();
+        } catch (error) {
+            Alert.alert("Error", "Error al agregar el banco de preguntas.");
         }
-
-        FakeDatabase.addQuestionBank(category, parseInt(questionCount));
-
-        Alert.alert("Éxito", "Banco de preguntas agregado correctamente.");
-        navigation.goBack(); // 🔙 Regresa a la pantalla anterior
     };
 
     return (
@@ -43,7 +41,7 @@ const AddQuestionBank = ({ navigation }) => {
                     color="#000000"
                     text="Agregar Banco"
                     onPress={handleSubmit}
-                    disabled={category.trim() === '' || questionCount.trim() === ''}
+                    disabled={category.trim() === ''}
                 />
             </View>
         </View>
