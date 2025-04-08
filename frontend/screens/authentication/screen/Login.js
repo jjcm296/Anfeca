@@ -14,7 +14,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import CustomButton from '../../ui/components/CustomButton';
 import EyeToggleButton from '../../ui/components/EyeToggleButton';
 
-import { ApiLogin } from '../../../api/ApiLogin';
+import {ApiLogin, ApiRefresghToken} from '../../../api/ApiLogin';
 
 const Login = () => {
     const navigation = useNavigation();
@@ -30,7 +30,8 @@ const Login = () => {
         }
 
         try {
-            const response = await ApiLogin(email, password);
+            const refreshToken = await SecureStore.getItemAsync('refreshToken');
+            const response = await ApiRefresghToken(refreshToken);
 
             if (response.error) {
                 console.log('Error:', response.error);
@@ -39,8 +40,6 @@ const Login = () => {
                 // Guardar el token en el almacenamiento seguro
                 await SecureStore.setItemAsync('accessToken', response.accessToken);
                 console.log('Token de acceso guardado:', response.accessToken);
-                await SecureStore.setItemAsync('refreshToken', response.refreshToken);
-                console.log('Token de actualización guardado:', response.refreshToken);
                 navigation.navigate('MainTabs');
             }
         } catch (error) {

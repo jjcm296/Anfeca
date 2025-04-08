@@ -10,3 +10,12 @@ export const ApiLogin = async (email, password) => {
     }
 }
 
+export const ApiRefresghToken = async (refreshToken) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/api/auth/token/refresh`, { refreshToken });
+        return response.data;
+    } catch (error) {
+        return error.response.data;
+    }
+}
+
