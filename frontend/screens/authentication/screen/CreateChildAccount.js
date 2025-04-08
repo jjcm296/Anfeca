@@ -10,6 +10,7 @@ import {
 import CustomInput from '../../ui/components/CustomInput';
 import CustomButton from '../../ui/components/CustomButton';
 import DB from '../../../fakeDataBase/FakeDataBase';
+import {ApiCreateKid} from "../../../api/ApiAccount";
 
 const CreateChildAccount = () => {
     const navigation = useNavigation();
@@ -17,19 +18,22 @@ const CreateChildAccount = () => {
     const [childName, setChildName] = useState('');
     const [error, setError] = useState(false);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (childName.trim() === '') {
             setError(true);
             return;
         }
 
-        const result = DB.confirmAccount(childName);
-        if (result) {
-            console.log("Cuenta creada correctamente de : " + childName + "con tutor de: " + result.name);
-            navigation.navigate("MainTabs");
-        } else {
+        const response = await ApiCreateKid({name:childName});
+
+        if (response.error) {
             setError(true);
+            console.error("Error al crear la cuenta del niño:", response.error);
+        } else {
+            console.log("Cuenta creada correctamente de:", response.name, "con niño: ", childName);
+            navigation.navigate("MainTabs");
         }
+
     };
 
     return (

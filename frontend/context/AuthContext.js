@@ -7,7 +7,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [accessToken, setAccessToken] = useState(null);
 
-    // CArgar token al iniciar la app
+    // Cargar token al iniciar la app
     useEffect(() => {
        const loadToken = async () => {
            const token = await SecureStore.getItemAsync('accessToken');
