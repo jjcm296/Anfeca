@@ -5,9 +5,12 @@ import FakeDatabase from '../../../fakeDataBase/FakeDataBase';
 import CustomButton from '../../ui/components/CustomButton';
 import CoinIcon from '../../ui/components/CoinIcon';
 import CustomInput from '../../ui/components/CustomInput';
+import {ApiRefreshAccessToken} from "../../../api/ApiLogin";
+import {createQuestion} from "../../../api/ApiQuestions";
 
 const AddQuestion = ({ route, navigation }) => {
-    const { category } = route.params || {};
+    const { bankId, name } = route.params;
+
     const [question, setQuestion] = useState('');
     const [answers, setAnswers] = useState(['', '', '', '']);
     const [difficulty, setDifficulty] = useState('1');
@@ -18,21 +21,66 @@ const AddQuestion = ({ route, navigation }) => {
         setAnswers(newAnswers);
     };
 
-    const handleSubmit = () => {
-        if (question.trim() === '' || answers.some(ans => ans.trim() === '')) {
+    const handleSubmit = async () => {
+        const trimmedAnswers = answers.map(a => a.trim());
+
+        // Validar campos vacíos
+        if (question.trim() === '' || trimmedAnswers.some(ans => ans === '')) {
             Alert.alert("Error", "Todos los campos son obligatorios.");
             return;
         }
 
-        FakeDatabase.addQuestion(category, question);
-        Alert.alert("Éxito", "Pregunta agregada correctamente.");
-        navigation.goBack();
+        // Validar cantidad mínima de respuestas: 1 correcta y 1 incorrecta
+        const hasCorrect = trimmedAnswers[0] !== '';
+        const incorrectCount = trimmedAnswers.slice(1).filter(ans => ans !== '').length;
+
+        if (!hasCorrect || incorrectCount < 1) {
+            Alert.alert("Error", "Debe haber al menos una respuesta correcta y una incorrecta.");
+            return;
+        }
+
+        // Construir respuestas como arreglo (no como objeto con índices)
+        const finalAnswers = [];
+
+        trimmedAnswers.forEach((ans, index) => {
+            if (ans !== '') {
+                finalAnswers.push({
+                    textAnswer: ans,
+                    isCorrect: index === 0,
+                });
+            }
+        });
+
+        const body = {
+            textQuestion: question.trim(),
+            answers: finalAnswers,
+            priority: difficulty,
+        };
+
+        try {
+            await ApiRefreshAccessToken();
+
+            const response = await createQuestion(body, bankId);
+            if (response.error) {
+                console.log("Error:", response.error);
+                Alert.alert("Error", "Error al agregar la pregunta.");
+                return;
+            }
+
+            console.log("Respuesta:", response);
+            Alert.alert("Éxito", "Pregunta agregada correctamente.");
+            navigation.goBack();
+
+        } catch (error) {
+            console.error("Error inesperado:", error);
+            Alert.alert("Error", "Error al agregar la pregunta.");
+        }
     };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>
-                Agregar Pregunta a <Text style={styles.categoryText}>{String(category) || 'Sin Categoría'}</Text>
+                Agregar Pregunta a <Text style={styles.categoryText}>{String(name) || 'Sin Categoría'}</Text>
             </Text>
 
             <CustomInput
