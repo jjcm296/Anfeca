@@ -3,22 +3,44 @@ import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import FakeDatabase from '../../../fakeDataBase/FakeDataBase';
 import CustomButton from '../../ui/components/CustomButton';
 import CloseButton from "../../ui/components/CloseButton";
-import {createBank} from "../../../api/ApiBank"; // Importa el botón reutilizable
+import {createBank} from "../../../api/ApiBank";
+import {ApiRefreshAccessToken} from "../../../api/ApiLogin"; // Importa el botón reutilizable
+import * as SecureStore from 'expo-secure-store';
 
 const AddQuestionBank = ({ navigation }) => {
     const [category, setCategory] = useState('');
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (category.trim() === '') {
             Alert.alert("Error", "Todos los campos son obligatorios.");
             return;
         }
 
         try {
-            const response = createBank({name: category});
-            Alert.alert("Éxito", "Banco de preguntas agregado correctamente.");
-            navigation.goBack();
+            const refreshToken = await SecureStore.getItemAsync('refreshToken');
+            const responseAccessToken = await ApiRefreshAccessToken(refreshToken); // ✅ función correcta
+
+            if (responseAccessToken.error) {
+                console.log("Error:", responseAccessToken.error);
+                Alert.alert("Error", responseAccessToken.error);
+                return;
+            } else {
+                await SecureStore.setItemAsync('accessToken', responseAccessToken.accessToken);
+                console.log('Nuevo accessToken guardado:', responseAccessToken.accessToken);
+            }
+
+            const response = await createBank({ name: category });
+
+            if (response.error) {
+                console.log("Error:", response.error);
+                Alert.alert("Error", "Error al agregar el banco de preguntas.");
+            } else {
+                Alert.alert("Éxito", "Banco de preguntas agregado correctamente.");
+                navigation.goBack();
+            }
+
         } catch (error) {
+            console.error("Error inesperado:", error);
             Alert.alert("Error", "Error al agregar el banco de preguntas.");
         }
     };
