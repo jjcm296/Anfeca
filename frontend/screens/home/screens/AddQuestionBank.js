@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
-import FakeDatabase from '../../../fakeDataBase/FakeDataBase';
+
 import CustomButton from '../../ui/components/CustomButton';
 import CloseButton from "../../ui/components/CloseButton";
 import {createBank} from "../../../api/ApiBank";
-import {ApiRefreshAccessToken} from "../../../api/ApiLogin"; // Importa el botón reutilizable
-import * as SecureStore from 'expo-secure-store';
+import {ApiRefreshAccessToken} from "../../../api/ApiLogin";
 
 const AddQuestionBank = ({ navigation }) => {
     const [category, setCategory] = useState('');
@@ -17,17 +16,7 @@ const AddQuestionBank = ({ navigation }) => {
         }
 
         try {
-            const refreshToken = await SecureStore.getItemAsync('refreshToken');
-            const responseAccessToken = await ApiRefreshAccessToken(refreshToken); // ✅ función correcta
-
-            if (responseAccessToken.error) {
-                console.log("Error:", responseAccessToken.error);
-                Alert.alert("Error", responseAccessToken.error);
-                return;
-            } else {
-                await SecureStore.setItemAsync('accessToken', responseAccessToken.accessToken);
-                console.log('Nuevo accessToken guardado:', responseAccessToken.accessToken);
-            }
+            await ApiRefreshAccessToken();
 
             const response = await createBank({ name: category });
 

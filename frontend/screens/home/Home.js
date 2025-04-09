@@ -9,24 +9,26 @@ import {getAllBanks} from "../../api/ApiBank";
 const HomeScreen = ({ navigation }) => {
     const [questionBanks, setQuestionBanks] = useState([]);
 
-    /// Cargar una vez al montar el componente
     useEffect(() => {
         const fetchBanks = async () => {
+            await ApiRefreshAccessToken();
+
             const banks = await getAllBanks();
-            console.log("Nombres de los bancos:", banks.map(bank => bank.name));
-            setQuestionBanks(banks);
+            console.log("Nombres de los bancos:", banks.banksArray.map(bank => bank.name));
+            setQuestionBanks(banks.banksArray);
         };
 
         fetchBanks();
     }, []);
 
-    // Recargar cada vez que la pantalla vuelve a estar activa
     useFocusEffect(
         useCallback(() => {
             const fetchBanks = async () => {
+                await ApiRefreshAccessToken();
+
                 const banks = await getAllBanks();
-                console.log("Nombres de los bancos:", banks.map(bank => bank.name));
-                setQuestionBanks(banks);
+                console.log("Nombres de los bancos:", banks.banksArray.map(bank => bank.name));
+                setQuestionBanks(banks.banksArray);
             };
 
             fetchBanks();
@@ -79,3 +81,4 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;  import axios from "axios";
+import {ApiRefreshAccessToken} from "../../api/ApiLogin";
