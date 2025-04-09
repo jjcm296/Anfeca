@@ -1,35 +1,60 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import QuestionCard from "../components/QuestionCard";
 import AddButton from "../../ui/components/AddButton";
-import FakeDataBase from '../../../fakeDataBase/FakeDataBase';
+import { ApiRefreshAccessToken } from "../../../api/ApiLogin";
+import { getAllQuestions } from "../../../api/ApiQuestions";
 
 const Questions = ({ route, navigation }) => {
-    const { category } = route.params;
+    const { bankId, name } = route.params;
     const [questions, setQuestions] = useState([]);
 
-    // Cargar preguntas cuando la pantalla se enfoque
+    const fetchQuestions = async () => {
+        try {
+            await ApiRefreshAccessToken();
+            const response = await getAllQuestions(bankId);
+
+            if (response.questions) {
+                console.log("Preguntas:", response.questions.map(q => q.textQuestion));
+                setQuestions(response.questions);
+            } else {
+                console.warn("No se encontraron preguntas o formato incorrecto:", response);
+            }
+        } catch (error) {
+            console.error("Error al obtener preguntas:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchQuestions();
+    }, []);
+
     useFocusEffect(
         React.useCallback(() => {
-            console.log(`Recargando preguntas para la categoría: ${category}`);
-            setQuestions([...FakeDataBase.getQuestionsByCategory(category)]);
-        }, [category])
+            fetchQuestions();
+        }, [])
     );
 
     return (
         <View style={styles.container}>
             <FlatList
                 data={questions}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
+                keyExtractor={(item) => item._id || item.id}
+                renderItem={({ item, index }) => (
                     <TouchableOpacity
                         activeOpacity={0.7}
-                        onPress={() => navigation.navigate("EditQuestion", { questionId: item.id })}
+                        onPress={() =>
+                            navigation.navigate("EditQuestion", {
+                                questionId: item._id || item.id,
+                                bankId,
+                                name,
+                            })
+                        }
                     >
                         <QuestionCard
-                            questionNumber={item.questionNumber}
-                            questionText={item.questionText}
+                            questionNumber={index + 1}
+                            questionText={item.textQuestion}
                         />
                     </TouchableOpacity>
                 )}
@@ -37,7 +62,7 @@ const Questions = ({ route, navigation }) => {
                 showsVerticalScrollIndicator={false}
             />
 
-            <AddButton onPress={() => navigation.navigate("AddQuestion", { category })} />
+            <AddButton onPress={() => navigation.navigate("AddQuestion", { bankId, name })} />
         </View>
     );
 };
@@ -50,7 +75,6 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         paddingHorizontal: 15,
         paddingBottom: 80,
-
     },
 });
 

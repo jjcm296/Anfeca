@@ -5,6 +5,7 @@ import QuestionBankCard from "./components/QuestionBankCard";
 import AddButton from "../ui/components/AddButton";
 import WebButton from "./components/WebButton";
 import {getAllBanks} from "../../api/ApiBank";
+import {ApiRefreshAccessToken} from "../../api/ApiLogin";
 
 const HomeScreen = ({ navigation }) => {
     const [questionBanks, setQuestionBanks] = useState([]);
@@ -44,7 +45,7 @@ const HomeScreen = ({ navigation }) => {
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
                     <TouchableOpacity
-                        onPress={() => navigation.navigate("Questions", { category: item.category })}
+                        onPress={() => navigation.navigate("Questions", { bankId: item._id, name: item.name })}
                         onLongPress={() => navigation.navigate("EditQuestionBank", { bankId: item._id })}
                     >
                         <QuestionBankCard category={item.name} questions={item.questions} />
@@ -80,5 +81,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default HomeScreen;  import axios from "axios";
-import {ApiRefreshAccessToken} from "../../api/ApiLogin";
+export default HomeScreen;
