@@ -11,7 +11,7 @@ const Bank = require('../models/Bank.js');
 router.use(authMiddleware);
 
 router.get('/', getAllBanks);
-router.post('/',checkOwnership(Bank, 'bankId', 'Bank'), createBank);
+router.post('/', createBank);
 router.get('/:bankId', checkOwnership(Bank, 'bankId', 'Bank'), getBank);
 router.delete('/:bankId', checkOwnership(Bank, 'bankId', 'Bank'), deleteBank);
 
