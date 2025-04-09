@@ -30,15 +30,12 @@ const Login = () => {
         }
 
         try {
-            const refreshToken = await SecureStore.getItemAsync('refreshToken');
-            const response = await ApiRefreshAccessToken(refreshToken);
+            const response = await ApiRefreshAccessToken();
 
             if (response.error) {
                 console.log('Error:', response.error);
             } else {
                 console.log(response.message);
-                // Guardar el token en el almacenamiento seguro
-                await SecureStore.setItemAsync('accessToken', response.accessToken);
                 console.log('Token de acceso guardado:', response.accessToken);
                 navigation.navigate('MainTabs');
             }
