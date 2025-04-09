@@ -14,7 +14,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import CustomButton from '../../ui/components/CustomButton';
 import EyeToggleButton from '../../ui/components/EyeToggleButton';
 
-import {ApiLogin, ApiRefresghToken} from '../../../api/ApiLogin';
+import {ApiRefreshAccessToken} from '../../../api/ApiLogin';
 
 const Login = () => {
     const navigation = useNavigation();
@@ -31,7 +31,7 @@ const Login = () => {
 
         try {
             const refreshToken = await SecureStore.getItemAsync('refreshToken');
-            const response = await ApiRefresghToken(refreshToken);
+            const response = await ApiRefreshAccessToken(refreshToken);
 
             if (response.error) {
                 console.log('Error:', response.error);

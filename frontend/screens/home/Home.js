@@ -1,54 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useCallback} from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import QuestionBankCard from "./components/QuestionBankCard";
 import AddButton from "../ui/components/AddButton";
-import FakeDataBase from '../../fakeDataBase/FakeDataBase';
 import WebButton from "./components/WebButton";
-
-function RewardsStack() {
-    return (
-        <View style={{ flex: 1 }}>
-            <RewardsScreen />
-        </View>
-    );
-}
+import {getAllBanks} from "../../api/ApiBank";
 
 const HomeScreen = ({ navigation }) => {
     const [questionBanks, setQuestionBanks] = useState([]);
 
-    // Cargar los bancos de preguntas y contar la cantidad de preguntas en cada uno
+    /// Cargar una vez al montar el componente
     useEffect(() => {
-        const banks = FakeDataBase.getQuestionBanks().map(bank => ({
-            ...bank,
-            questions: FakeDataBase.getQuestionsByCategory(bank.category).length
-        }));
-        setQuestionBanks(banks);
+        const fetchBanks = async () => {
+            const banks = await getAllBanks();
+            console.log("Nombres de los bancos:", banks.map(bank => bank.name));
+            setQuestionBanks(banks);
+        };
+
+        fetchBanks();
     }, []);
 
-    // Si el usuario presiona Home en la barra de navegación, vuelve a los bancos de preguntas
+    // Recargar cada vez que la pantalla vuelve a estar activa
     useFocusEffect(
-        React.useCallback(() => {
-            const banks = FakeDataBase.getQuestionBanks().map(bank => ({
-                ...bank,
-                questions: FakeDataBase.getQuestionsByCategory(bank.category).length
-            }));
-            setQuestionBanks(banks);
+        useCallback(() => {
+            const fetchBanks = async () => {
+                const banks = await getAllBanks();
+                console.log("Nombres de los bancos:", banks.map(bank => bank.name));
+                setQuestionBanks(banks);
+            };
+
+            fetchBanks();
         }, [])
     );
+
 
     return (
         <View style={styles.container}>
             {/* Lista de bancos de preguntas con número actualizado de preguntas */}
             <FlatList
                 data={questionBanks}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
                     <TouchableOpacity
                         onPress={() => navigation.navigate("Questions", { category: item.category })}
-                        onLongPress={() => navigation.navigate("EditQuestionBank", { bankId: item.id })} // 🔹 Agregado: Mantener presionado para editar
+                        onLongPress={() => navigation.navigate("EditQuestionBank", { bankId: item._id })}
                     >
-                        <QuestionBankCard category={item.category} questions={item.questions} />
+                        <QuestionBankCard category={item.name} questions={item.questions} />
                     </TouchableOpacity>
                 )}
                 contentContainerStyle={styles.listContainer}
@@ -81,4 +78,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default HomeScreen;
+export default HomeScreen;  import axios from "axios";
