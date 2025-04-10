@@ -6,16 +6,32 @@ import CustomButton from '../../ui/components/CustomButton';
 import CustomInput from '../../ui/components/CustomInput';
 import RedemptionOptionButton from '../../ui/components/RedemptionOptionButton';
 import FakeDataBase from '../../../fakeDataBase/FakeDataBase';
+import {deleteReward, getRewardById} from "../../../api/ApiRewards";
+import {ApiRefreshAccessToken} from "../../../api/ApiLogin";
 
-const EditReward = () => {
+const EditReward = ({route}) => {
     const navigation = useNavigation();
-    const route = useRoute();
-    const { reward } = route.params;
+    const { rewardId} = route.params;
 
-    const [name, setName] = useState(reward.name);
-    const [coins, setCoins] = useState(reward.coins.toString());
-    const [redemptions, setRedemptions] = useState(reward.redemptions?.toString() || "");
-    const [redemptionType, setRedemptionType] = useState("");
+    const [name, setName] = useState('');
+    const [coins, setCoins] = useState('');
+    const [redemptions, setRedemptions] = useState('');
+    const [redemptionType, setRedemptionType] = useState('');
+
+    useEffect(() => {
+        const fetchReward = async () => {
+            await ApiRefreshAccessToken();
+            const reward = await getRewardById(rewardId);
+            if (reward) {
+                setName(reward.name);
+                setCoins(reward.coins.toString());
+                setRedemptions(reward.redemptions?.toString() || "");
+            } else {
+                Alert.alert("Error", "Recompensa no encontrada.");
+                navigation.goBack();
+            }
+        }
+    }, []);
 
     useEffect(() => {
         if (redemptions === "1") {
@@ -64,8 +80,9 @@ const EditReward = () => {
                 {
                     text: "Eliminar",
                     style: "destructive",
-                    onPress: () => {
-                        FakeDataBase.deleteReward(reward.id);
+                    onPress: async () => {
+                        await ApiRefreshAccessToken();
+                        const deleted = await deleteReward(rewardId);
                         Alert.alert("Éxito", "Recompensa eliminada correctamente");
                         navigation.goBack();
                     }
