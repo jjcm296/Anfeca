@@ -1,22 +1,50 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import RewardCard from './compoonents/RewardCard';
-import FakeDataBase from '../../fakeDataBase/FakeDataBase';
 import AddButton from '../ui/components/AddButton';
+import { ApiRefreshAccessToken } from "../../api/ApiLogin";
+import { getAllRewards } from "../../api/ApiRewards";
 
 const Rewards = () => {
     const navigation = useNavigation();
-    const rewards = FakeDataBase.getRewards();
+    const [rewards, setRewards] = useState([]);
+
+    const fetchRewards = async () => {
+        try {
+            await ApiRefreshAccessToken();
+            const response = await getAllRewards();
+            setRewards(response.rewardsArray);
+            console.log("Rewards:", response);
+        } catch (error) {
+            console.error("Error fetching rewards:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchRewards();
+    }, []);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchRewards();
+        }, [])
+    );
 
     return (
         <View style={styles.container}>
             <FlatList
                 data={rewards}
-                keyExtractor={(item) => item.name}
+                keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => navigation.navigate('EditReward', { reward: item })}>
-                        <RewardCard name={item.name} coins={item.coins} expiration={item.expiration} />
+                    <TouchableOpacity>
+                        <RewardCard
+                            name={item.name}
+                            coins={item.price}
+                            type={item.type}
+                            redemptionLimit={item.redemptionLimit ?? 0}
+                            redemptionCount={item.redemptionCount ?? 0}
+                        />
                     </TouchableOpacity>
                 )}
                 contentContainerStyle={styles.list}

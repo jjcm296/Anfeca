@@ -5,6 +5,8 @@ import CustomButton from '../../ui/components/CustomButton';
 import CustomInput from '../../ui/components/CustomInput';
 import RedemptionOptionButton from '../../ui/components/RedemptionOptionButton';
 import FakeDataBase from '../../../fakeDataBase/FakeDataBase';
+import {ApiRefreshAccessToken} from "../../../api/ApiLogin";
+import {createReward} from "../../../api/ApiRewards";
 
 const AddReward = ({ navigation }) => {
     const [name, setName] = useState('');
@@ -26,18 +28,47 @@ const AddReward = ({ navigation }) => {
         setRedemptionsError(value && parseInt(value) > 0 ? '' : "El número de canjes debe ser mayor a 0.");
     };
 
-    const handleAddReward = () => {
+    const handleAddReward = async () => {
         if (!name.trim() || !coins.trim()) {
             Alert.alert("Error", "Todos los campos son obligatorios");
             return;
         }
 
-        const redemptionValue = redemptionType === 'custom' ? redemptions : redemptionType;
+        const body = {
+            name: name,
+            price: parseInt(coins),
+            type: redemptionType === 'custom' ? 'custom' : redemptionType === '1' ? 'once' : 'forever',
+            ...(redemptionType === 'custom' && { redemptionLimit: parseInt(redemptions) }),
+            ...(redemptionType === '' && { redemptionLimit: 0 }) // si es "forever"
+        }
 
-        FakeDataBase.addReward(name, parseInt(coins), redemptionValue);
+        if (body.type === 'custom') {
+            const limit = parseInt(redemptions);
+            if (!limit || limit <= 0) {
+                Alert.alert("Error", "Debes especificar un número de canjes válido mayor a 0.");
+                return;
+            }
+            body.redemptionLimit = limit;
+        }
 
-        Alert.alert("Éxito", "Recompensa agregada correctamente");
-        navigation.goBack();
+        try {
+            await ApiRefreshAccessToken();
+
+            const response = await createReward(body);
+
+            if (response.error) {
+                console.log("Error en la respuesta:", response.error);
+                Alert.alert("Error", response.error);
+                return;
+            }
+
+            console.log("Respuesta de la API:", response);
+            Alert.alert("Éxito", "Recompensa agregada correctamente");
+            navigation.goBack();
+        } catch (error) {
+            console.error("Error al agregar recompensa:", error);
+            Alert.alert("Error", "No se pudo conectar con el servidor");
+        }
     };
 
     return (
@@ -97,7 +128,17 @@ const AddReward = ({ navigation }) => {
                 textColor="#FFFFFF"
                 text="Agregar Recompensa"
                 onPress={handleAddReward}
-                disabled={!name.trim() || !coins.trim() || parseInt(coins) <= 0 || coinError || (redemptionType === "custom" && (!redemptions.trim() || parseInt(redemptions) <= 0 || redemptionsError))}
+                disabled={
+                    !name.trim() ||
+                    !coins.trim() ||
+                    parseInt(coins) <= 0 ||
+                    coinError ||
+                    (redemptionType === "custom" && (
+                        !redemptions.trim() ||
+                        parseInt(redemptions) <= 0 ||
+                        redemptionsError
+                    ))
+                }
             />
         </View>
     );
