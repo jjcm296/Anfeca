@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import FakeDatabase from '../../../fakeDataBase/FakeDataBase';
 import CustomButton from '../../ui/components/CustomButton';
+import {deleteBank, getBankById} from "../../../api/ApiBank";
+import {ApiRefreshAccessToken} from "../../../api/ApiLogin";
 
 const EditQuestionBank = ({ route, navigation }) => {
     const { bankId } = route.params;
@@ -9,12 +11,16 @@ const EditQuestionBank = ({ route, navigation }) => {
 
     // Cargar el nombre del banco de preguntas
     useEffect(() => {
-        const bank = FakeDatabase.getQuestionBanks().find(b => b.id === bankId);
-        if (bank) {
-            setCategory(bank.category);
-        } else {
-            Alert.alert("Error", "Banco de preguntas no encontrado.");
-            navigation.goBack();
+        const fetchBank = async () => {
+            await ApiRefreshAccessToken();
+            const bank = getBankById(bankId);
+            if (bank) {
+                console.log("Banco de preguntas encontrado:", bank);
+                setCategory(bank.name);
+            } else {
+                Alert.alert("Error", "Banco de preguntas no encontrado.");
+                navigation.goBack();
+            }
         }
     }, [bankId]);
 
@@ -40,8 +46,9 @@ const EditQuestionBank = ({ route, navigation }) => {
                 {
                     text: "Eliminar",
                     style: "destructive",
-                    onPress: () => {
-                        const deleted = FakeDatabase.deleteQuestionBank(bankId);
+                    onPress: async () => {
+                        await ApiRefreshAccessToken();
+                        const deleted = await deleteBank(bankId);
                         if (deleted) {
                             Alert.alert("Éxito", "Banco de preguntas eliminado correctamente.");
                             navigation.goBack();
