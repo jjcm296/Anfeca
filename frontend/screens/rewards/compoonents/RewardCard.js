@@ -2,20 +2,25 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import CoinIcon from '../../ui/components/CoinIcon';
 
-const RewardCard = ({ name, coins, expiration, color = '#FFFFFF' }) => {
+const RewardCard = ({ name, coins, type, redemptionLimit = 0, redemptionCount = 0, color = '#FFFFFF' }) => {
+    const expirationText =
+        type === 'forever'
+            ? '∞ ilimitado'
+            : type === 'once'
+                ? '1 vez'
+                : `${redemptionLimit} canjes`;
+
     return (
         <View style={[styles.card, { backgroundColor: color }]}>
-            {/* Contenedor de la información */}
             <View style={styles.leftContainer}>
                 <Text style={styles.name}>{name}</Text>
                 <View style={styles.expirationBox}>
                     <Text style={styles.expirationText}>
-                        {expiration === 0 ? 'Expirado' : `${expiration} canjes`}
+                        {expirationText}
                     </Text>
                 </View>
             </View>
 
-            {/* Contenedor de las monedas */}
             <View style={styles.coinContainer}>
                 <CoinIcon size={24} />
                 <Text style={styles.coinText}>{coins}</Text>
@@ -33,7 +38,7 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         padding: 10,
         justifyContent: 'space-between',
-        elevation: 3, // Sombra en Android
+        elevation: 3,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
@@ -51,17 +56,17 @@ const styles = StyleSheet.create({
         color: '#000',
     },
     expirationBox: {
-        backgroundColor: '#000000', // Morado elegante
+        backgroundColor: '#000000',
         paddingHorizontal: 12,
         paddingVertical: 4,
         borderRadius: 10,
-        alignSelf: 'flex-start', // Tamaño adaptable al contenido
+        alignSelf: 'flex-start',
         marginTop: 5,
     },
     expirationText: {
         fontSize: 13,
         fontWeight: 'bold',
-        color: '#FFFFFF', // Texto blanco para contraste
+        color: '#FFFFFF',
     },
     coinContainer: {
         flexDirection: 'row',

@@ -78,7 +78,7 @@
 
     function RewardsStack() {
         return (
-            <View style={{ flex: 1 }}>x
+            <View style={{ flex: 1 }}>
                 <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="RewardsMain">
                     <Stack.Screen name="RewardsMain" component={Rewards} />
                     <Stack.Screen name="AddReward" component={AddReward} />
