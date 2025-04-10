@@ -37,7 +37,10 @@ const Rewards = () => {
                 data={rewards}
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate("EditReward", { rewardId: item._id })}
+
+                    >
                         <RewardCard
                             name={item.name}
                             coins={item.price}

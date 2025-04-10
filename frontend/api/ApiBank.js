@@ -40,3 +40,33 @@ export const createBank = async (bank) => {
         return error.response?.data || { error: "No se pudo conectar con el servidor" };
     }
 }
+
+export const deleteBank = async (bankId) => {
+    try {
+        const token = await SecureStore.getItemAsync('accessToken');
+        const response = await axios.delete(`${API_BASE_URL}/api/banks/${bankId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error en deleteBank:", error);
+        return error.response?.data || { error: "No se pudo conectar con el servidor" };
+    }
+};
+
+export const getBankById = async (bankId) => {
+    try {
+        const token = await SecureStore.getItemAsync('accessToken');
+        const response = await axios.get(`${API_BASE_URL}/api/banks/${bankId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error en getBankById:", error);
+        return error.response?.data || { error: "No se pudo conectar con el servidor" };
+    }
+}

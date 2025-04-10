@@ -39,3 +39,33 @@ export const createReward = async (reward) => {
         return error.response?.data || { error: "No se pudo conectar con el servidor" };
     }
 }
+
+export const deleteReward = async (rewardId) => {
+    try {
+        const token = await SecureStore.getItemAsync('accessToken');
+        const response = await axios.delete(`${API_BASE_URL}/api/rewards/${rewardId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error en deleteReward:", error);
+        return error.response?.data || { error: "No se pudo conectar con el servidor" };
+    }
+}
+
+export const getRewardById = async (rewardId) => {
+    try {
+        const token = await SecureStore.getItemAsync('accessToken');
+        const response = await axios.get(`${API_BASE_URL}/api/rewards/${rewardId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    }catch (error) {
+        console.error("Error en getRewardById:", error);
+        return error.response?.data || { error: "No se pudo conectar con el servidor" };
+    }
+}

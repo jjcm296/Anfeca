@@ -4,28 +4,31 @@ import { Picker } from '@react-native-picker/picker';
 import FakeDatabase from '../../../fakeDataBase/FakeDataBase';
 import CustomButton from '../../ui/components/CustomButton';
 import CustomInput from '../../ui/components/CustomInput';
+import {deleteQuestion, getQuestionById} from "../../../api/ApiQuestions";
 
 const EditQuestion = ({ route, navigation }) => {
-    const { questionId } = route.params;
+    const { questionId, bankId, name } = route.params;
     const [question, setQuestion] = useState('');
     const [answers, setAnswers] = useState(['', '', '', '']);
     const [difficulty, setDifficulty] = useState('1');
 
     useEffect(() => {
-        if (!questionId) {
-            console.warn("No se recibió questionId en EditQuestion.");
-            return;
-        }
+        const fetchQuestion = async () => {
+            if (!questionId) {
+                console.warn("No se recibió questionId en EditQuestion.");
+                return;
+            }
 
-        console.log("Cargando pregunta con ID:", questionId);
-        const questionData = FakeDatabase.getQuestionById(questionId);
+            console.log("Cargando pregunta con ID:", questionId);
+            const questionData = getQuestionById(bankId, questionId);
 
-        if (questionData) {
-            setQuestion(questionData.questionText);
-            setAnswers(questionData.answers || ["", "", "", ""]);
-            setDifficulty(String(questionData.difficulty || '1'));
-        } else {
-            console.error("No se encontró la pregunta con ID:", questionId);
+            if (questionData) {
+                setQuestion(questionData.questionText);
+                setAnswers(questionData.answers || ["", "", "", ""]);
+                setDifficulty(String(questionData.difficulty || '1'));
+            } else {
+                console.error("No se encontró la pregunta con ID:", questionId);
+            }
         }
     }, [questionId]);
 
@@ -55,8 +58,8 @@ const EditQuestion = ({ route, navigation }) => {
                 {
                     text: "Eliminar",
                     style: "destructive",
-                    onPress: () => {
-                        const deleted = FakeDatabase.deleteQuestion(questionId);
+                    onPress: async () => {
+                        const deleted = deleteQuestion(bankId, questionId);
                         if (deleted) {
                             Alert.alert("Éxito", "Pregunta eliminada correctamente.");
                             navigation.goBack();
