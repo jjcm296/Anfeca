@@ -53,3 +53,23 @@ export const ApiCreateKid = async (body) => {
         return error.response?.data || { error: "Error desconocido al crear el niño." };
     }
 };
+
+export const ApiValidateEmail = async (body) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/api/auth/validation/email`, body);
+        return response.data;
+    } catch (error) {
+        console.error("Error en ApiValidateEmail:", error);
+        return error.response?.data || { error: "Error desconocido al validar el correo electrónico." };
+    }
+}
+
+export const ApiValidatePassword = async (body) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/api/auth/validation/password`, body);
+        return response.data;
+    } catch (error) {
+        console.error("Error en ApiValidatePassword:", error);
+        return error.response?.data || { error: "Error desconocido al validar la contraseña." };
+    }
+}
