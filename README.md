@@ -96,51 +96,51 @@ npx expo install expo-secure-store
 
 ## Useful Git commands
 
-# Traer una carpeta específica desde una rama remota
+## Traer una carpeta específica desde una rama remota
 git checkout origin/rama -- carpeta/
 
-# Actualizar referencias de ramas remotas
+## Actualizar referencias de ramas remotas
 git fetch origin
 
-# Ver ramas remotas disponibles
+## Ver ramas remotas disponibles
 git branch -r
 
-# Ver el contenido (archivos) de un directorio en una rama remota
+## Ver el contenido (archivos) de un directorio en una rama remota
 git ls-tree --name-only origin/rama
 
-# Revertir todos los cambios en archivos modificados (soft reset)
+## Revertir todos los cambios en archivos modificados (soft reset)
 git restore .
 
-# Eliminar archivos no versionados (nuevos)
+## Eliminar archivos no versionados (nuevos)
 git clean -fd
 
-# Quitar un archivo o carpeta del staging
+## Quitar un archivo o carpeta del staging
 git restore --staged directorio/archivo
 
-# Crear una nueva rama remota a partir de una local
+## Crear una nueva rama remota a partir de una local
 git push -u origin rama-prueba
 
-# Fusionar otra rama con la rama actual
+## Fusionar otra rama con la rama actual
 git merge nombre-rama
 
-# Subir cambios de la rama actual al repositorio remoto
+## Subir cambios de la rama actual al repositorio remoto
 git push origin nombre-rama
 
-# Crear una nueva rama local basada en una rama remota
+## Crear una nueva rama local basada en una rama remota
 git checkout -b nueva-rama origin/rama-remota
 
-# Eliminar una rama local
+## Eliminar una rama local
 git branch -d nombre-rama   # Usa -D si no está fusionada
 
-# Eliminar una rama remota
+## Eliminar una rama remota
 git push origin --delete nombre-de-la-rama
 
-# Usar VS Code como editor por defecto para Git (en lugar de Vim)
+## Usar VS Code como editor por defecto para Git (en lugar de Vim)
 git config --global core.editor "code --wait"
 
-# Abrir VS Code para escribir un commit multilinea
+## Abrir VS Code para escribir un commit multilinea
 git commit --edit
 
-# Comparar diferencias entre ramas
+## Comparar diferencias entre ramas
 git diff rama-1..rama-2 --name-status
 
