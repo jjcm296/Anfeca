@@ -94,7 +94,7 @@ npm install lucide-react-native
 npm install axios
 npx expo install expo-secure-store
 
-## Useful Git commands
+# Useful Git commands
 
 ## Traer una carpeta específica desde una rama remota
 git checkout origin/rama -- carpeta/
