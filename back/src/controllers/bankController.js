@@ -1,4 +1,5 @@
 const bankService = require('../services/bankService.js');
+const {createBankSchema} = require('../lib/joischemas/bankJoi.js')
 
 exports.getAllBanks = async (req, res) => {
     try {
@@ -16,6 +17,8 @@ exports.getAllBanks = async (req, res) => {
 
 exports.createBank = async (req, res) => {
     try {
+        await createBankSchema.validateAsync(req.body);
+
         const guardianId = req.user.guardianId; // extracted from the token
         const { name } = req.body;
 

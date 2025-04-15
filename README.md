@@ -9,6 +9,8 @@
 | Send verification code | POST   | `/api/auth/verification-code`        | JSON object `{ email }`                           | Success message                                    |
 | Verify code            | POST   | `/api/auth/verification-code/verify` | JSON object `{ email, code }`                     | Success message                                    |
 | Refresh access token   | POST   | `/api/auth/token/refresh`            | JSON object `{ refreshToken }`                    | New access token                                   |
+| Validate email         | POST   | `/api/auth/validation/email`         | JSON object `{ email }`                           | Success message or invalid email message           |
+| Validate password      | POST   | `/api/auth/validation/password`      | JSON object `{ password }`                        | Success message or invalid password message        |
 
 ### Kid
 | Purpose                | Method | Route        | Consumes                         | Returns                 |
@@ -53,10 +55,10 @@ With `redemptionLimit`
 - Password321
 
 ## command to install dependencies 
-`npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose sib-api-v3-sdk`
+`npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose sib-api-v3-sdk joi`
 
 ## command to run the API
-`node /back/src/app.js`
+`node back/src/app.js`
 
 ## Account registered
 zuzzet.hs14@gmail.com
@@ -83,3 +85,4 @@ Hola123*
 - [refresh tokens](https://auth0.com/docs/secure/tokens/refresh-tokens)
 - [REST API URI Naming Conventions](https://restfulapi.net/resource-naming/)
 - [HTTP response codes in RESTful APIs](https://medium.com/@jamala.zawia/understanding-http-response-codes-in-restful-apis-57ab332c13f3)
+- [joi](https://joi.dev/api/?v=17.13.3)

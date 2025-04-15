@@ -87,7 +87,6 @@ exports.sendVerificationCodeToGuardian = async (email) => {
     return code;
 };
 
-// Check code and create Guardian + Account
 exports.validateVerificationCode = async ({ email, code }) => {
     const stored = await VerificationCode.findOne({ email });
 

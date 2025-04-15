@@ -1,4 +1,5 @@
 const questionService = require('../services/questionService.js');
+const { createQuestionSchema } = require('../lib/joischemas/bankJoi.js');
 
 exports.getAllQuestions = async (req, res) => {
     try {
@@ -14,6 +15,9 @@ exports.getAllQuestions = async (req, res) => {
 exports.createQuestion = async (req, res) => {
     try {
         const { textQuestion, answers, priority } = req.body;
+
+        await createQuestionSchema.validateAsync({ textQuestion, answers, priority });
+
         const { bankId } = req.params;
 
         const question = await questionService.createQuestion({ textQuestion, answers, priority, bankId });
