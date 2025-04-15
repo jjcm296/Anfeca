@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import {
     ScrollView,
@@ -6,7 +6,8 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
-    TextInput
+    TextInput,
+    Modal,
 } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -14,14 +15,21 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import CustomButton from '../../ui/components/CustomButton';
 import EyeToggleButton from '../../ui/components/EyeToggleButton';
 
-import {ApiRefreshAccessToken} from '../../../api/ApiLogin';
+import { ApiRefreshAccessToken } from '../../../api/ApiLogin';
 
-const Login = () => {
+const Login = ({ route }) => {
     const navigation = useNavigation();
 
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState(route?.params?.email || '');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+
+    useEffect(() => {
+        if (route?.params?.email) {
+            setShowModal(true);
+        }
+    }, [route?.params?.email]);
 
     const handleLogin = async () => {
         if (!email || !password) {
@@ -45,59 +53,78 @@ const Login = () => {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <View style={styles.card}>
-                <Text style={styles.title}>Iniciar Sesión</Text>
-
-                <View style={styles.inputContainer}>
-                    <Ionicons name="mail-outline" size={20} color="#555" style={styles.icon} />
-                    <TextInput
-                        style={styles.flexInput}
-                        placeholder="Correo electrónico"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                    />
+        <>
+            <Modal visible={showModal} transparent animationType="fade">
+                <View style={styles.modalBackground}>
+                    <View style={styles.modalCard}>
+                        <Text style={styles.modalTitle}>Correo ya registrado</Text>
+                        <Text style={styles.modalText}>
+                            Este correo ya está registrado. Por favor, inicia sesión.
+                        </Text>
+                        <CustomButton
+                            text="Entendido"
+                            color="#000"
+                            textColor="#FFF"
+                            onPress={() => setShowModal(false)}
+                        />
+                    </View>
                 </View>
+            </Modal>
 
-                <View style={styles.inputContainer}>
-                    <Ionicons
-                        name={showPassword ? 'lock-open-outline' : 'lock-closed-outline'}
-                        size={20}
-                        color="#555"
-                        style={styles.icon} />
-                    <TextInput
-                        style={styles.flexInput}
-                        placeholder="Contraseña"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry={!showPassword}
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <View style={styles.card}>
+                    <Text style={styles.title}>Iniciar Sesión</Text>
+
+                    <View style={styles.inputContainer}>
+                        <Ionicons name="mail-outline" size={20} color="#555" style={styles.icon} />
+                        <TextInput
+                            style={styles.flexInput}
+                            placeholder="Correo electrónico"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                        />
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                        <Ionicons
+                            name={showPassword ? 'lock-open-outline' : 'lock-closed-outline'}
+                            size={20}
+                            color="#555"
+                            style={styles.icon} />
+                        <TextInput
+                            style={styles.flexInput}
+                            placeholder="Contraseña"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry={!showPassword}
+                        />
+                        <EyeToggleButton
+                            isVisible={showPassword}
+                            onPress={() => setShowPassword(!showPassword)}
+                        />
+                    </View>
+
+                    <TouchableOpacity>
+                        <Text style={styles.forgotText}>¿Olvidaste tu contraseña?</Text>
+                    </TouchableOpacity>
+
+                    <CustomButton
+                        text="Iniciar sesión"
+                        color="#000"
+                        textColor="#FFF"
+                        onPress={handleLogin}
                     />
-                    <EyeToggleButton
-                        isVisible={showPassword}
-                        onPress={() => setShowPassword(!showPassword)}
-                    />
+
+                    <TouchableOpacity style={{ marginTop: 20 }} onPress={() => navigation.navigate('RegisterAccount')}>
+                        <Text style={styles.registerText}>
+                            ¿Aún no tienes cuenta? <Text style={{ textDecorationLine: 'underline' }}>Regístrate</Text>
+                        </Text>
+                    </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity>
-                    <Text style={styles.forgotText}>¿Olvidaste tu contraseña?</Text>
-                </TouchableOpacity>
-
-                <CustomButton
-                    text="Iniciar sesión"
-                    color="#000"
-                    textColor="#FFF"
-                    onPress={() => handleLogin()}
-                />
-
-                <TouchableOpacity style={{ marginTop: 20 }} onPress={() => navigation.navigate('RegisterAccount')}>
-                    <Text style={styles.registerText}>
-                        ¿Aún no tienes cuenta? <Text style={{ textDecorationLine: 'underline' }}>Regístrate</Text>
-                    </Text>
-                </TouchableOpacity>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </>
     );
 };
 
@@ -153,6 +180,31 @@ const styles = StyleSheet.create({
         fontSize: 14,
         textAlign: 'center',
         color: '#333',
+    },
+    modalBackground: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalCard: {
+        backgroundColor: '#fff',
+        padding: 25,
+        borderRadius: 15,
+        width: '80%',
+        alignItems: 'center',
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    modalText: {
+        fontSize: 14,
+        textAlign: 'center',
+        marginBottom: 20,
+        color: '#444',
     },
 });
 
