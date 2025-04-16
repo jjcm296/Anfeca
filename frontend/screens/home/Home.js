@@ -6,17 +6,21 @@ import AddButton from "../ui/components/AddButton";
 import WebButton from "./components/WebButton";
 import {getAllBanks} from "../../api/ApiBank";
 import {ApiRefreshAccessToken} from "../../api/ApiLogin";
+import SkeletonQuestionBankCard from "./components/skeletons/SkeletonQuestionBankCard";
 
 const HomeScreen = ({ navigation }) => {
+    const [loading, setLoading] = useState(true);
     const [questionBanks, setQuestionBanks] = useState([]);
+
 
     useEffect(() => {
         const fetchBanks = async () => {
+            setLoading(true);
             await ApiRefreshAccessToken();
-
             const banks = await getAllBanks();
             console.log("Nombres de los bancos:", banks.banksArray.map(bank => bank.name));
             setQuestionBanks(banks.banksArray);
+            setLoading(false);
         };
 
         fetchBanks();
@@ -26,7 +30,6 @@ const HomeScreen = ({ navigation }) => {
         useCallback(() => {
             const fetchBanks = async () => {
                 await ApiRefreshAccessToken();
-
                 const banks = await getAllBanks();
                 console.log("Nombres de los bancos:", banks.banksArray.map(bank => bank.name));
                 setQuestionBanks(banks.banksArray);
@@ -36,27 +39,36 @@ const HomeScreen = ({ navigation }) => {
         }, [])
     );
 
-
     return (
         <View style={styles.container}>
-            {/* Lista de bancos de preguntas con número actualizado de preguntas */}
-            <FlatList
-                data={questionBanks}
-                keyExtractor={(item) => item._id}
-                renderItem={({ item }) => (
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate("Questions", { bankId: item._id, name: item.name })}
-                        onLongPress={() => navigation.navigate("EditQuestionBank", { bankId: item._id })}
-                    >
-                        <QuestionBankCard category={item.name} questions={item.questions} />
-                    </TouchableOpacity>
-                )}
-                contentContainerStyle={styles.listContainer}
-                ItemSeparatorComponent={() => <View style={styles.separator} />}
-                showsVerticalScrollIndicator={false}
-            />
+            {loading ? (
+                <View style={styles.listContainer}>
+                    {[1, 2, 3, 4, 5].map((_, index) => (
+                        <SkeletonQuestionBankCard key={index} />
+                    ))}
+                </View>
+            ) : (
+                <FlatList
+                    data={questionBanks}
+                    keyExtractor={(item) => item._id}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity
+                            onPress={() =>
+                                navigation.navigate("Questions", { bankId: item._id, name: item.name })
+                            }
+                            onLongPress={() =>
+                                navigation.navigate("EditQuestionBank", { bankId: item._id })
+                            }
+                        >
+                            <QuestionBankCard category={item.name} questions={item.questions} />
+                        </TouchableOpacity>
+                    )}
+                    contentContainerStyle={styles.listContainer}
+                    ItemSeparatorComponent={() => <View style={styles.separator} />}
+                    showsVerticalScrollIndicator={false}
+                />
+            )}
 
-            {/* Botón independiente para HomeScreen */}
             <AddButton onPress={() => navigation.navigate("AddQuestionBank")} />
 
             <WebButton
@@ -65,6 +77,7 @@ const HomeScreen = ({ navigation }) => {
             />
         </View>
     );
+
 };
 
 const styles = StyleSheet.create({
