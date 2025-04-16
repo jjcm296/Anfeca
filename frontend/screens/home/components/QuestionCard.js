@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
         elevation: 3,
         marginVertical: 5, // Espaciado entre tarjetas
         marginHorizontal: 5, // Espaciado lateral
+
     },
     textContainer: {
         flex: 1,
