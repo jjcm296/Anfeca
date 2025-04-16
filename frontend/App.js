@@ -35,6 +35,7 @@
     import { GuardianProvider } from './context/GuardianContext';
     import Profile from "./screens/profile/Profile";
     import {AuthContext, AuthProvider} from "./context/AuthContext";
+    import {SessionContext, SessionProvider} from "./context/SessionContext";
 
     const Stack = createStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -147,15 +148,17 @@
 
     export default function App() {
         return (
-            <AuthProvider>
-                <AccountProvider>
-                    <GuardianProvider>
-                        <NavigationContainer>
-                            <StatusBar barStyle="light-content" backgroundColor="black" />
-                            <MainStack />
-                        </NavigationContainer>
-                    </GuardianProvider>
-                </AccountProvider>
-            </AuthProvider>
+            <SessionProvider>
+                <AuthProvider>
+                    <AccountProvider>
+                        <GuardianProvider>
+                            <NavigationContainer>
+                                <StatusBar barStyle="light-content" backgroundColor="black" />
+                                <MainStack />
+                            </NavigationContainer>
+                        </GuardianProvider>
+                    </AccountProvider>
+                </AuthProvider>
+            </SessionProvider>
         );
     }
