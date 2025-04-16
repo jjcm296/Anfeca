@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import QuestionCard from "../components/QuestionCard";
@@ -9,24 +9,24 @@ import SkeletonQuestionCard from "../components/skeletons/SkeletonQuestionCard";
 
 const Questions = ({ route, navigation }) => {
     const { bankId, name } = route.params;
+    
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [hasLoaded, setHasLoaded] = useState(false);
 
     const fetchQuestions = async () => {
         try {
             setLoading(true);
             await ApiRefreshAccessToken();
             const response = await getAllQuestions(bankId);
-
             if (response.questions) {
-                console.log("Preguntas:", response.questions.map(q => q.textQuestion));
                 setQuestions(response.questions);
-                setLoading(false);
-            } else {
-                console.warn("No se encontraron preguntas o formato incorrecto:", response);
+                setHasLoaded(true); // 🟢 marcamos como cargado
             }
+            setLoading(false);
         } catch (error) {
             console.error("Error al obtener preguntas:", error);
+            setLoading(false);
         }
     };
 
@@ -35,9 +35,11 @@ const Questions = ({ route, navigation }) => {
     }, []);
 
     useFocusEffect(
-        React.useCallback(() => {
-            fetchQuestions();
-        }, [])
+        useCallback(() => {
+            if (!hasLoaded) {
+                fetchQuestions();
+            }
+        }, [hasLoaded])
     );
 
     return (
