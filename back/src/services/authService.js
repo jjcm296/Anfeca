@@ -62,7 +62,7 @@ exports.login =  async ({ email, password }) => {
     const payload = generateGuardianPayload(account._id, account.guardianId._id, "guardian");
 
     const accessToken = jwtUtils.generateAccesToken(payload);
-    const refreshToken = jwtUtils.generateRefreshToken(payload);
+    const refreshToken = jwtUtils.generateRefreshToken(payload); // the refresh token is created with profileType guardian
 
     await Session.findOneAndDelete({ accountId: account._id }); // delete the previous session
 

@@ -43,7 +43,6 @@ exports.login = async (req, res) => {
     }
 };
 
-// verify if that email already exists in the database
 
 exports.sendCode = async (req, res) => {
     try {
