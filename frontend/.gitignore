@@ -1,15 +1,16 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
-# dependencies
+# ─────────────────────────────
+# 📦 Dependencies
 node_modules/
 
-# Expo
+# 🚀 Expo
 .expo/
 dist/
 web-build/
 expo-env.d.ts
 
-# Native
+# 📱 Native build-related files
 *.orig.*
 *.jks
 *.p8
@@ -17,24 +18,26 @@ expo-env.d.ts
 *.key
 *.mobileprovision
 
-# Metro
+# ⚡ Metro bundler
 .metro-health-check*
 
-# debug
+# 🐞 Debug logs
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-# macOS
+# 🍏 macOS
 .DS_Store
 *.pem
 
-# local env files
+# 🌱 Local env files
 .env*.local
 
-# typescript
+# 🔷 TypeScript
 *.tsbuildinfo
 
+# 🧠 JetBrains IDE (IntelliJ/WebStorm)
 .idea/workspace.xml
 
-*.json  
+# ⚠️ Optional: ignore all JSON files (use with caution)
+# *.json

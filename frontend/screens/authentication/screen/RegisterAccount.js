@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
     View,
     Text,
@@ -13,11 +13,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import CustomButton from '../../ui/components/CustomButton';
 import EyeToggleButton from '../../ui/components/EyeToggleButton';
 
-import {useContext} from 'react';
-
 import { AccountContext } from '../../../context/AccountContext';
 import { GuardianContext } from '../../../context/GuardianContext';
-import {ApiSendCode} from "../../../api/ApiAccount";
+import { ApiSendCode, ApiValidateEmail, ApiValidatePassword } from "../../../api/ApiAccount";
 
 const RegisterAccount = () => {
     const navigation = useNavigation();
@@ -37,12 +35,12 @@ const RegisterAccount = () => {
 
     const handleRegister = async () => {
         const newErrors = {};
+
         if (!name) newErrors.name = true;
         if (!lastName) newErrors.lastName = true;
         if (!email) newErrors.email = true;
         if (!password) newErrors.password = true;
         if (!confirmPassword) newErrors.confirmPassword = true;
-
         if (password !== confirmPassword) newErrors.confirmPassword = true;
 
         if (Object.keys(newErrors).length > 0) {
@@ -50,25 +48,51 @@ const RegisterAccount = () => {
             return;
         }
 
-        setAccount({
-            email,
-            password,
-        });
+        try {
+            const emailValidation = await ApiValidateEmail({ email });
+            if (emailValidation.error) {
+                console.log("Error al validar el correo electrónico:", emailValidation.error);
+                setErrors(prev => ({ ...prev, email: "El correo electrónico no es válido." }));
+                return;
+            }
+        } catch (error) {
+            console.error("Error en la validación del correo electrónico:", error);
+            setErrors(prev => ({ ...prev, email: "Error en la validación del correo electrónico." }));
+            return;
+        }
 
-        setGuardian({
-            name,
-            lastName,
-        });
+        try {
+            const passwordValidation = await ApiValidatePassword({ password });
+            if (passwordValidation.error) {
+                console.log("Error al validar la contraseña:", passwordValidation.error);
+                setErrors(prev => ({
+                    ...prev,
+                    password: "La contraseña no cumple con los requisitos de seguridad.",
+                    confirmPassword: "La contraseña no cumple con los requisitos de seguridad.",
+                }));
+                return;
+            }
+        } catch (error) {
+            console.error("Error en la validación de la contraseña:", error);
+            setErrors(prev => ({
+                ...prev,
+                password: "Error en la validación de la contraseña.",
+                confirmPassword: "Error en la validación de la contraseña.",
+            }));
+            return;
+        }
 
+        setAccount({ email, password });
+        setGuardian({ name, lastName });
         setErrors({});
 
         try {
-            const response = await ApiSendCode({email});
+            const response = await ApiSendCode({ email });
 
             if (response.error) {
                 console.log("Error al enviar el código:", response.error);
                 return;
-            }else {
+            } else {
                 console.log("Código enviado correctamente");
             }
         } catch (error) {
@@ -121,7 +145,13 @@ const RegisterAccount = () => {
                         placeholderTextColor="#999"
                     />
                 </View>
-                {errors.email && <Text style={styles.errorText}>Este campo es obligatorio</Text>}
+                {errors.email && (
+                    <Text style={styles.errorText}>
+                        {typeof errors.email === 'string'
+                            ? errors.email
+                            : 'Este campo es obligatorio'}
+                    </Text>
+                )}
 
                 <View style={[styles.inputWrapper, errors.password && styles.inputWrapperError]}>
                     <Ionicons
@@ -143,7 +173,20 @@ const RegisterAccount = () => {
                         onPress={() => setShowPassword(!showPassword)}
                     />
                 </View>
-                {errors.password && <Text style={styles.errorText}>Este campo es obligatorio</Text>}
+                {errors.password && (
+                    <Text style={styles.errorText}>
+                        {typeof errors.password === 'string'
+                            ? errors.password
+                            : 'La contraseña es obligatoria'}
+                    </Text>
+                )}
+                <Text style={styles.passwordHint}>
+                    La contraseña debe contener:
+                    {'\n'}• Al menos una letra mayúscula
+                    {'\n'}• Al menos un número
+                    {'\n'}• Al menos un carácter especial (!@#\$%^&*)
+                    {'\n'}• Mínimo 8 caracteres
+                </Text>
 
                 <View style={[styles.inputWrapper, errors.confirmPassword && styles.inputWrapperError]}>
                     <Ionicons
@@ -165,17 +208,22 @@ const RegisterAccount = () => {
                         onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                     />
                 </View>
-                {errors.confirmPassword && <Text style={styles.errorText}>Las contraseñas no coinciden o está vacío</Text>}
+                {errors.confirmPassword && (
+                    <Text style={styles.errorText}>
+                        {typeof errors.confirmPassword === 'string'
+                            ? errors.confirmPassword
+                            : 'Las contraseñas no coinciden o está vacío'}
+                    </Text>
+                )}
 
                 <View style={{ width: '100%' }}>
                     <CustomButton
                         onPress={handleRegister}
-                        text="Crear Cuenta"
+                        text="Crear cuenta"
                         textColor="#FFFFFF"
                         color="#000000"
                     />
                 </View>
-
 
                 <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                     <Text style={styles.registerText}>
@@ -226,21 +274,6 @@ const styles = StyleSheet.create({
     inputWrapperError: {
         borderColor: 'red',
     },
-    inputWrapperHalf: {
-        borderRadius: 10,
-        paddingHorizontal: 10,
-        flex: 1,
-        height: 45,
-        borderWidth: 1,
-        borderColor: '#ccc',
-    },
-    rowContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: 10,
-        marginBottom: 10,
-        width: '100%',
-    },
     input: {
         flex: 1,
         fontSize: 15,
@@ -261,9 +294,13 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         marginLeft: 5,
     },
-    fullWidthButton: {
-        width: '100%',
-        marginTop: 10,
+    passwordHint: {
+        alignSelf: 'flex-start',
+        color: '#666',
+        fontSize: 12,
+        marginTop: -2,
+        marginBottom: 10,
+        marginLeft: 5,
     },
 });
 
