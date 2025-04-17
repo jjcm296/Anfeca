@@ -13,14 +13,14 @@
 | Validate password      | POST   | `/api/auth/validation/password`      | JSON object `{ password }`                        | Success message or invalid password message        |
 
 ### Account
-| Purpose             | Method | Route                         | Consumes | Returns |
-|---------------------|--------|-------------------------------|----------|---------|
-| change profile      | POST   | /api/account/profile/switch   | ???      | ???     |
-| Get current profile | GET    | /api/account/profile/current  | ???      | ???     |
-| Get guardian info   | GET    | /api/account/profile/guardian | ???      | ???     |
-| Get kid info        | GET    | /api/account/profile/kid      | ???      | ???     |
-| Edit guardian info  | POST   | /api/account/profile/guardian | ???      | ???     |
-| Edit kid info       | POST   | /api/account/profile/kid      | ???      | ???     |
+| Purpose             | Method | Route                         | Consumes                                                            | Returns                                               |
+|---------------------|--------|-------------------------------|---------------------------------------------------------------------|-------------------------------------------------------|
+| Switch profile      | POST   | `/api/account/profile/switch` | { targetProfile: "guardian", password } or { targetProfile: "kid" } | JSON object with success message and new access token |
+| Get current profile | GET    | `/api/account/profile/`       | Nothing                                                             | Message stating the current profile                   |
+| Get guardian info   | GET    | /api/account/profile/guardian | ???                                                                 | ???                                                   |
+| Get kid info        | GET    | /api/account/profile/kid      | ???                                                                 | ???                                                   |
+| Edit guardian info  | POST   | /api/account/profile/guardian | ???                                                                 | ???                                                   |
+| Edit kid info       | POST   | /api/account/profile/kid      | ???                                                                 | ???                                                   |
 
 
 
