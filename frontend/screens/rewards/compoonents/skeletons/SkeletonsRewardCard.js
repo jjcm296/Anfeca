@@ -20,7 +20,7 @@ const SkeletonRewardCard = () => {
         </View>
     );
 };
-
+//.
 const styles = StyleSheet.create({
     wrapper: {
         marginVertical: 5,
