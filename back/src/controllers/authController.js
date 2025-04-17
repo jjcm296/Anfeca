@@ -1,5 +1,6 @@
 const authService = require('../services/authService.js');
 const jwtUtils = require('../lib/auth/jwtUtils.js');
+const {generateKidPayload,generateGuardianPayload} = require('../lib/auth/payload');
 const Session = require('../models/Session.js');
 const { registerSchema,
     loginSchema,
@@ -42,7 +43,6 @@ exports.login = async (req, res) => {
     }
 };
 
-// verify if that email already exists in the database
 
 exports.sendCode = async (req, res) => {
     try {
@@ -78,12 +78,22 @@ exports.refresh = async (req, res) => {
         const session = await Session.findOne({
             accountId: decoded.id, refreshToken
         });
-        if (!session) throw new Error();
 
-        const newAccessToken = jwtUtils.generateAccesToken({
-            id: decoded.id,
-            guardianId: decoded.guardianId
-        });
+        if (!session) throw new Error("Couldn't find any session");
+
+        let payload;
+
+        if (decoded.profileType === 'guardian') {
+            payload = generateGuardianPayload(decoded.id, decoded.guardianId, "guardian");
+
+        } else if (decoded.profileType === 'kid') {
+            payload = generateKidPayload(decoded.id, decoded.guardianId,decoded.kidId, "kid");
+
+        } else {
+            return res.status(400).json({ error: 'Invalid profile type in refresh token' });
+        }
+
+        const newAccessToken = jwtUtils.generateAccesToken(payload);
 
         return res.status(200).json({ accessToken: newAccessToken });
 

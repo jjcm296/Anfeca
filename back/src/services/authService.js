@@ -5,7 +5,8 @@ const jwt = require('jsonwebtoken');
 const Session = require('../models/Session.js');
 const jwtUtils = require('../lib/auth/jwtUtils.js');
 const VerificationCode = require('../models/VerificationCode.js');
-const { sendVerficationCode } = require('../lib/auth/verificationCodeSender.js')
+const { sendVerficationCode } = require('../lib/auth/verificationCodeSender.js');
+const { generateGuardianPayload } = require('../lib/auth/payload.js');
 const crypto = require('node:crypto');
 const path = require('path');
 
@@ -58,10 +59,12 @@ exports.login =  async ({ email, password }) => {
     const isPasswordValid = await bcrypt.compare(password, account.password);
     if (!isPasswordValid) throw new Error('Incorrect password');
 
-    const payload = { id: account._id, guardianId: account.guardianId._id };
+    const payload = generateGuardianPayload(account._id, account.guardianId._id, "guardian");
 
     const accessToken = jwtUtils.generateAccesToken(payload);
-    const refreshToken = jwtUtils.generateRefreshToken(payload);
+    const refreshToken = jwtUtils.generateRefreshToken(payload); // the refresh token is created with profileType guardian
+
+    await Session.findOneAndDelete({ accountId: account._id }); // delete the previous session
 
     await Session.create({
        accountId: account._id,

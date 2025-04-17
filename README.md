@@ -12,10 +12,29 @@
 | Validate email         | POST   | `/api/auth/validation/email`         | JSON object `{ email }`                           | Success message or invalid email message           |
 | Validate password      | POST   | `/api/auth/validation/password`      | JSON object `{ password }`                        | Success message or invalid password message        |
 
+### Account
+| Purpose                  | Method | Route                          | Consumes                                                            | Returns                                                             |
+|--------------------------|--------|--------------------------------|---------------------------------------------------------------------|---------------------------------------------------------------------|
+| Switch profile           | POST   | `/api/account/profiles/switch` | { targetProfile: "guardian", password } or { targetProfile: "kid" } | Success message, new access token and new fresh token               |
+| Get current profile info | GET    | `/api/account/profiles/`       | Nothing                                                             | Message stating the current profile and JSON guardian or kid object |
+| Get profiles names       | GET    | `/api/account/profiles/names`  | Nothing                                                             | JSON object { guardian, kid }                                       |                                       |    
+| Edit guardian info       | POST   | /api/account/profile/guardian  | ???                                                                 | ???                                                                 |
+| Edit kid info            | POST   | /api/account/profile/kid       | ???                                                                 | ???                                                                 |
+⚠️⚠️⚠️ When switching account, a new fresh token is generated, to every time the user switch profile, frontend must storage a new fresh token
+
+Get current profile info
+![img_3.png](img_3.png)
+
+Get profiles' names
+![img_4.png](img_4.png)
+
 ### Kid
-| Purpose                | Method | Route        | Consumes                         | Returns                 |
-|------------------------|--------|--------------|----------------------------------|-------------------------|
-| Create kid profile     | POST   | `/api/kids/` | JSON Object `{ name }`           | JSON Kid profile object |
+| Purpose              | Method | Route                     | Consumes               | Returns                 |
+|----------------------|--------|---------------------------|------------------------|-------------------------|
+| Create kid profile   | POST   | `/api/kids/`              | JSON Object `{ name }` | JSON Kid profile object |
+| Kid study flashcards | ??     | api/kid/study/flashcards/ | ???                    | ???                     | 
+| Kid play game        | ??     | api/kid/play/game/        | ???                    | ???                     | 
+
 
 ### Questions bank
 | Purpose           | Method | Route                                      | Consumes                                          | Returns                                        |
@@ -28,6 +47,9 @@
 | Create a question | POST   | `/api/banks/:bankId/questions/`            | JSON Object `{ textQuestion, answers, priority }` | Success message, JSON question object          |
 | Get a question    | GET    | `/api/banks/:bankId/questions/:questionId` | Nothing                                           | Success message, JSON question object          |
 | Delete a question | GET    | `/api/banks/:bankId/questions/:questionId` | Nothing                                           | Success message                                |
+| Get flashcards ?? | GET    | /api/banks/:bankId/flashcards/             | ???                                               | ???                                            |
+| Get flashcard??   | GET    | /api/banks/:bankId/flashcards/:flashcards  | ???                                               | ???                                            |
+
 - `:bankId` is the questions bank ID
 - `answers` in JSON Object must be an array of objects, max of 4 answers, at least one corrrect and one incorrect
 
@@ -35,12 +57,14 @@
 
 
 ### Reward
-| Purpose         | Method | Route                    | Consumes                                                                                  | Returns                                      |
-|-----------------|--------|--------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------|
-| Get all rewards | GET    | `/api/rewards/`          | Nothing                                                                                   | Success message, Array of JSON banks objects |
-| Create reward   | POST   | `/api/rewards/`          | JSON Object `{ name, price, type }` or `{ name, price, type, redemptionLimit }` if needed | Success message, JSON Reward object          |
-| Get a reward    | GET    | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message, JSON Reward object          |
-| Delete a reward | DELETE | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message                              |
+| Purpose           | Method | Route                    | Consumes                                                                                  | Returns                                      |
+|-------------------|--------|--------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------|
+| Get all rewards   | GET    | `/api/rewards/`          | Nothing                                                                                   | Success message, Array of JSON banks objects |
+| Create reward     | POST   | `/api/rewards/`          | JSON Object `{ name, price, type }` or `{ name, price, type, redemptionLimit }` if needed | Success message, JSON Reward object          |
+| Get a reward      | GET    | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message, JSON Reward object          |
+| Delete a reward   | DELETE | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message                              |
+| Kid only, redeems | POST   | /api/rewards/redeem/:id  | ???                                                                                       | ???                                          |
+| Guardian confirms | POST   | /api/rewards/confirm/:id | ???                                                                                       | ???                                          |
 - `type` is an enum `[once, forever, custom]`, if the user selects `custom` then the front must send `redemptionLimit`
 
 Without `redemptionLimit`
