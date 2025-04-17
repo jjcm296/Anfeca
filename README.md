@@ -12,10 +12,25 @@
 | Validate email         | POST   | `/api/auth/validation/email`         | JSON object `{ email }`                           | Success message or invalid email message           |
 | Validate password      | POST   | `/api/auth/validation/password`      | JSON object `{ password }`                        | Success message or invalid password message        |
 
+### Account
+| Purpose             | Method | Route                         | Consumes                                                            | Returns                                               |
+|---------------------|--------|-------------------------------|---------------------------------------------------------------------|-------------------------------------------------------|
+| Switch profile      | POST   | `/api/account/profile/switch` | { targetProfile: "guardian", password } or { targetProfile: "kid" } | JSON object with success message and new access token |
+| Get current profile | GET    | `/api/account/profile/`       | Nothing                                                             | Message stating the current profile                   |
+| Get guardian info   | GET    | /api/account/profile/guardian | ???                                                                 | ???                                                   |
+| Get kid info        | GET    | /api/account/profile/kid      | ???                                                                 | ???                                                   |
+| Edit guardian info  | POST   | /api/account/profile/guardian | ???                                                                 | ???                                                   |
+| Edit kid info       | POST   | /api/account/profile/kid      | ???                                                                 | ???                                                   |
+
+
+
 ### Kid
-| Purpose                | Method | Route        | Consumes                         | Returns                 |
-|------------------------|--------|--------------|----------------------------------|-------------------------|
-| Create kid profile     | POST   | `/api/kids/` | JSON Object `{ name }`           | JSON Kid profile object |
+| Purpose              | Method | Route                     | Consumes               | Returns                 |
+|----------------------|--------|---------------------------|------------------------|-------------------------|
+| Create kid profile   | POST   | `/api/kids/`              | JSON Object `{ name }` | JSON Kid profile object |
+| Kid study flashcards | ??     | api/kid/study/flashcards/ | ???                    | ???                     | 
+| Kid play game        | ??     | api/kid/play/game/        | ???                    | ???                     | 
+
 
 ### Questions bank
 | Purpose           | Method | Route                                      | Consumes                                          | Returns                                        |
@@ -28,6 +43,9 @@
 | Create a question | POST   | `/api/banks/:bankId/questions/`            | JSON Object `{ textQuestion, answers, priority }` | Success message, JSON question object          |
 | Get a question    | GET    | `/api/banks/:bankId/questions/:questionId` | Nothing                                           | Success message, JSON question object          |
 | Delete a question | GET    | `/api/banks/:bankId/questions/:questionId` | Nothing                                           | Success message                                |
+| Get flashcards ?? | GET    | /api/banks/:bankId/flashcards/             | ???                                               | ???                                            |
+| Get flashcard??   | GET    | /api/banks/:bankId/flashcards/:flashcards  | ???                                               | ???                                            |
+
 - `:bankId` is the questions bank ID
 - `answers` in JSON Object must be an array of objects, max of 4 answers, at least one corrrect and one incorrect
 
@@ -35,12 +53,14 @@
 
 
 ### Reward
-| Purpose         | Method | Route                    | Consumes                                                                                  | Returns                                      |
-|-----------------|--------|--------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------|
-| Get all rewards | GET    | `/api/rewards/`          | Nothing                                                                                   | Success message, Array of JSON banks objects |
-| Create reward   | POST   | `/api/rewards/`          | JSON Object `{ name, price, type }` or `{ name, price, type, redemptionLimit }` if needed | Success message, JSON Reward object          |
-| Get a reward    | GET    | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message, JSON Reward object          |
-| Delete a reward | DELETE | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message                              |
+| Purpose           | Method | Route                    | Consumes                                                                                  | Returns                                      |
+|-------------------|--------|--------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------|
+| Get all rewards   | GET    | `/api/rewards/`          | Nothing                                                                                   | Success message, Array of JSON banks objects |
+| Create reward     | POST   | `/api/rewards/`          | JSON Object `{ name, price, type }` or `{ name, price, type, redemptionLimit }` if needed | Success message, JSON Reward object          |
+| Get a reward      | GET    | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message, JSON Reward object          |
+| Delete a reward   | DELETE | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message                              |
+| Kid only, redeems | POST   | /api/rewards/redeem/:id  | ???                                                                                       | ???                                          |
+| Guardian confirms | POST   | /api/rewards/confirm/:id | ???                                                                                       | ???                                          |
 - `type` is an enum `[once, forever, custom]`, if the user selects `custom` then the front must send `redemptionLimit`
 
 Without `redemptionLimit`

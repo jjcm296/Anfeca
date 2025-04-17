@@ -5,5 +5,6 @@ router.use('/auth', require('./authRoutes.js'));
 router.use('/kids', require('./kidRoutes.js'));
 router.use('/banks', require('./bankRoutes.js'));
 router.use('/rewards', require('./rewardRoutes.js'));
+router.use('/account', require('./accountRoutes.js'));
 
 module.exports = router;
