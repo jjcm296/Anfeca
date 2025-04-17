@@ -36,8 +36,10 @@ const Rewards = () => {
 
     useFocusEffect(
         React.useCallback(() => {
-            fetchRewards();
-        }, [])
+            if (!hasLoaded) {
+                fetchRewards();
+            }
+        }, [hasLoaded])
     );
 
     return (
