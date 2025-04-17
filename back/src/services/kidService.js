@@ -7,9 +7,19 @@ exports.createKidProfile = async ({ name, guardianId }) => {
     return kid;
 };
 
-exports.getKid = async (guardianId) => {
+exports.getKid = async (kidId) => {
 
-    const kid = await Kid.findOne({ guardianId });
+    const kid = await Kid.findById(kidId).select('-_id -guardianId');
+
+    if (!kid) throw new Error("Kid not found");
+
+    return kid;
+
+};
+
+exports.getKidByGuardianId = async (guardianId) => {
+
+    const kid = await Kid.findOne({ guardianId }).select('-_id -guardianId');
 
     if (!kid) throw new Error("Kid not found");
 
