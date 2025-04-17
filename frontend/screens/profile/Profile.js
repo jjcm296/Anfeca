@@ -1,60 +1,75 @@
-import React, { useState } from 'react';
-import {useNavigation} from "@react-navigation/native";
+import React, { useState, useEffect, useContext } from 'react';
 import {
     View, Text, StyleSheet, FlatList, TouchableOpacity, Modal,
     TouchableWithoutFeedback, Keyboard, TextInput, Alert
 } from 'react-native';
+import { useNavigation } from "@react-navigation/native";
 
-import FakeDataBase from '../../fakeDataBase/FakeDataBase';
+import { ApiGetProfilesNames, ApiGetCurrentName } from '../../api/ApiLogin';
+import { SessionContext } from '../../context/SessionContext';
 
 import ProfileImage from '../ui/components/ProfileImage';
 import CustomButton from '../ui/components/CustomButton';
 import CloseButton from '../ui/components/CloseButton';
 import EyeToggleButton from '../ui/components/EyeToggleButton';
 
-
 const Profile = () => {
     const navigate = useNavigation();
+    const { session } = useContext(SessionContext);
+
     const [modalVisible, setModalVisible] = useState(false);
     const [passwordModalVisible, setPasswordModalVisible] = useState(false);
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [tempProfile, setTempProfile] = useState(null);
-    const [showPassword, setShowPassword] = useState(false); // Siempre inicia oculto
 
-    // ID del tutor (se puede obtener dinámicamente según el usuario logueado)
-    const tutorId = '1';
-    const profiles = FakeDataBase.getProfilesByTutor(tutorId);
-    const [selectedProfile, setSelectedProfile] = useState(profiles[0]);
+    const [selectedProfile, setSelectedProfile] = useState(null);
+    const [profiles, setProfiles] = useState([]);
 
-    const options = [
-        { id: '1', title: 'Cambiar perfil' },
-        { id: '2', title: 'Ir a la página web' },
-        { id: '3', title: 'Cerrar sesión', onPress: () => navigate.navigate("Authentication") },
-        { id: '4', title: 'Eliminar cuenta', color: '#FF0000', textColor: '#FFFFFF' },
-    ];
+    useEffect(() => {
+        const fetchData = async () => {
+            const profileNameData = await ApiGetCurrentName();
+            const allProfiles = await ApiGetProfilesNames();
+
+            if (profileNameData && profileNameData.name) {
+                setSelectedProfile(profileNameData);
+            }
+
+            if (Array.isArray(allProfiles)) {
+                setProfiles(allProfiles);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const handleSelectProfile = (profile) => {
+        setTempProfile(profile);
         if (profile.type === 'Tutor') {
-            setTempProfile(profile);
             setPassword('');
-            setShowPassword(false); // Asegurar que la contraseña esté oculta al abrir el modal
+            setShowPassword(false);
             setPasswordModalVisible(true);
         } else {
-            setSelectedProfile(profile);
             setModalVisible(false);
         }
     };
 
     const handlePasswordSubmit = () => {
         const enteredPassword = password.trim();
-        if (tempProfile && tempProfile.password === enteredPassword) {
-            setSelectedProfile(tempProfile);
+        if (tempProfile && enteredPassword !== '') {
             setPasswordModalVisible(false);
             setModalVisible(false);
         } else {
-            Alert.alert('Error', 'Contraseña incorrecta. Intenta de nuevo.');
+            Alert.alert('Error', 'Contraseña incorrecta o vacía.');
         }
     };
+
+    const options = [
+        { id: '1', title: 'Cambiar perfil', onPress: () => setModalVisible(true) },
+        { id: '2', title: 'Ir a la página web' },
+        { id: '3', title: 'Cerrar sesión', onPress: () => navigate.navigate("Authentication") },
+        { id: '4', title: 'Eliminar cuenta', color: '#FF0000', textColor: '#FFFFFF' },
+    ];
 
     return (
         <View style={styles.container}>
@@ -62,8 +77,13 @@ const Profile = () => {
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
                     <ProfileImage width={100} height={100} />
                 </TouchableOpacity>
-                <Text style={styles.profileType}>{selectedProfile.type}</Text>
-                <Text style={styles.profileName}>{selectedProfile.name}</Text>
+
+                {selectedProfile && (
+                    <>
+                        <Text style={styles.profileType}>{selectedProfile.type}</Text>
+                        <Text style={styles.profileName}>{selectedProfile.name}</Text>
+                    </>
+                )}
             </View>
 
             {/* Modal de selección de perfil */}
@@ -85,11 +105,12 @@ const Profile = () => {
                                         style={styles.profileItem}
                                         onPress={() => handleSelectProfile(item)}
                                     >
+                                        <Text style={styles.profileTypeSmall}>{item.type}</Text>
                                         <ProfileImage width={80} height={80} />
                                         <Text style={styles.profileName}>{item.name}</Text>
                                     </TouchableOpacity>
                                 )}
-                                keyExtractor={item => item.id}
+                                keyExtractor={item => item.id.toString()}
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
                             />
@@ -114,7 +135,7 @@ const Profile = () => {
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Contraseña"
-                                    secureTextEntry={!showPassword} // Solo se muestra si showPassword es true
+                                    secureTextEntry={!showPassword}
                                     value={password}
                                     onChangeText={setPassword}
                                 />
@@ -129,7 +150,7 @@ const Profile = () => {
                 </TouchableWithoutFeedback>
             </Modal>
 
-            {/* Opciones de usuario */}
+            {/* Opciones */}
             <FlatList
                 data={options}
                 renderItem={({ item }) => (
@@ -161,6 +182,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#777',
         marginTop: 5,
+    },
+    profileTypeSmall: {
+        fontSize: 14,
+        color: '#666',
+        marginTop: 4,
     },
     profileName: {
         fontSize: 22,
