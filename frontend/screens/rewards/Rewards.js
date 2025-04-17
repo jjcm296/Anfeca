@@ -6,18 +6,27 @@ import AddButton from '../ui/components/AddButton';
 import { ApiRefreshAccessToken } from "../../api/ApiLogin";
 import { getAllRewards } from "../../api/ApiRewards";
 
+import SkeletonRewardCard from './compoonents/skeletons/SkeletonsRewardCard';
+
 const Rewards = () => {
     const navigation = useNavigation();
     const [rewards, setRewards] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [hasLoaded, setHasLoaded] = useState(false);
 
     const fetchRewards = async () => {
         try {
+            setLoading(true);
             await ApiRefreshAccessToken();
             const response = await getAllRewards();
+
             setRewards(response.rewardsArray);
+            setHasLoaded(true);
+            setLoading(false);
             console.log("Rewards:", response);
         } catch (error) {
             console.error("Error fetching rewards:", error);
+            setLoading(false);
         }
     };
 
@@ -33,25 +42,33 @@ const Rewards = () => {
 
     return (
         <View style={styles.container}>
-            <FlatList
-                data={rewards}
-                keyExtractor={(item) => item._id}
-                renderItem={({ item }) => (
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate("EditReward", { rewardId: item._id })}
+            {loading ? (
+                <View style={styles.list}>
+                    {[1, 2, 3, 4, 5].map((_, index) => (
+                        <SkeletonRewardCard key={index} />
+                    ))}
+                </View>
+            ) : (
+                <FlatList
+                    data={rewards}
+                    keyExtractor={(item) => item._id}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate("EditReward", { rewardId: item._id })}
+                        >
+                            <RewardCard
+                                name={item.name}
+                                coins={item.price}
+                                type={item.type}
+                                redemptionLimit={item.redemptionLimit ?? 0}
+                                redemptionCount={item.redemptionCount ?? 0}
+                            />
+                        </TouchableOpacity>
+                    )}
+                    contentContainerStyle={styles.list}
+                />
+            )}
 
-                    >
-                        <RewardCard
-                            name={item.name}
-                            coins={item.price}
-                            type={item.type}
-                            redemptionLimit={item.redemptionLimit ?? 0}
-                            redemptionCount={item.redemptionCount ?? 0}
-                        />
-                    </TouchableOpacity>
-                )}
-                contentContainerStyle={styles.list}
-            />
             <AddButton onPress={() => navigation.navigate('AddReward')} />
         </View>
     );
