@@ -58,7 +58,7 @@ exports.login =  async ({ email, password }) => {
     const isPasswordValid = await bcrypt.compare(password, account.password);
     if (!isPasswordValid) throw new Error('Incorrect password');
 
-    const payload = { id: account._id, guardianId: account.guardianId._id };
+    const payload = { id: account._id, guardianId: account.guardianId._id, profileType: "guardian" };
 
     const accessToken = jwtUtils.generateAccesToken(payload);
     const refreshToken = jwtUtils.generateRefreshToken(payload);
