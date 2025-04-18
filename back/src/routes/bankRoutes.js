@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getAllBanks, createBank, getBank, editBank, deleteBank } = require('../controllers/bankController.js');
-const { getAllQuestions, createQuestion, getQuestion,  deleteQuestion} = require('../controllers/questionController.js');
+const { getAllQuestions, createQuestion, editQuestion, getQuestion,  deleteQuestion} = require('../controllers/questionController.js');
 const { authMiddleware } = require('../middlewares/authMiddleware.js');
 const { checkOwnership } = require('../middlewares/ownershipMiddleware.js');
 const { checkBankOwnership } = require('../middlewares/bankOwnershipMiddleware.js');
@@ -20,6 +20,7 @@ router.delete('/:bankId', checkOwnership(Bank, 'bankId', 'Bank'), allowOnly(['gu
 router.get('/:bankId/questions/', checkBankOwnership, getAllQuestions);
 router.post('/:bankId/questions/', checkBankOwnership, allowOnly(['guardian']) , createQuestion);
 router.get('/:bankId/questions/:questionId', checkBankOwnership, allowOnly(['guardian']) , getQuestion);
+router.put('/:bankId/questions/:questionId', checkBankOwnership, allowOnly(['guardian']) , editQuestion);
 router.delete('/:bankId/questions/:questionId', checkBankOwnership, allowOnly(['guardian']) , deleteQuestion);
 
 
