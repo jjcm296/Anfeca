@@ -65,7 +65,7 @@ exports.editReward = async (req, res) => {
         const existingReward = await rewardService.getReward(rewardId);
 
         if (!existingReward) {
-            return res.status(404).json({ error: "Rewar not found" });
+            return res.status(404).json({ error: "Reward not found" });
         }
 
         const { _id, __v, redemptionCount, guardianId, ...cleanedReward } = existingReward.toObject();
