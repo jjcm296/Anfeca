@@ -13,19 +13,23 @@
 | Validate password      | POST   | `/api/auth/validation/password`      | JSON object `{ password }`                        | Success message or invalid password message        |
 
 ### Account
-| Purpose                  | Method | Route                          | Consumes                                                            | Returns                                                             |
-|--------------------------|--------|--------------------------------|---------------------------------------------------------------------|---------------------------------------------------------------------|
-| Switch profile           | POST   | `/api/account/profiles/switch` | { targetProfile: "guardian", password } or { targetProfile: "kid" } | Success message, new access token and new fresh token               |
-| Get current profile info | GET    | `/api/account/profiles/`       | Nothing                                                             | Message stating the current profile and JSON guardian or kid object |
-| Get profiles names       | GET    | `/api/account/profiles/names`  | Nothing                                                             | JSON object { guardian, kid }                                       |                                       |    
-| Edit guardian info       | POST   | /api/account/profile/guardian  | ???                                                                 | ???                                                                 |
-| Edit kid info            | POST   | /api/account/profile/kid       | ???                                                                 | ???                                                                 |
-⚠️⚠️⚠️ When switching account, a new fresh token is generated, to every time the user switch profile, frontend must storage a new fresh token
+| Purpose                  | Method | Route                          | Consumes                                                                   | Returns                                                             |
+|--------------------------|--------|--------------------------------|----------------------------------------------------------------------------|---------------------------------------------------------------------|
+| Switch profile           | POST   | `/api/account/profiles/switch` | JSON `{ targetProfile: "guardian", password } or { targetProfile: "kid" }` | Success message, new access token and new fresh token               |
+| Get current profile info | GET    | `/api/account/profiles/`       | Nothing                                                                    | Message stating the current profile and JSON guardian or kid object |
+| Get profiles names       | GET    | `/api/account/profiles/names`  | Nothing                                                                    | JSON object { guardian, kid }                                       |                                        
+| Edit guardian info       | POST   | /api/account/profile/guardian  | ???                                                                        | ???                                                                 |
+| Edit kid info            | POST   | /api/account/profile/kid       | ???                                                                        | ???                                                                 |
+
+⚠️⚠️⚠️ When switching account, a new fresh token is generated, to every time the user switch profile, frontend must store a new fresh token
 
 Get current profile info
+
 ![img_3.png](img_3.png)
 
+
 Get profiles' names
+
 ![img_4.png](img_4.png)
 
 ### Kid
@@ -42,6 +46,7 @@ Get profiles' names
 | Get all banks     | GET    | `/api/banks/`                              | Nothing                                           | Success message, Array of JSON banks objects   |
 | Create a bank     | POST   | `/api/banks/`                              | JSON Object `{ name }`                            | Success message, JSON bank object              |
 | Get a bank        | GET    | `/api/banks/:bankId`                       | Nothing                                           | Success message, JSON bank object              | 
+| Edit a bank       | PUT    | `/api/banks/:bankId`                       | { fields that are updated }                       | Success message, JSON bank object updated      |
 | Delete a bank     | DELETE | `/api/banks/:bankId`                       | Nothing                                           | Success message                                |
 | Get all questions | GET    | `/api/banks/:bankId/questions/`            | Nothing                                           | Success message, Array of JSON question object |
 | Create a question | POST   | `/api/banks/:bankId/questions/`            | JSON Object `{ textQuestion, answers, priority }` | Success message, JSON question object          |

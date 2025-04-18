@@ -29,3 +29,9 @@ exports.deleteQuestion = async (questionId) => {
 
     await Question.findByIdAndDelete(questionId);
 }
+
+exports.deleteQuestionsByBankId = async (bankId) => {
+    const deletedDocs = await Question.deleteMany({ bankId });
+
+    return `Number of questions deleted ${deletedDocs}`;
+}
