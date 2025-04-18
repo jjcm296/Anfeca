@@ -27,16 +27,20 @@ exports.getReward = async (rewardId) => {
 
 exports.editReward = async (rewardId, updatedFields) => {
 
-    const reward = await Reward.findByIdAndUpdate(rewardId, updatedFields);
+    const reward = await Reward.findById(rewardId);
 
     if (!reward) throw new Error("Reward not found");
 
-    const updatedReward = await Reward.findById(rewardId);
+    // assign changes to found reward body
+    Object.assign(reward, updatedFields)
 
-    if (!updatedReward) throw new Error("Updated reward not found");
+    // validate with personalized and pre validations (mongoose)
+    await reward.validate();
 
-    return updatedReward;
+    // save in the database
+    await reward.save();
 
+    return reward;
 };
 
 exports.deleteReward = async (rewardId) => {

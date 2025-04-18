@@ -53,6 +53,7 @@ exports.editBank = async (req, res) => {
 
         const { bankId } = req.params;
 
+        await createBankSchema.validateAsync(req.body);
 
         const updatedBank = await bankService.editBank(bankId, req.body);
 
