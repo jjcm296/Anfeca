@@ -46,12 +46,13 @@ Get profiles' names
 | Get all banks     | GET    | `/api/banks/`                              | Nothing                                           | Success message, Array of JSON banks objects   |
 | Create a bank     | POST   | `/api/banks/`                              | JSON Object `{ name }`                            | Success message, JSON bank object              |
 | Get a bank        | GET    | `/api/banks/:bankId`                       | Nothing                                           | Success message, JSON bank object              | 
-| Edit a bank       | PUT    | `/api/banks/:bankId`                       | { fields that are updated }                       | Success message, JSON bank object updated      |
+| Edit a bank       | PUT    | `/api/banks/:bankId`                       | { fields that are updated }                       | Success message, JSON updated bank             |
 | Delete a bank     | DELETE | `/api/banks/:bankId`                       | Nothing                                           | Success message                                |
 | Get all questions | GET    | `/api/banks/:bankId/questions/`            | Nothing                                           | Success message, Array of JSON question object |
 | Create a question | POST   | `/api/banks/:bankId/questions/`            | JSON Object `{ textQuestion, answers, priority }` | Success message, JSON question object          |
 | Get a question    | GET    | `/api/banks/:bankId/questions/:questionId` | Nothing                                           | Success message, JSON question object          |
-| Delete a question | GET    | `/api/banks/:bankId/questions/:questionId` | Nothing                                           | Success message                                |
+| Edit a question   | PUT    | `/api/banks/:bankId/questions/:questionId` | { fields that are updated }                       | Success message, JSON updated question         |
+| Delete a question | DELETE | `/api/banks/:bankId/questions/:questionId` | Nothing                                           | Success message                                |
 | Get flashcards ?? | GET    | /api/banks/:bankId/flashcards/             | ???                                               | ???                                            |
 | Get flashcard??   | GET    | /api/banks/:bankId/flashcards/:flashcards  | ???                                               | ???                                            |
 
@@ -67,6 +68,7 @@ Get profiles' names
 | Get all rewards   | GET    | `/api/rewards/`          | Nothing                                                                                   | Success message, Array of JSON banks objects |
 | Create reward     | POST   | `/api/rewards/`          | JSON Object `{ name, price, type }` or `{ name, price, type, redemptionLimit }` if needed | Success message, JSON Reward object          |
 | Get a reward      | GET    | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message, JSON Reward object          |
+| Edit a reward     | PUT    | `/api/rewards/:rewardId` | { fields that are updated }                                                               | Success message, JSON updated reward         |
 | Delete a reward   | DELETE | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message                              |
 | Kid only, redeems | POST   | /api/rewards/redeem/:id  | ???                                                                                       | ???                                          |
 | Guardian confirms | POST   | /api/rewards/confirm/:id | ???                                                                                       | ???                                          |

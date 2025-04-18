@@ -13,7 +13,7 @@ exports.getAllBanks = async (req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+};
 
 exports.createBank = async (req, res) => {
     try {
@@ -29,7 +29,7 @@ exports.createBank = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 
-}
+};
 
 exports.getBank = async (req, res) => {
     try {
@@ -45,7 +45,25 @@ exports.getBank = async (req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+};
+
+exports.editBank = async (req, res) => {
+
+    try {
+
+        const { bankId } = req.params;
+
+
+        const updatedBank = await bankService.editBank(bankId, req.body);
+
+        return res.status(200).json({ message: "Bank successfully updated", updatedBank });
+
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+
+};
+
 
 exports.deleteBank = async (req, res) => {
     try {
@@ -57,4 +75,4 @@ exports.deleteBank = async (req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+};
