@@ -10,7 +10,7 @@ exports.getAllQuestions = async (req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+};
 
 exports.createQuestion = async (req, res) => {
     try {
@@ -25,7 +25,7 @@ exports.createQuestion = async (req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+};
 
 exports.getQuestion = async (req, res) => {
     try {
@@ -43,7 +43,23 @@ exports.getQuestion = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 
-}
+};
+
+exports.editQuestion = async (req, res) => {
+
+    try{
+        const { questionId } = req.params;
+
+        const updatedQuestion = await questionService.editQuestion(questionId, req.body);
+
+        return res.status(200).json({ message: "Question successfully updated",  updatedQuestion});
+
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+
+
+};
 
 exports.deleteQuestion = async (req, res) => {
     try {
@@ -57,4 +73,4 @@ exports.deleteQuestion = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 
-}
+};

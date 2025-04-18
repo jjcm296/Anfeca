@@ -12,7 +12,7 @@ exports.getAllRewards = async (req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+};
 
 exports.createReward = async (req, res) => {
 
@@ -33,7 +33,7 @@ exports.createReward = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 
-}
+};
 
 exports.getReward = async (req, res) => {
     try {
@@ -50,7 +50,22 @@ exports.getReward = async (req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+};
+
+exports.editReward = async (req, res) => {
+    try {
+
+        const { rewardId } = req.params
+
+        const updatedReward = await rewardService.editReward(rewardId, req.body);
+
+        return res.status(200).json({ message: "Reward updated successfully", updatedReward });
+
+
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
 
 exports.deleteReward = async (req, res) => {
     try {
@@ -62,4 +77,4 @@ exports.deleteReward = async (req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+};
