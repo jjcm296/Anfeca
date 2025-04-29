@@ -36,10 +36,8 @@ const Questions = ({ route, navigation }) => {
 
     useFocusEffect(
         useCallback(() => {
-            if (!hasLoaded) {
-                fetchQuestions();
-            }
-        }, [hasLoaded])
+            fetchQuestions();
+        }, [])
     );
 
     return (
