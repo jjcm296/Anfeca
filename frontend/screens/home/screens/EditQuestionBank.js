@@ -1,42 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
-import FakeDatabase from '../../../fakeDataBase/FakeDataBase';
+import { getBankById, updateBank, deleteBank } from "../../../api/ApiBank";
+import { ApiRefreshAccessToken } from "../../../api/ApiLogin";
 import CustomButton from '../../ui/components/CustomButton';
-import {deleteBank, getBankById} from "../../../api/ApiBank";
-import {ApiRefreshAccessToken} from "../../../api/ApiLogin";
 
 const EditQuestionBank = ({ route, navigation }) => {
     const { bankId } = route.params;
     const [category, setCategory] = useState('');
 
-    // Cargar el nombre del banco de preguntas
+    // Cargar datos del banco al abrir la pantalla
     useEffect(() => {
         const fetchBank = async () => {
-            await ApiRefreshAccessToken();
-            const bank = getBankById(bankId);
-            if (bank) {
-                console.log("Banco de preguntas encontrado:", bank);
-                setCategory(bank.name);
-            } else {
-                Alert.alert("Error", "Banco de preguntas no encontrado.");
+            try {
+                await ApiRefreshAccessToken();
+                const bank = await getBankById(bankId); // CORRECTO: consulta real
+                if (bank) {
+                    console.log("Banco de preguntas encontrado:", bank);
+                    setCategory(bank.name);
+                } else {
+                    Alert.alert("Error", "Banco de preguntas no encontrado.");
+                    navigation.goBack();
+                }
+            } catch (error) {
+                console.error("Error al obtener el banco:", error);
+                Alert.alert("Error", "No se pudo cargar el banco de preguntas.");
                 navigation.goBack();
             }
-        }
+        };
+
+        fetchBank();
     }, [bankId]);
 
-    // Función para actualizar el banco de preguntas
-    const handleUpdate = () => {
+    // Función para actualizar el banco
+    const handleUpdate = async () => {
         if (category.trim() === '') {
             Alert.alert("Error", "El nombre de la categoría no puede estar vacío.");
             return;
         }
 
-        FakeDatabase.updateQuestionBank(bankId, category);
-        Alert.alert("Éxito", "Banco de preguntas actualizado correctamente.");
-        navigation.goBack();
+        try {
+            await ApiRefreshAccessToken();
+            const updated = await updateBank(bankId, { name: category });
+
+            if (updated) {
+                Alert.alert("Éxito", "Banco de preguntas actualizado correctamente.");
+                navigation.goBack();
+            } else {
+                Alert.alert("Error", "No se pudo actualizar el banco de preguntas.");
+            }
+        } catch (error) {
+            console.error("Error al actualizar banco:", error);
+            Alert.alert("Error", "No se pudo actualizar el banco de preguntas.");
+        }
     };
 
-    // Función para eliminar el banco de preguntas
+    // Función para eliminar el banco
     const handleDelete = () => {
         Alert.alert(
             "Confirmar eliminación",
@@ -47,12 +65,18 @@ const EditQuestionBank = ({ route, navigation }) => {
                     text: "Eliminar",
                     style: "destructive",
                     onPress: async () => {
-                        await ApiRefreshAccessToken();
-                        const deleted = await deleteBank(bankId);
-                        if (deleted) {
-                            Alert.alert("Éxito", "Banco de preguntas eliminado correctamente.");
-                            navigation.goBack();
-                        } else {
+                        try {
+                            await ApiRefreshAccessToken();
+                            const deleted = await deleteBank(bankId);
+
+                            if (deleted) {
+                                Alert.alert("Éxito", "Banco de preguntas eliminado correctamente.");
+                                navigation.goBack();
+                            } else {
+                                Alert.alert("Error", "No se pudo eliminar el banco de preguntas.");
+                            }
+                        } catch (error) {
+                            console.error("Error al eliminar banco:", error);
                             Alert.alert("Error", "No se pudo eliminar el banco de preguntas.");
                         }
                     }
@@ -64,15 +88,27 @@ const EditQuestionBank = ({ route, navigation }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Editar Banco de Preguntas</Text>
+
             <TextInput
                 style={styles.input}
                 placeholder="Nombre de la categoría..."
                 value={category}
                 onChangeText={setCategory}
             />
+
             <CustomButton
-                color={'#FF0000'} text={"Eliminar"} textColor={'#FFFFFF'} onPress={handleDelete}/>
-            <CustomButton color="#6200EE" text="Actualizar" textColor={'#FFFFFF'} onPress={handleUpdate} />
+                color="#FF0000"
+                text="Eliminar"
+                textColor="#FFFFFF"
+                onPress={handleDelete}
+            />
+
+            <CustomButton
+                color="#6200EE"
+                text="Actualizar"
+                textColor="#FFFFFF"
+                onPress={handleUpdate}
+            />
         </View>
     );
 };

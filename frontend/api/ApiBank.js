@@ -70,3 +70,18 @@ export const getBankById = async (bankId) => {
         return error.response?.data || { error: "No se pudo conectar con el servidor" };
     }
 }
+
+export const updateBank = async (bankId, bank) => {
+    try {
+        const token = await SecureStore.getItemAsync('accessToken');
+        const response = await axios.put(`${API_BASE_URL}/api/banks/${bankId}`, bank, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error en updateBank:", error);
+        return error.response?.data || { error: "No se pudo conectar con el servidor" };
+    }
+}
