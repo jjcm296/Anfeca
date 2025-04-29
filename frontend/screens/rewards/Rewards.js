@@ -36,11 +36,34 @@ const Rewards = () => {
 
     useFocusEffect(
         React.useCallback(() => {
-            if (!hasLoaded) {
-                fetchRewards();
-            }
-        }, [hasLoaded])
+            let isActive = true;
+
+            const loadRewards = async () => {
+                try {
+                    await ApiRefreshAccessToken();
+                    const response = await getAllRewards();
+                    if (isActive) {
+                        setRewards(response.rewardsArray);
+                        setHasLoaded(true);
+                        setLoading(false);
+                    }
+                } catch (error) {
+                    if (isActive) {
+                        console.error("Error fetching rewards:", error);
+                        setLoading(false);
+                    }
+                }
+            };
+
+            setLoading(true);
+            loadRewards();
+
+            return () => {
+                isActive = false;
+            };
+        }, [])
     );
+
 
     return (
         <View style={styles.container}>
