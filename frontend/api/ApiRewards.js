@@ -69,3 +69,18 @@ export const getRewardById = async (rewardId) => {
         return error.response?.data || { error: "No se pudo conectar con el servidor" };
     }
 }
+
+export const ApiEditReward = async (rewardId, reward) => {
+    try {
+        const token = await SecureStore.getItemAsync('accessToken');
+        const response = await axios.put(`${API_BASE_URL}/api/rewards/${rewardId}`, reward, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error en ApiEditReward:", error);
+        return error.response?.data || { error: "No se pudo conectar con el servidor" };
+    }
+}

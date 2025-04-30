@@ -90,3 +90,36 @@ export const ApiGetProfilesNames = async () => {
         return null;
     }
 };
+
+export const ApiSwitchProfile = async (targetProfile, password = null) => {
+    try {
+        const token = await SecureStore.getItemAsync('accessToken');
+
+        const body = password
+            ? { targetProfile, password }
+            : { targetProfile };
+
+        const response = await axios.post(
+            `${API_BASE_URL}/api/account/profiles/switch`,
+            body,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        const { newAccessToken, newRefreshToken } = response.data;
+
+        if (newAccessToken && newRefreshToken) {
+            await SecureStore.setItemAsync('accessToken', newAccessToken);
+            await SecureStore.setItemAsync('refreshToken', newRefreshToken);
+            console.log("Nuevos tokens guardados");
+        }
+
+        return response.data;
+    } catch (error) {
+        console.log("Error al cambiar de perfil:", error?.response?.data || error.message);
+        return null;
+    }
+};

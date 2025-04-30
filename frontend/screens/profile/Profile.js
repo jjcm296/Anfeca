@@ -5,7 +5,8 @@ import {
 } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 
-import { ApiGetProfilesNames, ApiGetCurrentName } from '../../api/ApiLogin';
+import { ApiGetProfilesNames, ApiGetCurrentName, ApiSwitchProfile } from '../../api/ApiLogin';
+
 import { SessionContext } from '../../context/SessionContext';
 
 import ProfileImage from '../ui/components/ProfileImage';
@@ -43,24 +44,36 @@ const Profile = () => {
         fetchData();
     }, []);
 
-    const handleSelectProfile = (profile) => {
+    const handleSelectProfile = async (profile) => {
         setTempProfile(profile);
         if (profile.type === 'Tutor') {
             setPassword('');
             setShowPassword(false);
             setPasswordModalVisible(true);
         } else {
-            setModalVisible(false);
+            const result = await ApiSwitchProfile(profile.id); // "kid"
+            if (result) {
+                setModalVisible(false);
+                navigate.reset({ index: 0, routes: [{ name: 'Home' }] });
+            } else {
+                Alert.alert('Error', 'No se pudo cambiar al perfil de niño.');
+            }
         }
     };
 
-    const handlePasswordSubmit = () => {
+    const handlePasswordSubmit = async () => {
         const enteredPassword = password.trim();
         if (tempProfile && enteredPassword !== '') {
-            setPasswordModalVisible(false);
-            setModalVisible(false);
+            const result = await ApiSwitchProfile(tempProfile.id, enteredPassword); // "guardian", password
+            if (result) {
+                setPasswordModalVisible(false);
+                setModalVisible(false);
+                navigate.reset({ index: 0, routes: [{ name: 'Home' }] });
+            } else {
+                Alert.alert('Error', 'Contraseña incorrecta.');
+            }
         } else {
-            Alert.alert('Error', 'Contraseña incorrecta o vacía.');
+            Alert.alert('Error', 'Contraseña vacía.');
         }
     };
 

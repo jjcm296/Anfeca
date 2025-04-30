@@ -6,7 +6,7 @@ import CustomButton from '../../ui/components/CustomButton';
 import CustomInput from '../../ui/components/CustomInput';
 import RedemptionOptionButton from '../../ui/components/RedemptionOptionButton';
 import FakeDataBase from '../../../fakeDataBase/FakeDataBase';
-import {deleteReward, getRewardById} from "../../../api/ApiRewards";
+import {ApiEditReward, deleteReward, getRewardById} from "../../../api/ApiRewards";
 import {ApiRefreshAccessToken} from "../../../api/ApiLogin";
 
 const EditReward = ({route}) => {
@@ -53,7 +53,7 @@ const EditReward = ({route}) => {
         setRedemptions(value);
     };
 
-    const handleSaveReward = () => {
+    const handleSaveReward = async () => {
         if (!name.trim() || !coins.trim()) {
             Alert.alert("Error", "Todos los campos son obligatorios");
             return;
@@ -61,15 +61,28 @@ const EditReward = ({route}) => {
 
         const updatedRedemptions = redemptionType === "custom" ? redemptions : redemptionType;
 
-        FakeDataBase.updateReward(reward.id, {
-            name,
+        const updatedReward = {
+            name: name.trim(),
             coins: parseInt(coins),
-            redemptions: updatedRedemptions
-        });
+            redemptions: updatedRedemptions !== "" ? parseInt(updatedRedemptions) : null
+        };
 
-        Alert.alert("Éxito", "Recompensa actualizada correctamente");
-        navigation.goBack();
+        try {
+            await ApiRefreshAccessToken();
+            const response = await ApiEditReward(rewardId, updatedReward);
+
+            if (response && !response.error) {
+                Alert.alert("Éxito", "Recompensa actualizada correctamente");
+                navigation.goBack();
+            } else {
+                Alert.alert("Error", response?.error || "No se pudo actualizar la recompensa");
+            }
+        } catch (error) {
+            console.error("Error al guardar recompensa:", error);
+            Alert.alert("Error", "Ocurrió un error al guardar la recompensa");
+        }
     };
+
 
     const handleDeleteReward = () => {
         Alert.alert(
