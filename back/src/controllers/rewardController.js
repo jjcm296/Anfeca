@@ -1,4 +1,5 @@
 const rewardService = require('../services/rewardService.js');
+const { createRewardSchema, updateRewardSchema } = require('../lib/joischemas/rewardJoi.js');
 
 exports.getAllRewards = async (req, res) => {
     try {
@@ -17,8 +18,12 @@ exports.getAllRewards = async (req, res) => {
 exports.createReward = async (req, res) => {
 
     try {
+
+        await createRewardSchema.validateAsync(req.body);
+
         const { name, price, type, redemptionLimit } = req.body;
         const guardianId  = req.user.guardianId; // extracted from the token
+
 
         const reward = await rewardService.createReward({
             name,
@@ -56,6 +61,25 @@ exports.editReward = async (req, res) => {
     try {
 
         const { rewardId } = req.params
+
+        const existingReward = await rewardService.getReward(rewardId);
+
+        if (!existingReward) {
+            return res.status(404).json({ error: "Reward not found" });
+        }
+
+        const { _id, __v, redemptionCount, guardianId, ...cleanedReward } = existingReward.toObject();
+
+        if (req.body.type === 'forever') {
+            delete cleanedReward.redemptionLimit;
+        }
+
+        const dataToValidate = {
+            ...cleanedReward,
+            ...req.body
+        }
+
+        await updateRewardSchema.validateAsync(dataToValidate);
 
         const updatedReward = await rewardService.editReward(rewardId, req.body);
 
