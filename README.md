@@ -89,7 +89,7 @@ With `redemptionLimit`
 `npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose sib-api-v3-sdk joi`
 
 ## command to run the API
-`node back/src/app.js`
+`node back/src/server.js`
 
 ## Account registered
 zuzzet.hs14@gmail.com
@@ -100,7 +100,7 @@ Hola123*
 - Express
 - MongoDB + Mongoose
 - JWT
-- ~~joi~~ I'll implement it later
+- joi
 - Brevo API
 
 ## docs I've been using

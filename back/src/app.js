@@ -44,6 +44,4 @@ const initializeApp = async () => {
 
 };
 
-initializeApp();
-
 module.exports = { app, initializeApp };
