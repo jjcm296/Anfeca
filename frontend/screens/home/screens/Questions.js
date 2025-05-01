@@ -42,7 +42,7 @@ const Questions = ({ route, navigation }) => {
 
     return (
         <View style={styles.container}>
-            {loading ? (
+            {loading && !hasLoaded ? (
                 <View style={styles.listContainer}>
                     {[1, 2, 3, 4, 5].map((_, index) => (
                         <SkeletonQuestionCard key={index} />
@@ -73,7 +73,6 @@ const Questions = ({ route, navigation }) => {
                     showsVerticalScrollIndicator={false}
                 />
             )}
-
             <AddButton onPress={() => navigation.navigate("AddQuestion", { bankId, name })} />
         </View>
     );
