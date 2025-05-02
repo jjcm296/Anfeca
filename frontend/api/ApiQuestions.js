@@ -72,3 +72,23 @@ export const getQuestionById = async (bankId, questionId) => {
         return error.response?.data || { error: "No se pudo conectar con el servidor" };
     }
 }
+
+export const ApiEditQuestion = async (bankId, questionId, question) => {
+    try {
+        const token = await SecureStore.getItemAsync('accessToken');
+
+        const response = await axios.put(
+            `${API_BASE_URL}/api/banks/${bankId}/questions/${questionId}`,
+            question,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error en ApiEditQuestion:", error);
+        return error.response?.data || { error: "No se pudo conectar con el servidor" };
+    }
+}

@@ -67,7 +67,7 @@ const Rewards = () => {
 
     return (
         <View style={styles.container}>
-            {loading ? (
+            {loading && !hasLoaded ? (
                 <View style={styles.list}>
                     {[1, 2, 3, 4, 5].map((_, index) => (
                         <SkeletonRewardCard key={index} />
@@ -93,7 +93,6 @@ const Rewards = () => {
                     contentContainerStyle={styles.list}
                 />
             )}
-
             <AddButton onPress={() => navigation.navigate('AddReward')} />
         </View>
     );

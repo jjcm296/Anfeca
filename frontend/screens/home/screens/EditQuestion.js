@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import FakeDatabase from '../../../fakeDataBase/FakeDataBase';
+import { deleteQuestion, getQuestionById } from "../../../api/ApiQuestions";
+import { ApiEditQuestion } from "../../../api/ApiQuestions";
+import { ApiRefreshAccessToken } from "../../../api/ApiLogin";
 import CustomButton from '../../ui/components/CustomButton';
 import CustomInput from '../../ui/components/CustomInput';
-import {deleteQuestion, getQuestionById} from "../../../api/ApiQuestions";
 
 const EditQuestion = ({ route, navigation }) => {
     const { questionId, bankId, name } = route.params;
@@ -19,17 +20,32 @@ const EditQuestion = ({ route, navigation }) => {
                 return;
             }
 
-            console.log("Cargando pregunta con ID:", questionId);
-            const questionData = getQuestionById(bankId, questionId);
+            try {
+                await ApiRefreshAccessToken();
+                const response = await getQuestionById(bankId, questionId);
+                const questionData = response?.question;
 
-            if (questionData) {
-                setQuestion(questionData.questionText);
-                setAnswers(questionData.answers || ["", "", "", ""]);
-                setDifficulty(String(questionData.difficulty || '1'));
-            } else {
-                console.error("No se encontró la pregunta con ID:", questionId);
+                if (questionData) {
+                    setQuestion(questionData.textQuestion || '');
+
+                    const safeAnswers = (questionData.answers || []).map(a => a.textAnswer || '');
+                    while (safeAnswers.length < 4) safeAnswers.push("");
+                    setAnswers(safeAnswers);
+
+                    setDifficulty(String(questionData.difficulty || '1'));
+                } else {
+                    console.error("No se encontró la pregunta con ID:", questionId);
+                    Alert.alert("Error", "No se encontró la pregunta.");
+                    navigation.goBack();
+                }
+            } catch (error) {
+                console.error("Error al cargar la pregunta:", error);
+                Alert.alert("Error", "No se pudo cargar la pregunta.");
+                navigation.goBack();
             }
-        }
+        };
+
+        fetchQuestion();
     }, [questionId]);
 
     const handleAnswerChange = (text, index) => {
@@ -38,15 +54,32 @@ const EditQuestion = ({ route, navigation }) => {
         setAnswers(newAnswers);
     };
 
-    const handleUpdate = () => {
-        if (question.trim() === '' || answers.some(ans => ans.trim() === '')) {
-            Alert.alert("Error", "Todos los campos son obligatorios.");
-            return;
-        }
+    const handleUpdate = async () => {
 
-        FakeDatabase.updateQuestion(questionId, question, answers, difficulty);
-        Alert.alert("Éxito", "Pregunta actualizada correctamente.");
-        navigation.goBack();
+        const questionData = {
+            textQuestion: question.trim(),
+            answers: answers.map((text, index) => ({
+                textAnswer: text.trim(),
+                isCorrect: index === 0,
+            })),
+            priority: Number(difficulty),
+        };
+
+        console.log(questionData);
+
+        try {
+            await ApiRefreshAccessToken();
+            const result = await ApiEditQuestion(bankId, questionId, questionData);
+
+            if (result && !result.error) {
+                Alert.alert("Éxito", "Pregunta actualizada correctamente.");
+                navigation.navigate("Questions", { bankId, refresh: true });
+            } else {
+                Alert.alert("Error", result?.error || "No se pudo actualizar la pregunta.");
+            }
+        } catch (error) {
+            Alert.alert("Error", "Ocurrió un error inesperado al actualizar.");
+        }
     };
 
     const handleDelete = () => {
@@ -59,19 +92,24 @@ const EditQuestion = ({ route, navigation }) => {
                     text: "Eliminar",
                     style: "destructive",
                     onPress: async () => {
-                        const deleted = deleteQuestion(bankId, questionId);
-                        if (deleted) {
-                            Alert.alert("Éxito", "Pregunta eliminada correctamente.");
-                            navigation.goBack();
-                        } else {
-                            Alert.alert("Error", "No se encontró la pregunta.");
+                        try {
+                            await ApiRefreshAccessToken();
+                            const deleted = await deleteQuestion(bankId, questionId);
+                            if (deleted) {
+                                Alert.alert("Éxito", "Pregunta eliminada correctamente.");
+                                navigation.goBack();
+                            } else {
+                                Alert.alert("Error", "No se pudo eliminar la pregunta.");
+                            }
+                        } catch (error) {
+                            console.error("Error al eliminar la pregunta:", error);
+                            Alert.alert("Error", "No se pudo eliminar la pregunta.");
                         }
                     }
                 }
             ]
         );
     };
-
 
     return (
         <View style={styles.container}>
@@ -116,19 +154,8 @@ const EditQuestion = ({ route, navigation }) => {
                 <Picker.Item label="3 Coins" value="3" />
             </Picker>
 
-            <CustomButton
-                color={'#FF0000'}
-                text={"Eliminar"}
-                textColor={'#FFFFFF'}
-                onPress={handleDelete}
-            />
-
-            <CustomButton
-                color={'#6200EE'}
-                text="Aceptar"
-                textColor={'#FFFFFF'}
-                onPress={handleUpdate}
-            />
+            <CustomButton color={'#FF0000'} text={"Eliminar"} textColor={'#FFFFFF'} onPress={handleDelete} />
+            <CustomButton color={'#6200EE'} text="Aceptar" textColor={'#FFFFFF'} onPress={handleUpdate} />
         </View>
     );
 };
@@ -164,6 +191,11 @@ const styles = StyleSheet.create({
     incorrectAnswer: {
         backgroundColor: '#FFD6D6',
         borderColor: 'red',
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginTop: 20
     },
     picker: {
         marginTop: 10,
