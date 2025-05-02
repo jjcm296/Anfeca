@@ -18,8 +18,6 @@
 | Switch profile           | POST   | `/api/account/profiles/switch` | JSON `{ targetProfile: "guardian", password } or { targetProfile: "kid" }` | Success message, new access token and new fresh token               |
 | Get current profile info | GET    | `/api/account/profiles/`       | Nothing                                                                    | Message stating the current profile and JSON guardian or kid object |
 | Get profiles names       | GET    | `/api/account/profiles/names`  | Nothing                                                                    | JSON object { guardian, kid }                                       |                                        
-| Edit guardian info       | POST   | /api/account/profile/guardian  | ???                                                                        | ???                                                                 |
-| Edit kid info            | POST   | /api/account/profile/kid       | ???                                                                        | ???                                                                 |
 
 ⚠️⚠️⚠️ When switching account, a new fresh token is generated, to every time the user switch profile, frontend must store a new fresh token
 
@@ -87,6 +85,7 @@ With `redemptionLimit`
 
 ## command to install dependencies 
 `npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose sib-api-v3-sdk joi`
+`npm i --save-dev chai@^4.3.7 chai-http@^4.3.0 chai-as-promised@^8.0.1 mocha@^11.1.0 sinon@^20.0.0 cross-env@^7.0.3`
 
 ## command to run the API
 `node back/src/server.js`
