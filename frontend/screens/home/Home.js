@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useContext} from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import QuestionBankCard from "./components/QuestionBankCard";
@@ -7,11 +7,13 @@ import WebButton from "./components/WebButton";
 import {getAllBanks} from "../../api/ApiBank";
 import {ApiRefreshAccessToken} from "../../api/ApiLogin";
 import SkeletonQuestionBankCard from "./components/skeletons/SkeletonQuestionBankCard";
+import {SessionContext} from "../../context/SessionContext";
 
 const HomeScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(true);
     const [questionBanks, setQuestionBanks] = useState([]);
 
+    const {session} = useContext(SessionContext);
 
     useEffect(() => {
         const fetchBanks = async () => {
@@ -69,7 +71,9 @@ const HomeScreen = ({ navigation }) => {
                 />
             )}
 
-            <AddButton onPress={() => navigation.navigate("AddQuestionBank")} />
+            {session.profileType === 'guardian' && (
+                <AddButton onPress={() => navigation.navigate("AddQuestionBank")} />
+            )}
 
             <WebButton
                 imageSource={require('../../images/Logo-png.png')}

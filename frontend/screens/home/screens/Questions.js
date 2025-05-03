@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import QuestionCard from "../components/QuestionCard";
@@ -6,6 +6,7 @@ import AddButton from "../../ui/components/AddButton";
 import { ApiRefreshAccessToken } from "../../../api/ApiLogin";
 import { getAllQuestions } from "../../../api/ApiQuestions";
 import SkeletonQuestionCard from "../components/skeletons/SkeletonQuestionCard";
+import {SessionContext} from "../../../context/SessionContext";
 
 const Questions = ({ route, navigation }) => {
     const { bankId, name } = route.params;
@@ -13,6 +14,8 @@ const Questions = ({ route, navigation }) => {
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [hasLoaded, setHasLoaded] = useState(false);
+
+    const { session } = useContext(SessionContext);
 
     const fetchQuestions = async () => {
         try {
@@ -73,7 +76,9 @@ const Questions = ({ route, navigation }) => {
                     showsVerticalScrollIndicator={false}
                 />
             )}
-            <AddButton onPress={() => navigation.navigate("AddQuestion", { bankId, name })} />
+            {session.profileType === 'guardian' && (
+                <AddButton onPress={() => navigation.navigate("AddQuestion", { bankId, name })} />
+            )}
         </View>
     );
 };
