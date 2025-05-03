@@ -16,7 +16,8 @@ import EyeToggleButton from '../ui/components/EyeToggleButton';
 
 const Profile = () => {
     const navigate = useNavigation();
-    const { session } = useContext(SessionContext);
+    const { session, updateSessionFromToken } = useContext(SessionContext);
+
 
     const [modalVisible, setModalVisible] = useState(false);
     const [passwordModalVisible, setPasswordModalVisible] = useState(false);
@@ -32,6 +33,10 @@ const Profile = () => {
             const profileNameData = await ApiGetCurrentName();
             const allProfiles = await ApiGetProfilesNames();
 
+            console.log("🧠 Tipo de perfil desde el contexto:", session.profileType);
+            console.log("🧾 ID del tutor:", session.guardianId);
+            console.log("🧾 ID del niño:", session.kidId);
+
             if (profileNameData && profileNameData.name) {
                 setSelectedProfile(profileNameData);
             }
@@ -42,7 +47,7 @@ const Profile = () => {
         };
 
         fetchData();
-    }, []);
+    }, [session]);
 
     const handleSelectProfile = async (profile) => {
         setTempProfile(profile);
@@ -53,6 +58,7 @@ const Profile = () => {
         } else {
             const result = await ApiSwitchProfile(profile.id); // "kid"
             if (result) {
+                updateSessionFromToken(result.newAccessToken, result.decoded); // ✅ GUARDAR EN CONTEXTO
                 setModalVisible(false);
                 navigate.reset({ index: 0, routes: [{ name: 'Home' }] });
             } else {
@@ -66,6 +72,7 @@ const Profile = () => {
         if (tempProfile && enteredPassword !== '') {
             const result = await ApiSwitchProfile(tempProfile.id, enteredPassword); // "guardian", password
             if (result) {
+                updateSessionFromToken(result.newAccessToken, result.decoded); // ✅ GUARDAR EN CONTEXTO
                 setPasswordModalVisible(false);
                 setModalVisible(false);
                 navigate.reset({ index: 0, routes: [{ name: 'Home' }] });
