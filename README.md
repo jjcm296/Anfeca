@@ -15,6 +15,7 @@
 ### Account
 | Purpose                  | Method | Route                          | Consumes                                                                   | Returns                                                             |
 |--------------------------|--------|--------------------------------|----------------------------------------------------------------------------|---------------------------------------------------------------------|
+| Delete account           | DELETE | `/api/account/`                | Nothing                                                                    | Success message                                                     |
 | Switch profile           | POST   | `/api/account/profiles/switch` | JSON `{ targetProfile: "guardian", password } or { targetProfile: "kid" }` | Success message, new access token and new fresh token               |
 | Get current profile info | GET    | `/api/account/profiles/`       | Nothing                                                                    | Message stating the current profile and JSON guardian or kid object |
 | Get profiles names       | GET    | `/api/account/profiles/names`  | Nothing                                                                    | JSON object { guardian, kid }                                       |                                        
