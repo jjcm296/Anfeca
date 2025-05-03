@@ -129,3 +129,13 @@ exports.getProfilesNames = async (req, res) => {
 
 
 };
+
+exports.deleteAccount = async (req, res) => {
+    try {
+        const { id } = req.user; // from JWT payload
+        await accountService.deleteAccount(id);
+        return res.status(200).json({ message: "Account deleted successfully" });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}

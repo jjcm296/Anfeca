@@ -11,9 +11,17 @@ exports.getAllBanks = async ( guardianId ) => {
 
 exports.createBank = async ({ name, guardianId  }) => {
 
-    const bank = await Bank.create({ name, guardianId })
+    const bankDuplicated = await Bank.find({ name: name, guardianId: guardianId });
 
-    return bank;
+    if (bankDuplicated.length > 0) {
+        throw new Error('You already have a bank named like that');
+    }
+
+    await Bank.create({ name, guardianId })
+
+    const createdBank = await Bank.findOne({ name, guardianId}).lean();
+
+    return createdBank;
 };
 
 exports.getBank = async (bankId) => {

@@ -8,19 +8,19 @@ exports.getAllRewards = async (guardianId) => {
 
 exports.createReward = async ({ name, price, type, redemptionLimit, guardianId }) => {
 
-    const reward = await Reward.create({
-       name,
-       price,
-       type,
-       redemptionLimit,
-       guardianId
-    });
+    const duplicatedReward = await Reward.find({ name, price, type, redemptionLimit, guardianId });
+
+    if (duplicatedReward > 0) throw Error("The same exact reward already exists");
+
+    await Reward.create({ name, price, type, redemptionLimit, guardianId });
+
+    const reward = await Reward.findOne({ name, price, type, redemptionLimit, guardianId }).lean();
 
     return reward;
 };
 
 exports.getReward = async (rewardId) => {
-    const reward = Reward.findById(rewardId);
+    const reward = await Reward.findById(rewardId);
 
     return reward;
 };

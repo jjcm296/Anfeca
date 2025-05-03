@@ -6,12 +6,13 @@ exports.getAllQuestions = async (bankId) => {
 
 exports.createQuestion = async ({ textQuestion, answers, priority, bankId }) => {
 
-    const question = await Question.create({
-        textQuestion,
-        answers,
-        priority,
-        bankId
-    });
+    const duplicatedQuestion = await Question.find({ textQuestion, answers, priority, bankId });
+
+    if (duplicatedQuestion > 0) throw new Error("The same exact question already exists");
+
+    await Question.create({ textQuestion, answers, priority, bankId });
+
+    const question = await Question.findOne({ textQuestion, answers, priority, bankId }).lean();
 
     return question ;
 

@@ -29,13 +29,15 @@ const initializeApp = async () => {
             // 3 = disconnecting
         });
 
-        const port = process.env.PORT || 3001
-        const server = app.listen(port, ()=>{
-           console.log(`Server running on port ${port}`);
-           console.log(`MongoDB readyState: ${mongoose.connection.readyState}`);
-        });
+        if (process.env.NODE_ENV !== 'test') {
+            const port = process.env.PORT || 3001
+            const server = app.listen(port, ()=>{
+                console.log(`Server running on port ${port}`);
+                console.log(`MongoDB readyState: ${mongoose.connection.readyState}`);
+            });
 
-        return { app, server, dbConnection };
+            return { app, server, dbConnection };
+        }
 
     } catch (error) {
         console.error('Fatal initialization error:', error);
@@ -43,7 +45,5 @@ const initializeApp = async () => {
     }
 
 };
-
-initializeApp();
 
 module.exports = { app, initializeApp };
