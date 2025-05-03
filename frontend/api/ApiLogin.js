@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {API_BASE_URL} from '../config/Config';
+import { API_BASE_URL } from '../config/Config';
 import * as SecureStore from 'expo-secure-store';
 import { jwtDecode } from 'jwt-decode';
 
@@ -8,29 +8,21 @@ export const ApiLogin = async (email, password) => {
         const response = await axios.post(`${API_BASE_URL}/api/auth/login`, { email, password });
         return response.data;
     } catch (error) {
-        return error.response.data;
+        return error.response?.data || { error: "Error desconocido al iniciar sesión." };
     }
-}
+};
 
 export const ApiRefreshAccessToken = async () => {
     try {
         const refreshToken = await SecureStore.getItemAsync('refreshToken');
-        if (!refreshToken) {
-            throw new Error('No refresh token found');
-        }
+        if (!refreshToken) throw new Error('No refresh token found');
 
-        const response = await axios.post(`${API_BASE_URL}/api/auth/token/refresh`, {
-            refreshToken,
-        });
-
+        const response = await axios.post(`${API_BASE_URL}/api/auth/token/refresh`, { refreshToken });
         const { accessToken } = response.data;
 
         await SecureStore.setItemAsync('accessToken', accessToken);
-        console.log('Nuevo accessToken guardado:', accessToken);
-
-        return accessToken; // también puedes retornar el token si lo necesitas
+        return accessToken;
     } catch (error) {
-        console.log("Error al refrescar token:", error?.response?.data || error.message);
         return null;
     }
 };
@@ -41,14 +33,10 @@ export const ApiGetCurrentName = async () => {
         if (!token) throw new Error('No access token found');
 
         const response = await axios.get(`${API_BASE_URL}/api/account/profiles/`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
         });
 
-        // Extrae directamente el perfil y el tipo desde la respuesta
         const { profile, message } = response.data;
-
         if (!profile || !profile.name) throw new Error("Perfil inválido");
 
         const profileType = message.includes("guardian") ? "Tutor" : "Niño";
@@ -59,7 +47,6 @@ export const ApiGetCurrentName = async () => {
             type: profileType,
         };
     } catch (error) {
-        console.log("Error al obtener el nombre del perfil:", error?.response?.data || error.message);
         return null;
     }
 };
@@ -70,24 +57,18 @@ export const ApiGetProfilesNames = async () => {
         if (!token) throw new Error('No access token found');
 
         const response = await axios.get(`${API_BASE_URL}/api/account/profiles/names`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
         });
 
         const { profilesNames } = response.data;
-
         if (!profilesNames || typeof profilesNames !== 'object') throw new Error("Lista de perfiles inválida");
 
-        const result = Object.entries(profilesNames).map(([key, value]) => ({
+        return Object.entries(profilesNames).map(([key, value]) => ({
             id: key,
             name: value,
             type: key === "guardian" ? "Tutor" : "Niño",
         }));
-
-        return result;
     } catch (error) {
-        console.log("Error al obtener los nombres de los perfiles:", error?.response?.data || error.message);
         return null;
     }
 };
@@ -95,18 +76,13 @@ export const ApiGetProfilesNames = async () => {
 export const ApiSwitchProfile = async (targetProfile, password = null) => {
     try {
         const token = await SecureStore.getItemAsync('accessToken');
-
-        const body = password
-            ? { targetProfile, password }
-            : { targetProfile };
+        const body = password ? { targetProfile, password } : { targetProfile };
 
         const response = await axios.post(
             `${API_BASE_URL}/api/account/profiles/switch`,
             body,
             {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             }
         );
 
@@ -117,18 +93,15 @@ export const ApiSwitchProfile = async (targetProfile, password = null) => {
             await SecureStore.setItemAsync('refreshToken', newRefreshToken);
 
             const decoded = jwtDecode(newAccessToken);
-            console.log("✅ Token decodificado desde ApiSwitchProfile:", decoded);
 
-            // Aquí puedes retornar también los datos decodificados
             return {
                 ...response.data,
-                decoded, // esto contiene id, guardianId, kidId, profileType, etc.
+                decoded,
             };
         }
 
         return null;
     } catch (error) {
-        console.log("❌ Error al cambiar de perfil:", error?.response?.data || error.message);
         return null;
     }
 };
