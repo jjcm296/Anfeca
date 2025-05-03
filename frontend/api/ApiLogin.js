@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {API_BASE_URL} from '../config/Config';
 import * as SecureStore from 'expo-secure-store';
+import { jwtDecode } from 'jwt-decode';
 
 export const ApiLogin = async (email, password) => {
     try {
@@ -114,12 +115,20 @@ export const ApiSwitchProfile = async (targetProfile, password = null) => {
         if (newAccessToken && newRefreshToken) {
             await SecureStore.setItemAsync('accessToken', newAccessToken);
             await SecureStore.setItemAsync('refreshToken', newRefreshToken);
-            console.log("Nuevos tokens guardados");
+
+            const decoded = jwtDecode(newAccessToken);
+            console.log("✅ Token decodificado desde ApiSwitchProfile:", decoded);
+
+            // Aquí puedes retornar también los datos decodificados
+            return {
+                ...response.data,
+                decoded, // esto contiene id, guardianId, kidId, profileType, etc.
+            };
         }
 
-        return response.data;
+        return null;
     } catch (error) {
-        console.log("Error al cambiar de perfil:", error?.response?.data || error.message);
+        console.log("❌ Error al cambiar de perfil:", error?.response?.data || error.message);
         return null;
     }
 };

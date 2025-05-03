@@ -17,25 +17,31 @@ export const SessionProvider = ({ children }) => {
         const loadSession = async () => {
             const token = await SecureStore.getItemAsync('accessToken');
             if (token) {
-                updateSessionFromToken(token);
+                updateSessionFromToken(token); // sin decoded, se decodifica aquí
             }
         };
         loadSession();
     }, []);
 
-    const updateSessionFromToken = (token) => {
-        const decoded = jwt_decode(token);
-        setSession({
-            accessToken: token,
-            accountId: decoded.id,
-            guardianId: decoded.guardianId,
-            kidId: decoded.kidId || null,
-            profileType: decoded.profileType,
-        });
+    const updateSessionFromToken = (token, decoded = null) => {
+        try {
+            const payload = decoded;
+
+            setSession({
+                accessToken: token,
+                accountId: payload.id,
+                guardianId: payload.guardianId,
+                kidId: payload.kidId || null,
+                profileType: payload.profileType,
+            });
+        } catch (error) {
+            console.log("❌ Error al decodificar el token:", error.message);
+        }
     };
 
     const clearSession = async () => {
         await SecureStore.deleteItemAsync('accessToken');
+        await SecureStore.deleteItemAsync('refreshToken');
         setSession({
             accessToken: null,
             accountId: null,
