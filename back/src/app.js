@@ -31,7 +31,7 @@ const initializeApp = async () => {
 
         if (process.env.NODE_ENV !== 'test') {
             const port = process.env.PORT || 3001
-            const server = app.listen(port, ()=>{
+            const server = app.listen(port, '0.0.0.0',()=>{
                 console.log(`Server running on port ${port}`);
                 console.log(`MongoDB readyState: ${mongoose.connection.readyState}`);
             });
