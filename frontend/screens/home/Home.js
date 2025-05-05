@@ -55,16 +55,20 @@ const HomeScreen = ({ navigation }) => {
                     keyExtractor={(item) => item._id}
                     renderItem={({ item }) => (
                         <TouchableOpacity
+                            disabled={session.profileType !== 'guardian'}
                             onPress={() =>
+                                session.profileType === 'guardian' &&
                                 navigation.navigate("Questions", { bankId: item._id, name: item.name })
                             }
                             onLongPress={() =>
+                                session.profileType === 'guardian' &&
                                 navigation.navigate("EditQuestionBank", { bankId: item._id })
                             }
                         >
                             <QuestionBankCard category={item.name} questions={item.questions} />
                         </TouchableOpacity>
                     )}
+
                     contentContainerStyle={styles.listContainer}
                     ItemSeparatorComponent={() => <View style={styles.separator} />}
                     showsVerticalScrollIndicator={false}
