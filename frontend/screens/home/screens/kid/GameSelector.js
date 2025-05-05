@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {useNavigation} from "@react-navigation/native";
 
-const GameSelector = ({ visible, onClose, onSelectMode }) => {
+const GameSelector = ({ visible, onClose, bankId, bankName }) => {
+    const navigation = useNavigation();
     return (
         <Modal visible={visible} transparent animationType="fade">
             <View style={styles.overlay}>
@@ -11,7 +13,10 @@ const GameSelector = ({ visible, onClose, onSelectMode }) => {
 
                     <TouchableOpacity
                         style={[styles.button, styles.cardMode]}
-                        onPress={() => onSelectMode('cards')}
+                        onPress={() => {
+                            onClose();
+                            navigation.navigate('FlashCardGame', { bankId, bankName });
+                        }}
                     >
                         <Ionicons name="albums-outline" size={26} color="#fff" />
                         <Text style={styles.buttonText}>Modo Tarjetas</Text>
@@ -19,7 +24,10 @@ const GameSelector = ({ visible, onClose, onSelectMode }) => {
 
                     <TouchableOpacity
                         style={[styles.button, styles.gameMode]}
-                        onPress={() => onSelectMode('game')}
+                        onPress={() => {
+                            onClose();
+                            // Aquí puedes añadir navegación para el modo 'game' si lo deseas
+                        }}
                     >
                         <Ionicons name="game-controller-outline" size={26} color="#fff" />
                         <Text style={styles.buttonText}>Modo Juego</Text>
