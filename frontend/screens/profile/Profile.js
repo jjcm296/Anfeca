@@ -6,6 +6,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 
 import { ApiGetProfilesNames, ApiGetCurrentName, ApiSwitchProfile } from '../../api/ApiLogin';
+import { ApiDeleteAccount } from '../../api/ApiAccount';
 
 import { SessionContext } from '../../context/SessionContext';
 
@@ -13,11 +14,11 @@ import ProfileImage from '../ui/components/ProfileImage';
 import CustomButton from '../ui/components/CustomButton';
 import CloseButton from '../ui/components/CloseButton';
 import EyeToggleButton from '../ui/components/EyeToggleButton';
+import * as SecureStore from "expo-secure-store";
 
 const Profile = () => {
     const navigate = useNavigation();
     const { session, updateSessionFromToken } = useContext(SessionContext);
-
 
     const [modalVisible, setModalVisible] = useState(false);
     const [passwordModalVisible, setPasswordModalVisible] = useState(false);
@@ -32,10 +33,6 @@ const Profile = () => {
         const fetchData = async () => {
             const profileNameData = await ApiGetCurrentName();
             const allProfiles = await ApiGetProfilesNames();
-
-            console.log("🧠 Tipo de perfil desde el contexto:", session.profileType);
-            console.log("🧾 ID del tutor:", session.guardianId);
-            console.log("🧾 ID del niño:", session.kidId);
 
             if (profileNameData && profileNameData.name) {
                 setSelectedProfile(profileNameData);
@@ -56,7 +53,7 @@ const Profile = () => {
             setShowPassword(false);
             setPasswordModalVisible(true);
         } else {
-            const result = await ApiSwitchProfile(profile.id); // "kid"
+            const result = await ApiSwitchProfile(profile.id);
             if (result) {
                 updateSessionFromToken(result.newAccessToken, result.decoded);
                 setModalVisible(false);
@@ -70,9 +67,9 @@ const Profile = () => {
     const handlePasswordSubmit = async () => {
         const enteredPassword = password.trim();
         if (tempProfile && enteredPassword !== '') {
-            const result = await ApiSwitchProfile(tempProfile.id, enteredPassword); // "guardian", password
+            const result = await ApiSwitchProfile(tempProfile.id, enteredPassword);
             if (result) {
-                updateSessionFromToken(result.newAccessToken, result.decoded); // ✅ GUARDAR EN CONTEXTO
+                updateSessionFromToken(result.newAccessToken, result.decoded);
                 setPasswordModalVisible(false);
                 setModalVisible(false);
                 navigate.reset({ index: 0, routes: [{ name: 'Home' }] });
@@ -88,8 +85,49 @@ const Profile = () => {
         { id: '1', title: 'Cambiar perfil', onPress: () => setModalVisible(true) },
         { id: '2', title: 'Ir a la página web' },
         { id: '3', title: 'Cerrar sesión', onPress: () => navigate.navigate("Authentication") },
-        { id: '4', title: 'Eliminar cuenta', color: '#FF0000', textColor: '#FFFFFF' },
     ];
+
+    if (session.profileType === 'guardian') {
+        options.push({
+            id: '4',
+            title: 'Eliminar cuenta',
+            color: '#FF0000',
+            textColor: '#FFFFFF',
+            onPress: () => {
+                Alert.alert(
+                    "Eliminar cuenta",
+                    "¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.",
+                    [
+                        { text: "Cancelar", style: "cancel" },
+                        {
+                            text: "Eliminar",
+                            style: "destructive",
+                            onPress: async () => {
+                                try {
+                                    const result = await ApiDeleteAccount();
+
+                                    if (result?.message) {
+                                        await SecureStore.deleteItemAsync('accessToken');
+                                        await SecureStore.deleteItemAsync('refreshToken');
+                                        Alert.alert("Cuenta eliminada", "Tu cuenta fue eliminada correctamente.");
+                                        navigate.reset({
+                                            index: 0,
+                                            routes: [{ name: 'Authentication' }],
+                                        });
+                                    } else {
+                                        Alert.alert("Error", result?.error || "No se pudo eliminar la cuenta.");
+                                    }
+                                } catch (err) {
+                                    console.error("Error al eliminar la cuenta:", err);
+                                    Alert.alert("Error", "Ocurrió un error al intentar eliminar la cuenta.");
+                                }
+                            }
+                        }
+                    ]
+                );
+            }
+        });
+    }
 
     return (
         <View style={styles.container}>
