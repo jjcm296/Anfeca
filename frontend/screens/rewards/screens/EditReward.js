@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Alert, TextInput } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import CoinIcon from '../../ui/components/CoinIcon';
 import CustomButton from '../../ui/components/CustomButton';
 import CustomInput from '../../ui/components/CustomInput';
 import RedemptionOptionButton from '../../ui/components/RedemptionOptionButton';
-import FakeDataBase from '../../../fakeDataBase/FakeDataBase';
-import {ApiEditReward, deleteReward, getRewardById} from "../../../api/ApiRewards";
-import {ApiRefreshAccessToken} from "../../../api/ApiLogin";
+import { ApiEditReward, deleteReward, getRewardById } from "../../../api/ApiRewards";
+import { ApiRefreshAccessToken } from "../../../api/ApiLogin";
 
-const EditReward = ({route}) => {
+const EditReward = () => {
+    const route = useRoute();
     const navigation = useNavigation();
-    const { rewardId} = route.params;
+    const { rewardId } = route.params || {};
 
     const [name, setName] = useState('');
     const [coins, setCoins] = useState('');
@@ -19,19 +19,28 @@ const EditReward = ({route}) => {
     const [redemptionType, setRedemptionType] = useState('');
 
     useEffect(() => {
+        if (!rewardId) {
+            Alert.alert("Error", "No se proporcionó la recompensa a editar.");
+            navigation.goBack();
+            return;
+        }
+
         const fetchReward = async () => {
             await ApiRefreshAccessToken();
-            const reward = await getRewardById(rewardId);
-            if (reward) {
+            const response = await getRewardById(rewardId);
+            if (response?.reward) {
+                const reward = response.reward;
                 setName(reward.name);
-                setCoins(reward.coins.toString());
-                setRedemptions(reward.redemptions?.toString() || "");
+                setCoins((reward.coins ?? reward.price ?? '').toString());
+                setRedemptions(reward.redemptionLimit?.toString() || '');
             } else {
                 Alert.alert("Error", "Recompensa no encontrada.");
                 navigation.goBack();
             }
-        }
-    }, []);
+        };
+
+        fetchReward();
+    }, [rewardId]);
 
     useEffect(() => {
         if (redemptions === "1") {
@@ -59,12 +68,12 @@ const EditReward = ({route}) => {
             return;
         }
 
-        const updatedRedemptions = redemptionType === "custom" ? redemptions : redemptionType;
-
         const updatedReward = {
             name: name.trim(),
-            coins: parseInt(coins),
-            redemptions: updatedRedemptions !== "" ? parseInt(updatedRedemptions) : null
+            price: parseInt(coins),
+            type: redemptionType === 'custom' ? 'custom' : redemptionType === '1' ? 'once' : 'forever',
+            ...(redemptionType === 'custom' && { redemptionLimit: parseInt(redemptions) }),
+            ...(redemptionType === '' && { redemptionLimit: 0 })
         };
 
         try {
@@ -83,7 +92,6 @@ const EditReward = ({route}) => {
         }
     };
 
-
     const handleDeleteReward = () => {
         Alert.alert(
             "Eliminar Recompensa",
@@ -95,7 +103,7 @@ const EditReward = ({route}) => {
                     style: "destructive",
                     onPress: async () => {
                         await ApiRefreshAccessToken();
-                        const deleted = await deleteReward(rewardId);
+                        await deleteReward(rewardId);
                         Alert.alert("Éxito", "Recompensa eliminada correctamente");
                         navigation.goBack();
                     }
