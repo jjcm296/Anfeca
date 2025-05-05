@@ -13,6 +13,7 @@
     import EditQuestion from './screens/home/screens/EditQuestion';
     import AddQuestionBank from './screens/home/screens/AddQuestionBank';
     import EditQuestionBank from './screens/home/screens/EditQuestionBank';
+    import GameSelector from './screens/home/screens/kid/GameSelector';
 
     import Rewards from './screens/rewards/Rewards';
     import AddReward from './screens/rewards/screens/AddReward';
@@ -57,6 +58,7 @@
                 <Stack.Screen name="Questions" component={QuestionsScreen} />
                 <Stack.Screen name="AddQuestion" component={AddQuestionScreen} />
                 <Stack.Screen name="EditQuestion" component={EditQuestion} />
+                <Stack.Screen name="GameSelector" component={GameSelector} />
             </Stack.Navigator>
         );
     }

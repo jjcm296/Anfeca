@@ -1,26 +1,31 @@
-import React, {useState, useEffect, useCallback, useContext} from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+
 import QuestionBankCard from "./components/QuestionBankCard";
 import AddButton from "../ui/components/AddButton";
 import WebButton from "./components/WebButton";
-import {getAllBanks} from "../../api/ApiBank";
-import {ApiRefreshAccessToken} from "../../api/ApiLogin";
 import SkeletonQuestionBankCard from "./components/skeletons/SkeletonQuestionBankCard";
-import {SessionContext} from "../../context/SessionContext";
+import GameSelectorModal from "./screens/kid/GameSelector";
+
+import { getAllBanks } from "../../api/ApiBank";
+import { ApiRefreshAccessToken } from "../../api/ApiLogin";
+import { SessionContext } from "../../context/SessionContext";
 
 const HomeScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(true);
     const [questionBanks, setQuestionBanks] = useState([]);
 
-    const {session} = useContext(SessionContext);
+    const [selectorVisible, setSelectorVisible] = useState(false);
+    const [selectedBank, setSelectedBank] = useState(null);
+
+    const { session } = useContext(SessionContext);
 
     useEffect(() => {
         const fetchBanks = async () => {
             setLoading(true);
             await ApiRefreshAccessToken();
             const banks = await getAllBanks();
-            console.log("Nombres de los bancos:", banks.banksArray.map(bank => bank.name));
             setQuestionBanks(banks.banksArray);
             setLoading(false);
         };
@@ -33,13 +38,21 @@ const HomeScreen = ({ navigation }) => {
             const fetchBanks = async () => {
                 await ApiRefreshAccessToken();
                 const banks = await getAllBanks();
-                console.log("Nombres de los bancos:", banks.banksArray.map(bank => bank.name));
                 setQuestionBanks(banks.banksArray);
             };
 
             fetchBanks();
         }, [])
     );
+
+    const handleBankPress = (item) => {
+        if (session.profileType === 'guardian') {
+            navigation.navigate("Questions", { bankId: item._id, name: item.name });
+        } else if (session.profileType === 'kid') {
+            setSelectedBank(item);
+            setSelectorVisible(true);
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -55,20 +68,16 @@ const HomeScreen = ({ navigation }) => {
                     keyExtractor={(item) => item._id}
                     renderItem={({ item }) => (
                         <TouchableOpacity
-                            disabled={session.profileType !== 'guardian'}
-                            onPress={() =>
-                                session.profileType === 'guardian' &&
-                                navigation.navigate("Questions", { bankId: item._id, name: item.name })
-                            }
+                            onPress={() => handleBankPress(item)}
                             onLongPress={() =>
                                 session.profileType === 'guardian' &&
                                 navigation.navigate("EditQuestionBank", { bankId: item._id })
                             }
+                            disabled={session.profileType !== 'guardian' && session.profileType !== 'kid'}
                         >
                             <QuestionBankCard category={item.name} questions={item.questions} />
                         </TouchableOpacity>
                     )}
-
                     contentContainerStyle={styles.listContainer}
                     ItemSeparatorComponent={() => <View style={styles.separator} />}
                     showsVerticalScrollIndicator={false}
@@ -83,9 +92,22 @@ const HomeScreen = ({ navigation }) => {
                 imageSource={require('../../images/Logo-png.png')}
                 url={'https://concentra-tda-kavv6se6a-jjcm296s-projects.vercel.app'}
             />
+
+            <GameSelectorModal
+                visible={selectorVisible}
+                onClose={() => setSelectorVisible(false)}
+                onSelectMode={(mode) => {
+                    setSelectorVisible(false);
+                    if (!selectedBank) return;
+                    if (mode === 'cards') {
+                        navigation.navigate('FlashcardsGame', { bankId: selectedBank._id, name: selectedBank.name });
+                    } else {
+                        navigation.navigate('MiniGame', { bankId: selectedBank._id, name: selectedBank.name });
+                    }
+                }}
+            />
         </View>
     );
-
 };
 
 const styles = StyleSheet.create({
