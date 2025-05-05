@@ -58,7 +58,7 @@ const Profile = () => {
         } else {
             const result = await ApiSwitchProfile(profile.id); // "kid"
             if (result) {
-                updateSessionFromToken(result.newAccessToken, result.decoded); // ✅ GUARDAR EN CONTEXTO
+                updateSessionFromToken(result.newAccessToken, result.decoded);
                 setModalVisible(false);
                 navigate.reset({ index: 0, routes: [{ name: 'Home' }] });
             } else {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import * as SecureStore from 'expo-secure-store';
 import {
     ScrollView,
@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { jwtDecode } from 'jwt-decode';
+import { SessionContext } from '../../../context/SessionContext';
 
 import CustomButton from '../../ui/components/CustomButton';
 import EyeToggleButton from '../../ui/components/EyeToggleButton';
@@ -19,6 +21,7 @@ import { ApiRefreshAccessToken } from '../../../api/ApiLogin';
 
 const Login = ({ route }) => {
     const navigation = useNavigation();
+    const { updateSessionFromToken } = useContext(SessionContext);
 
     const [email, setEmail] = useState(route?.params?.email || '');
     const [password, setPassword] = useState('');
@@ -38,15 +41,23 @@ const Login = ({ route }) => {
         }
 
         try {
-            const response = await ApiRefreshAccessToken();
+            const response = await ApiRefreshAccessToken(); // sigue usando refresh
 
-            if (response.error) {
-                console.log('Error:', response.error);
-            } else {
-                console.log(response.message);
-                console.log('Token de acceso guardado:', response.accessToken);
-                navigation.navigate('MainTabs');
+            if (!response) {
+                console.log('Error al refrescar el token');
+                return;
             }
+
+            const accessToken = await SecureStore.getItemAsync('accessToken');
+            if (!accessToken) {
+                console.log('No se pudo recuperar el accessToken');
+                return;
+            }
+
+            const decoded = jwtDecode(accessToken);
+            updateSessionFromToken(accessToken, decoded); // <-- actualiza el contexto como en switchProfile
+
+            navigation.navigate('MainTabs');
         } catch (error) {
             console.error('Error inesperado al iniciar sesión:', error.message);
         }
