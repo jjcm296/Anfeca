@@ -1,5 +1,5 @@
 const bankService = require('../services/bankService.js');
-const {createBankSchema} = require('../lib/joischemas/bankJoi.js')
+const {createBankSchema} = require('../lib/joischemas/bankJoi.js');
 
 exports.getAllBanks = async (req, res) => {
     try {

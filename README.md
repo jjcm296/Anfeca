@@ -40,23 +40,24 @@ Get profiles' names
 
 
 ### Questions bank
-| Purpose           | Method | Route                                      | Consumes                                          | Returns                                        |
-|-------------------|--------|--------------------------------------------|---------------------------------------------------|------------------------------------------------|
-| Get all banks     | GET    | `/api/banks/`                              | Nothing                                           | Success message, Array of JSON banks objects   |
-| Create a bank     | POST   | `/api/banks/`                              | JSON Object `{ name }`                            | Success message, JSON bank object              |
-| Get a bank        | GET    | `/api/banks/:bankId`                       | Nothing                                           | Success message, JSON bank object              | 
-| Edit a bank       | PUT    | `/api/banks/:bankId`                       | { fields that are updated }                       | Success message, JSON updated bank             |
-| Delete a bank     | DELETE | `/api/banks/:bankId`                       | Nothing                                           | Success message                                |
-| Get all questions | GET    | `/api/banks/:bankId/questions/`            | Nothing                                           | Success message, Array of JSON question object |
-| Create a question | POST   | `/api/banks/:bankId/questions/`            | JSON Object `{ textQuestion, answers, priority }` | Success message, JSON question object          |
-| Get a question    | GET    | `/api/banks/:bankId/questions/:questionId` | Nothing                                           | Success message, JSON question object          |
-| Edit a question   | PUT    | `/api/banks/:bankId/questions/:questionId` | { fields that are updated }                       | Success message, JSON updated question         |
-| Delete a question | DELETE | `/api/banks/:bankId/questions/:questionId` | Nothing                                           | Success message                                |
-| Get flashcards ?? | GET    | /api/banks/:bankId/flashcards/             | ???                                               | ???                                            |
-| Get flashcard??   | GET    | /api/banks/:bankId/flashcards/:flashcards  | ???                                               | ???                                            |
+| Purpose                     | Method | Route                                                                       | Consumes                                          | Returns                                                                                            |
+|-----------------------------|--------|-----------------------------------------------------------------------------|---------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| Get all banks               | GET    | `/api/banks/`                                                               | Nothing                                           | Success message, Array of JSON banks objects                                                       |
+| Create a bank               | POST   | `/api/banks/`                                                               | JSON Object `{ name }`                            | Success message, JSON bank object                                                                  |
+| Get a bank                  | GET    | `/api/banks/:bankId`                                                        | Nothing                                           | Success message, JSON bank object                                                                  | 
+| Edit a bank                 | PUT    | `/api/banks/:bankId`                                                        | { fields that are updated }                       | Success message, JSON updated bank                                                                 |
+| Delete a bank               | DELETE | `/api/banks/:bankId`                                                        | Nothing                                           | Success message                                                                                    |
+| Get all questions           | GET    | `/api/banks/:bankId/questions/`                                             | Nothing                                           | Success message, Array of JSON question object                                                     |
+| Create a question           | POST   | `/api/banks/:bankId/questions/`                                             | JSON Object `{ textQuestion, answers, priority }` | Success message, JSON question object                                                              |
+| Get a question              | GET    | `/api/banks/:bankId/questions/:questionId`                                  | Nothing                                           | Success message, JSON question object                                                              |
+| Edit a question             | PUT    | `/api/banks/:bankId/questions/:questionId`                                  | { fields that are updated }                       | Success message, JSON updated question                                                             |
+| Delete a question           | DELETE | `/api/banks/:bankId/questions/:questionId`                                  | Nothing                                           | Success message                                                                                    |
+| Start study session         | GET    | `/api/banks/:bankId/flashcards/study-session`                               | Nothing                                           | Study Session JSON object's id; Flashcard JSON object with the id, front and back of the flashcard |
+| Get the following flashcard | POST   | `/api/banks//:bankId/flashcards/study-session/:studySessionId/:flashcardId` | { feedback }                                      | Flashcard JSON object with id, front and back; or message "Study session complete!"                |
 
 - `:bankId` is the questions bank ID
 - `answers` in JSON Object must be an array of objects, max of 4 answers, at least one corrrect and one incorrect
+- `feedback` must be a number from 1 to 4. E.g. { "feedback": 4
 
 ![img.png](img.png)
 
@@ -86,7 +87,7 @@ With `redemptionLimit`
 
 ## command to install dependencies 
 `npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose sib-api-v3-sdk joi`
-`npm i --save-dev chai@^4.3.7 chai-http@^4.3.0 chai-as-promised@^8.0.1 mocha@^11.1.0 sinon@^20.0.0 cross-env@^7.0.3`
+`npm i --save-dev chai@^4.3.7 chai-http@^4.3.0 chai-as-promised@^8.0.1 mocha@^11.1.0 sinon@^20.0.0 cross-env@^7.0.3 sinon`
 
 ## command to run the API
 `node back/src/server.js`

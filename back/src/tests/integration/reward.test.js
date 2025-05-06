@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 const expect = chai.expect;
 
 let accessToken = '';
-let refreshToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTQxOWQ0NDcxNjkxNDdjNDE5MjE5NCIsImd1YXJkaWFuSWQiOiI2ODE0MTlkNDQ3MTY5MTQ3YzQxOTIxOTIiLCJwcm9maWxlVHlwZSI6Imd1YXJkaWFuIiwiaWF0IjoxNzQ2MTg3MDkxLCJleHAiOjE3NDk2NDMwOTF9.Xiy4SROEZZQsxCZxwZjQWWBTszqYmPYcMfMFlF5sWBE';
+let refreshToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTQxOWQ0NDcxNjkxNDdjNDE5MjE5NCIsImd1YXJkaWFuSWQiOiI2ODE0MTlkNDQ3MTY5MTQ3YzQxOTIxOTIiLCJwcm9maWxlVHlwZSI6Imd1YXJkaWFuIiwiaWF0IjoxNzQ2NDE2Mzg3LCJleHAiOjE3NDk4NzIzODd9.7_UWlUoLeSjYsLemad_FKAlZw3vEux6cQk1IZ7yikNM';
 let createdRewardId = '';
 let rewardName = `Test Reward ${Date.now()}`;
 
