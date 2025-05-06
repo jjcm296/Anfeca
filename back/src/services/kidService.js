@@ -19,7 +19,7 @@ exports.getKid = async (kidId) => {
 
 exports.getKidByGuardianId = async (guardianId) => {
 
-    const kid = await Kid.findOne({ guardianId }).select('-_id -guardianId');
+    const kid = await Kid.findOne({ guardianId }).select(' -guardianId');
 
     if (!kid) throw new Error("Kid not found");
 
