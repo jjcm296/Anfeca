@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import {
     ScrollView,
@@ -17,7 +17,7 @@ import { SessionContext } from '../../../context/SessionContext';
 import CustomButton from '../../ui/components/CustomButton';
 import EyeToggleButton from '../../ui/components/EyeToggleButton';
 
-import { ApiRefreshAccessToken } from '../../../api/ApiLogin';
+import { ApiLogin } from '../../../api/ApiLogin';
 
 const Login = ({ route }) => {
     const navigation = useNavigation();
@@ -41,25 +41,23 @@ const Login = ({ route }) => {
         }
 
         try {
-            const response = await ApiRefreshAccessToken(); // sigue usando refresh
+            const response = await ApiLogin(email, password);
 
-            if (!response) {
-                console.log('Error al refrescar el token');
+            if (response.error) {
+                console.log("❌ Error en login:", response.error);
                 return;
             }
 
-            const accessToken = await SecureStore.getItemAsync('accessToken');
-            if (!accessToken) {
-                console.log('No se pudo recuperar el accessToken');
-                return;
-            }
+            await SecureStore.setItemAsync('accessToken', response.accessToken);
+            await SecureStore.setItemAsync('refreshToken', response.refreshToken);
+            console.log("✅ Tokens guardados correctamente");
 
-            const decoded = jwtDecode(accessToken);
-            updateSessionFromToken(accessToken, decoded); // <-- actualiza el contexto como en switchProfile
+            const decoded = jwtDecode(response.accessToken);
+            updateSessionFromToken(response.accessToken, decoded);
 
             navigation.navigate('MainTabs');
         } catch (error) {
-            console.error('Error inesperado al iniciar sesión:', error.message);
+            console.error('❌ Error inesperado al iniciar sesión:', error.message);
         }
     };
 
@@ -103,7 +101,8 @@ const Login = ({ route }) => {
                             name={showPassword ? 'lock-open-outline' : 'lock-closed-outline'}
                             size={20}
                             color="#555"
-                            style={styles.icon} />
+                            style={styles.icon}
+                        />
                         <TextInput
                             style={styles.flexInput}
                             placeholder="Contraseña"
