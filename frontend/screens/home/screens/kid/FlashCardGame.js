@@ -1,74 +1,154 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+    View, Text, StyleSheet, TouchableOpacity,
+    FlatList, ActivityIndicator, Alert
+} from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
-const sampleQuestions = [
-    { question: '2 + 2', answer: '4' },
-    { question: '5 - 3', answer: '2' },
-    { question: '3 × 3', answer: '9' },
-    { question: '10 ÷ 2', answer: '5' },
-];
+import {
+    ApiStartStudySession,
+    ApiGetTheFollowingFlashcard
+} from '../../../../api/ApiBank';
 
 const ratings = [
-    { label: 'Muy difícil', icon: 'sad-outline', color: '#FF3B30' },
-    { label: 'Difícil', icon: 'alert-circle-outline', color: '#FF9500' },
-    { label: 'Bien', icon: 'happy-outline', color: '#34C759' },
-    { label: 'Muy bien', icon: 'thumbs-up-outline', color: '#0A84FF' },
+    { label: 'Muy difícil', icon: 'sad-outline', color: '#FF3B30', value: 1 },
+    { label: 'Difícil', icon: 'alert-circle-outline', color: '#FF9500', value: 2 },
+    { label: 'Bien', icon: 'happy-outline', color: '#34C759', value: 3 },
+    { label: 'Muy bien', icon: 'thumbs-up-outline', color: '#0A84FF', value: 4 },
 ];
 
 const FlashCardGame = () => {
-    const route = useRoute();
     const navigation = useNavigation();
-    const { bankName = 'Banco' } = route.params || {};
+    const route = useRoute();
 
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [bankId, setBankId] = useState(null);
+    const [studySessionId, setStudySessionId] = useState(null);
+    const [currentFlashcard, setCurrentFlashcard] = useState(null);
     const [showAnswer, setShowAnswer] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [sessionFinished, setSessionFinished] = useState(false);
 
-    const current = sampleQuestions[currentIndex];
+    useEffect(() => {
+        const incomingId = route?.params?.bankId;
+        console.log("📦 route.params:", route.params);
+        console.log("✅ Banco ID recibido:", incomingId);
 
-    const handleRate = () => {
-        setShowAnswer(false);
-        if (currentIndex < sampleQuestions.length - 1) {
-            setCurrentIndex(currentIndex + 1);
+        if (incomingId) {
+            setBankId(incomingId);
         } else {
-            navigation.goBack(); // o un mensaje de fin
+            Alert.alert("Error", "No se recibió el ID del banco.", [
+                { text: "Volver", onPress: () => navigation.goBack() }
+            ]);
         }
+    }, [route?.params]);
+
+    useEffect(() => {
+        const startSession = async () => {
+            if (!bankId) return;
+            setLoading(true);
+
+            try {
+                const res = await ApiStartStudySession(bankId);
+                console.log("📥 Respuesta al iniciar sesión:", res);
+
+                if (res?.firstFlashcard && res?.sessionId) {
+                    setStudySessionId(res.sessionId);
+                    setCurrentFlashcard({
+                        id: res.firstFlashcard._id,
+                        front: res.firstFlashcard.front,
+                        back: res.firstFlashcard.back,
+                    });
+                } else {
+                    throw new Error(res?.error || "Respuesta inválida");
+                }
+            } catch (err) {
+                console.error("❌ Error iniciando sesión:", err);
+                Alert.alert("Error", err.message || "No se pudo iniciar la sesión de estudio.");
+            }
+
+            setLoading(false);
+        };
+
+        startSession();
+    }, [bankId]);
+
+    const handleRate = async (feedbackValue) => {
+        setShowAnswer(false);
+        setLoading(true);
+
+        try {
+            const res = await ApiGetTheFollowingFlashcard(
+                bankId,
+                studySessionId,
+                currentFlashcard.id,
+                feedbackValue
+            );
+            console.log("🟡 Respuesta al calificar:", res);
+
+            if (res?.message === "Study session complete!") {
+                setSessionFinished(true);
+            } else if (res?._id && res?.front && res?.back) {
+                setCurrentFlashcard({
+                    id: res._id,
+                    front: res.front,
+                    back: res.back,
+                });
+            } else {
+                throw new Error("Respuesta inesperada");
+            }
+        } catch (err) {
+            console.error("❌ Error al continuar sesión:", err);
+            Alert.alert("Error", err.message || "No se pudo continuar la sesión.");
+        }
+
+        setLoading(false);
     };
+
+    const handleGoBack = () => navigation.goBack();
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>{bankName}</Text>
+            <Text style={styles.title}>Flashcards</Text>
 
-            <View style={styles.card}>
-                <Text style={styles.question}>{current.question}</Text>
-                <View style={styles.separator} />
-                {showAnswer && <Text style={styles.answer}>{current.answer}</Text>}
-            </View>
-
-            <View style={styles.bottomSection}>
-                {!showAnswer ? (
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => setShowAnswer(true)}
-                    >
-                        <Text style={styles.buttonText}>Mostrar respuesta</Text>
+            {loading ? (
+                <ActivityIndicator size="large" color="#6200EE" />
+            ) : sessionFinished ? (
+                <View style={styles.endContainer}>
+                    <Text style={styles.endText}>¡Sesión terminada!</Text>
+                    <TouchableOpacity style={styles.button} onPress={handleGoBack}>
+                        <Text style={styles.buttonText}>Volver</Text>
                     </TouchableOpacity>
-                ) : (
-                    <FlatList
-                        data={ratings}
-                        horizontal
-                        keyExtractor={(item) => item.label}
-                        contentContainerStyle={styles.ratingsContainer}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity style={styles.ratingItem} onPress={handleRate}>
-                                <Ionicons name={item.icon} size={34} color={item.color} />
-                                <Text style={styles.ratingLabel}>{item.label}</Text>
+                </View>
+            ) : (
+                <>
+                    <View style={styles.card}>
+                        <Text style={styles.question}>{currentFlashcard?.front}</Text>
+                        <View style={styles.separator} />
+                        {showAnswer && <Text style={styles.answer}>{currentFlashcard?.back}</Text>}
+                    </View>
+
+                    <View style={styles.bottomSection}>
+                        {!showAnswer ? (
+                            <TouchableOpacity style={styles.button} onPress={() => setShowAnswer(true)}>
+                                <Text style={styles.buttonText}>Mostrar respuesta</Text>
                             </TouchableOpacity>
+                        ) : (
+                            <FlatList
+                                data={ratings}
+                                horizontal
+                                keyExtractor={(item) => item.label}
+                                contentContainerStyle={styles.ratingsContainer}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity style={styles.ratingItem} onPress={() => handleRate(item.value)}>
+                                        <Ionicons name={item.icon} size={34} color={item.color} />
+                                        <Text style={styles.ratingLabel}>{item.label}</Text>
+                                    </TouchableOpacity>
+                                )}
+                            />
                         )}
-                    />
-                )}
-            </View>
+                    </View>
+                </>
+            )}
         </View>
     );
 };
@@ -137,6 +217,16 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginTop: 5,
         textAlign: 'center',
+    },
+    endContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    endText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 20,
     },
 });
 

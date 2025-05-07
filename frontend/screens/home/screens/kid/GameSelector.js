@@ -1,65 +1,56 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {useNavigation} from "@react-navigation/native";
 
-const GameSelector = ({ visible, onClose, bankId, bankName }) => {
+const GameSelector = () => {
+    const route = useRoute();
     const navigation = useNavigation();
+    const { bankId, bankName } = route.params;
+
+    console.log("📦 GameSelector route.params:", route.params);
+    console.log("✅ bankId recibido:", bankId);
+    console.log("✅ bankName recibido:", bankName);
+
     return (
-        <Modal visible={visible} transparent animationType="fade">
-            <View style={styles.overlay}>
-                <View style={styles.modalCard}>
-                    <Text style={styles.title}>Selecciona un modo de juego</Text>
+        <View style={styles.container}>
+            <Text style={styles.title}>Selecciona un modo de juego</Text>
 
-                    <TouchableOpacity
-                        style={[styles.button, styles.cardMode]}
-                        onPress={() => {
-                            onClose();
-                            navigation.navigate('FlashCardGame', { bankId, bankName });
-                        }}
-                    >
-                        <Ionicons name="albums-outline" size={26} color="#fff" />
-                        <Text style={styles.buttonText}>Modo Tarjetas</Text>
-                    </TouchableOpacity>
+            <TouchableOpacity
+                style={[styles.button, styles.cardMode]}
+                onPress={() => navigation.navigate("FlashCardGame", { bankId, bankName })}
+            >
+                <Ionicons name="albums-outline" size={26} color="#fff" />
+                <Text style={styles.buttonText}>Modo Tarjetas</Text>
+            </TouchableOpacity>
 
-                    <TouchableOpacity
-                        style={[styles.button, styles.gameMode]}
-                        onPress={() => {
-                            onClose();
-                            // Aquí puedes añadir navegación para el modo 'game' si lo deseas
-                        }}
-                    >
-                        <Ionicons name="game-controller-outline" size={26} color="#fff" />
-                        <Text style={styles.buttonText}>Modo Juego</Text>
-                    </TouchableOpacity>
+            <TouchableOpacity
+                style={[styles.button, styles.gameMode]}
+                onPress={() => navigation.navigate("RunnerGame", { bankId, bankName })}
+            >
+                <Ionicons name="game-controller-outline" size={26} color="#fff" />
+                <Text style={styles.buttonText}>Modo Juego</Text>
+            </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-                        <Text style={styles.closeText}>Cerrar</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </Modal>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Text style={styles.backText}>Volver</Text>
+            </TouchableOpacity>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    overlay: {
+    container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    modalCard: {
         backgroundColor: '#fff',
-        padding: 25,
-        borderRadius: 20,
-        width: '80%',
+        padding: 30,
+        justifyContent: 'center',
         alignItems: 'center',
     },
     title: {
-        fontSize: 20,
+        fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 20,
+        marginBottom: 30,
         textAlign: 'center',
     },
     button: {
@@ -83,12 +74,10 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         fontWeight: 'bold',
     },
-    closeBtn: {
-        marginTop: 15,
-    },
-    closeText: {
+    backText: {
         color: '#888',
         textDecorationLine: 'underline',
+        marginTop: 20,
     },
 });
 
