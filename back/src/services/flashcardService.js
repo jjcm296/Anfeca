@@ -66,42 +66,60 @@ exports.updateFlashcard = async (flashcardId, updatedFields) => {
 }
 
 exports.initializeStudySession = async (bankId, kidId) => {
-    const { flashcardIds, questionIds } = await retrievalService.retrieve(bankId);
+    let studySession;
+    let firstFlashcard;
 
-    if (!Array.isArray(flashcardIds) || flashcardIds.length === 0) {
-        throw new Error("No flashcards found for this kid and bank");
+    try {
+        // if session doesn't exist, there's an error that is caught, in the catch it's the creation process
+        studySession = await studySessionService.getStudySession(bankId,kidId);
+
+        const firstCardId = studySession.cards[0].flashcardId;
+
+        if (!studySession.cards || studySession.cards.length === 0) throw new Error("Study session has no cards");
+
+        firstFlashcard =  await Flashcard.findById(firstCardId).select('front back');
+    } catch (error) {
+
+        const { flashcardIds, questionIds } = await retrievalService.retrieve(bankId);
+
+        if (!Array.isArray(flashcardIds) || flashcardIds.length === 0) {
+            throw new Error("No flashcards found for this kid and bank");
+        }
+
+        // creating the array of subdocument {flashcardId, status}
+        const cards = flashcardIds.map(id => ({
+            flashcardId: id,
+            status: 1
+        }));
+
+        // creating the array of subdocument { questionId, answeredCorrectly}
+        const questions = questionIds.map(id => ({
+            questionId: id,
+            answeredCorrectly: null
+        }));
+
+        // validate for correct insertion
+        const { error: studyError } = studySessionSchema.validate({ bankId, kidId, cards });
+        if (studyError) throw new Error(studyError.details[0].message);
+
+        const { error: gameError } = newGameSchema.validate({ bankId, kidId, questions });
+        if (gameError) throw new Error(gameError.details[0].message);
+
+
+        // create game session
+        const gameSession = await gameSessionService.createGameSession(bankId, kidId, questions);
+
+        // create study session only if the game session has been created
+        if (gameSession) await studySessionService.createStudySession(bankId, kidId, cards);
+
+        // fetch the created study session
+        studySession = await studySessionService.getStudySession(bankId, kidId);
+
+        const firstCardId = cards[0].flashcardId;
+        firstFlashcard =  await Flashcard.findById(firstCardId).select('front back');
     }
 
-    // creating the array of subdocument {flashcardId, status}
-    const cards = flashcardIds.map(id => ({
-        flashcardId: id,
-        status: 1
-    }));
-
-    // creating the array of subdocument { questionId, answeredCorrectly}
-    const questions = questionIds.map(id => ({
-        questionId: id,
-        answeredCorrectly: null
-    }));
-
-    // validate for correct insertion
-    const { error: studyError } = studySessionSchema.validate({ bankId, kidId, cards });
-    if (studyError) throw new Error(studyError.details[0].message);
-
-    const { error: gameError } = newGameSchema.validate({ bankId, kidId, questions });
-    if (gameError) throw new Error(gameError.details[0].message);
-
-
-    // create a study session and a game session
-    await studySessionService.createStudySession(bankId, kidId, cards);
-    await gameSessionService.createGameSession(bankId, kidId, questions);
-
-    const session = await studySessionService.getStudySession(bankId, kidId);
-
-    const firstCardId = cards[0].flashcardId;
-    const firstFlashcard =  await Flashcard.findById(firstCardId).select('front back');
-
-    return  { sessionId: session._id, firstFlashcard } ;
+    return  { sessionId: studySession._id, firstFlashcard } ;
 
 };
 

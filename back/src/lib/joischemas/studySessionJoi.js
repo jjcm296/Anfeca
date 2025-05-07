@@ -18,7 +18,8 @@ const studySessionSchema = Joi.object({
                 status: Joi.number().integer().min(0).required()
             })
         )
-        .min(5)
+        .min(1)
+        .max(5)
         .required()
 });
 

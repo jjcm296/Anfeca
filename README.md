@@ -58,10 +58,14 @@ Get profiles' names
 | Get the following flashcard | POST   | `/api/banks/:bankId/flashcards/study-session/:studySessionId/:flashcardId` | { feedback }                                      | Flashcard JSON object with id, front and back; or message "Study session complete!" |
 
 - `:bankId` is the questions bank ID
-- `answers` in JSON Object must be an array of objects, max of 4 answers, at least one corrrect and one incorrect
+- `answers` in JSON Object must be an array of objects, max of 4 answers, at least one correct and one incorrect
 - `feedback` must be a number from 1 to 4. E.g. { "feedback": 4 }
 - `front` is the text question, `back` is the correct answer(s) 
 ![img.png](img.png)
+
+- start study session returns this
+
+![img_7.png](img_7.png)
 
 ## Game
 | Purpose          | Method | Route                          | Consumes | Returns                  |

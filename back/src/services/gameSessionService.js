@@ -91,3 +91,13 @@ async function updateGameSession (sessionId, questions, individualCoins) {
     await session.save();
 
 }
+
+exports.getGameSession = async (bankId, kidId) => {
+    const session = await GameSession.findOne({ bankId, kidId });
+
+    if (!session) {
+        throw new Error("Game session not found");
+    }
+
+    return session;
+}
