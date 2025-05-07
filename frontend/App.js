@@ -15,6 +15,7 @@
     import EditQuestionBank from './screens/home/screens/EditQuestionBank';
     import GameSelector from './screens/home/screens/kid/GameSelector';
     import FlashCardGame from "./screens/home/screens/kid/FlashCardGame";
+    import Runner from "./screens/home/screens/kid/game/Runner";
 
     import Rewards from './screens/rewards/Rewards';
     import AddReward from './screens/rewards/screens/AddReward';
@@ -61,6 +62,7 @@
                 <Stack.Screen name="EditQuestion" component={EditQuestion} />
                 <Stack.Screen name="GameSelector" component={GameSelector} />
                 <Stack.Screen name="FlashCardGame" component={FlashCardGame} />
+                <Stack.Screen name="RunnerGame" component={Runner} />
             </Stack.Navigator>
         );
     }
