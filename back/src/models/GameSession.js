@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const {boolean} = require("joi");
 const { Schema } = mongoose;
 
 const gameSessionSchema = Schema({
@@ -24,7 +23,7 @@ const gameSessionSchema = Schema({
        required: true,
        validate: {
            validator: function (value) {
-               return Array.isArray(value) && value.length >= 0 && value.length <= 5;
+               return Array.isArray(value) && value.length >= 0;
            },
            message: 'Game session must have 5 questions'
        }
