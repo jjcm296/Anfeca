@@ -13,6 +13,11 @@ function isZeroOnInsertOnly(value) {
 }
 const messageMustBeZeroOnInsert = "value must be 0 on creation";
 
+function isOneOnInsertOnly(value) {
+    return this.isNew ? value === 1 : true;
+}
+const messageMustBeOneOnInsert = "value must be 1 on creation";
+
 function validateNumberOfAnswers(answersArray) {
     // min 2 answers, max 4 answers
     if (answersArray.length < 2 || answersArray.length > 4) return false;
@@ -53,5 +58,7 @@ module.exports = {
     isValidEmail,
     messageInvalidEmail,
     isStrongPassword,
-    messageWeakPassword
+    messageWeakPassword,
+    isOneOnInsertOnly,
+    messageMustBeOneOnInsert
 };

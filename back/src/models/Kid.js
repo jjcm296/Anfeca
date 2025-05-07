@@ -4,7 +4,9 @@ const {
     isStringLengthGreaterThanZero,
     messageStringLengthGreaterThanZero,
     isZeroOnInsertOnly,
-    messageMustBeZeroOnInsert
+    messageMustBeZeroOnInsert,
+    isOneOnInsertOnly,
+    messageMustBeOneOnInsert
     } = require('../lib/db/validatorFunctions.js');
 
 const kidSchema = Schema({
@@ -28,11 +30,11 @@ const kidSchema = Schema({
     },
     streak: {
         type: Number,
-        default: 0,
+        default: 1,
         required:true,
         validate: {
-            validator: isZeroOnInsertOnly,
-            message: messageMustBeZeroOnInsert
+            validator: isOneOnInsertOnly,
+            message: messageMustBeOneOnInsert
         }
     },
     guardianId: { type: Schema.Types.ObjectId, ref: 'Guardian', required: true }
