@@ -66,3 +66,19 @@ export const ApiValidatePassword = async (body) => {
         return error.response?.data || { error: "Error desconocido al validar la contraseña." };
     }
 };
+
+export const ApiDeleteAccount = async () => {
+    try {
+        const token = await SecureStore.getItemAsync('accessToken');
+
+        const response = await axios.delete(`${API_BASE_URL}/api/account/`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        return response.data;
+    } catch (error) {
+        return error.response?.data || { error: "Error desconocido al eliminar la cuenta." };
+    }
+};
