@@ -2,12 +2,10 @@ const flashcardService = require('../services/flashcardService.js');
 
 exports.startStudySession = async (req, res) => {
     try {
-        console.log(req.user.kidId)
         const { bankId } = req.params;
         const kidId = req.user.kidId;
-        console.log(kidId)
 
-        const { session, firstFlashcard } = await flashcardService.initializeStudySession(kidId, bankId);
+        const { session, firstFlashcard } = await flashcardService.initializeStudySession(bankId, kidId);
 
         res.status(201).json({ session, firstFlashcard });
     } catch (error) {

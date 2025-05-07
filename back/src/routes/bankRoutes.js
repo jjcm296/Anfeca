@@ -12,13 +12,14 @@ const Bank = require('../models/Bank.js');
 // authenticated for all
 router.use(authMiddleware);
 
+// routes available for guardians and kids
 router.get('/', getAllBanks);
 router.get('/:bankId', checkOwnership(Bank, 'bankId', 'Bank'), getBank);
-router.get('/:bankId/questions/', checkBankOwnership, getAllQuestions);
+
 
 // CRUD banks and questions only for guardian
-
 router.post('/', allowOnly(['guardian']) ,createBank);
+router.get('/:bankId/questions/', checkBankOwnership, allowOnly(['guardian']), getAllQuestions);
 router.put('/:bankId', checkOwnership(Bank, 'bankId', 'Bank'), allowOnly(['guardian']), editBank);
 router.delete('/:bankId', checkOwnership(Bank, 'bankId', 'Bank'), allowOnly(['guardian']) , deleteBank);
 

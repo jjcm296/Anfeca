@@ -2,7 +2,6 @@ const StudySession = require('../models/StudySession.js');
 const Flashcard = require('../models/Flashcard.js');
 
 exports.createStudySession = async ( bankId, kidId, cards ) => {
-    console.log(cards)
     const existing = await StudySession.findOne({ bankId, kidId });
     if (existing) throw new Error("One session for this bank already exists");
 

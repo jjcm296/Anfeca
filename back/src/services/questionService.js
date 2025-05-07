@@ -73,6 +73,8 @@ exports.editQuestion = async (questionId, updatedFields) => {
 
 exports.deleteQuestion = async (questionId) => {
 
+    await Flashcard.findOneAndDelete({ questionId });
+
     await Question.findByIdAndDelete(questionId);
 
 };
