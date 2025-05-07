@@ -18,7 +18,8 @@ const newGameSchema = Joi.object({
                 answeredCorrectly: Joi.boolean().allow(null).default(null)
             })
         )
-        .length(5)
+        .min(1)
+        .max(5)
         .required(),
     individualCoins: Joi.number().integer().min(0).default(0)
 }).unknown(false);

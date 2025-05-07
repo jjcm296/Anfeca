@@ -2,19 +2,19 @@ const StudySession = require('../models/StudySession.js');
 const Flashcard = require('../models/Flashcard.js');
 
 exports.createStudySession = async ( bankId, kidId, cards ) => {
-    const existing = await StudySession.findOne({ bankId, kidId });
-    if (existing) throw new Error("One session for this bank already exists");
+    let session = await StudySession.findOne({ bankId, kidId });
 
-    await StudySession.create({ bankId, kidId, cards})
-
-    const session = await StudySession.findOne({ bankId, kidId });
+    if (!session) {
+        await StudySession.create({ bankId, kidId, cards});
+        session = await StudySession.findOne({ bankId, kidId });
+    }
 
     return session;
 
 }
 
 exports.getStudySession = async (bankId, kidId) => {
-    const session = await StudySession.findOne({ bankId, kidId}).select('_id');
+    const session = await StudySession.findOne({ bankId, kidId});
 
     if (!session) {
         throw new Error("Study session not found for this kid and bank");
