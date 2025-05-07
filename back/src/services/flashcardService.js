@@ -1,6 +1,10 @@
 const Flashcard = require('../models/Flashcard.js');
 const studySessionService = require('../services/studySessionService.js');
+const gameSessionService = require('../services/gameSessionService.js');
 const { studySessionSchema } = require('../lib/joischemas/studySessionJoi.js');
+const { newGameSchema } = require('../lib/joischemas/gameSessionJoi.js');
+const retrievalService = require('../services/retrievalService.js');
+const mongoose = require('mongoose');
 
 getFlashcard = async (flashcardId, bankId) => {
     const flashcard = await Flashcard.findOne({ _id: flashcardId, bankId });
@@ -10,8 +14,18 @@ getFlashcard = async (flashcardId, bankId) => {
     return flashcard;
 }
 
-getFlashcardsForStudy = async (kidId, bankId) => {
-    return Flashcard.find({ kidId, bankId }).limit(5);
+exports.getFlashcardsForStudy = async (bankId) => {
+    const count = 5;
+    return Flashcard.aggregate([
+        {
+            $match: {
+                bankId: new mongoose.Types.ObjectId(bankId)
+            }
+        },
+        {
+            $sample: {size: count}
+        }
+    ]);
 };
 
 exports.getFlashcardById = async (flashcardId) => {
@@ -51,34 +65,43 @@ exports.updateFlashcard = async (flashcardId, updatedFields) => {
 
 }
 
-exports.initializeStudySession = async (kidId, bankId) => {
-    const flashcards = await Flashcard.find({ bankId }).limit(5);
+exports.initializeStudySession = async (bankId, kidId) => {
+    const { flashcardIds, questionIds } = await retrievalService.retrieve(bankId);
 
-
-    if (flashcards.length === 0) {
+    if (!Array.isArray(flashcardIds) || flashcardIds.length === 0) {
         throw new Error("No flashcards found for this kid and bank");
     }
 
-    const cards = flashcards.map(f => ({
-        flashcardId: f._id,
+    // creating the array of subdocument {flashcardId, status}
+    const cards = flashcardIds.map(id => ({
+        flashcardId: id,
         status: 1
     }));
 
+    // creating the array of subdocument { questionId, answeredCorrectly}
+    const questions = questionIds.map(id => ({
+        questionId: id,
+        answeredCorrectly: null
+    }));
 
-    const { error } = studySessionSchema.validate({ bankId, kidId, cards });
+    // validate for correct insertion
+    const { error: studyError } = studySessionSchema.validate({ bankId, kidId, cards });
+    if (studyError) throw new Error(studyError.details[0].message);
 
-    if (error) {
-        throw new Error(error.details[0].message);
-    }
+    const { error: gameError } = newGameSchema.validate({ bankId, kidId, questions });
+    if (gameError) throw new Error(gameError.details[0].message);
 
+
+    // create a study session and a game session
     await studySessionService.createStudySession(bankId, kidId, cards);
+    await gameSessionService.createGameSession(bankId, kidId, questions);
 
     const session = await studySessionService.getStudySession(bankId, kidId);
 
     const firstCardId = cards[0].flashcardId;
     const firstFlashcard =  await Flashcard.findById(firstCardId).select('front back');
 
-    return  { session, firstFlashcard } ;
+    return  { sessionId: session._id, firstFlashcard } ;
 
 };
 
@@ -111,6 +134,7 @@ exports.study = async (flashcardId, feedback, studySessionId) => {
 
     if (session.cards.length === 0) {
         await session.deleteOne();
+        // ADD A COIN TO THE KID
         return { message: "Study session complete!" };
     }
 

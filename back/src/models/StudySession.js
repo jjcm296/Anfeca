@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const {type} = require("mocha/lib/utils");
 const { Schema } = mongoose;
 
 const studySessionSchema = Schema({
