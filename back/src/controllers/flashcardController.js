@@ -5,9 +5,9 @@ exports.startStudySession = async (req, res) => {
         const { bankId } = req.params;
         const kidId = req.user.kidId;
 
-        const { session, firstFlashcard } = await flashcardService.initializeStudySession(bankId, kidId);
+        const { sessionId, firstFlashcard } = await flashcardService.initializeStudySession(bankId, kidId);
 
-        res.status(201).json({ session, firstFlashcard });
+        res.status(201).json({ sessionId, firstFlashcard });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

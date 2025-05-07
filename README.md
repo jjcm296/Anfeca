@@ -54,7 +54,7 @@ Get profiles' names
 | Get a question              | GET    | `/api/banks/:bankId/questions/:questionId`                                 | Nothing                                           | Success message, JSON question object                                               |
 | Edit a question             | PUT    | `/api/banks/:bankId/questions/:questionId`                                 | { fields that are updated }                       | Success message, JSON updated question                                              |
 | Delete a question           | DELETE | `/api/banks/:bankId/questions/:questionId`                                 | Nothing                                           | Success message                                                                     |
-| Start study session         | GET    | `/api/banks/:bankId/flashcards/study-session`                              | Nothing                                           | {session: {_id}, front, back}                                                       |
+| Start study session         | GET    | `/api/banks/:bankId/flashcards/study-session`                              | Nothing                                           | {sessionId front, back}                                                             |
 | Get the following flashcard | POST   | `/api/banks/:bankId/flashcards/study-session/:studySessionId/:flashcardId` | { feedback }                                      | Flashcard JSON object with id, front and back; or message "Study session complete!" |
 
 - `:bankId` is the questions bank ID

@@ -101,7 +101,7 @@ exports.initializeStudySession = async (bankId, kidId) => {
     const firstCardId = cards[0].flashcardId;
     const firstFlashcard =  await Flashcard.findById(firstCardId).select('front back');
 
-    return  { session, firstFlashcard } ;
+    return  { sessionId: session._id, firstFlashcard } ;
 
 };
 
