@@ -32,13 +32,11 @@ Get profiles' names
 ![img_4.png](img_4.png)
 
 ### Kid
-| Purpose              | Method | Route                     | Consumes               | Returns                 |
-|----------------------|--------|---------------------------|------------------------|-------------------------|
-| Create kid profile   | POST   | `/api/kids/`              | JSON Object `{ name }` | JSON Kid profile object |
-| Kid study flashcards | ??     | api/kid/study/flashcards/ | ???                    | ???                     | 
-| Kid play game        | ??     | api/kid/play/game/        | ???                    | ???                     | 
-| get coins            |        |                           |                        |                         | 
-| get streak           |        |                           |                        |                         |
+| Purpose            | Method | Route              | Consumes               | Returns                 |
+|--------------------|--------|--------------------|------------------------|-------------------------|
+| Create kid profile | POST   | `/api/kids/`       | JSON Object `{ name }` | JSON Kid profile object |
+| get coins          | GET    | `/api/kids/coins`  | Nothing                | { coins }               | 
+| get streak         | GET    | `/api/kids/streak` | Nothing                | { streak }              |
 
 
 ### Questions bank
@@ -68,16 +66,20 @@ Get profiles' names
 ![img_7.png](img_7.png)
 
 ## Game
-| Purpose          | Method | Route                          | Consumes | Returns                  |
-|------------------|--------|--------------------------------|----------|--------------------------|
-| Fetch questions  | GET    | `/api/game/:bankId/start-game` | Nothing  | { sessionId, questions } |
-| Send game result | POST   |                                |          |                          |
+| Purpose          | Method | Route                                     | Consumes                                                                | Returns                       |
+|------------------|--------|-------------------------------------------|-------------------------------------------------------------------------|-------------------------------|
+| Fetch questions  | GET    | `/api/game/:bankId/start-game`            | Nothing                                                                 | { sessionId, questions }      |
+| Send game result | POST   | `/api/game/:bankId/:gameSessionId/result` | { "questions": [{"question", "answeredCorrectly"}], "individualCoins" } | Success message, earned coins |
 
 - fetch questions returns this
 
 ![img_6.png](img_6.png)
 
 - `questions` is the array with the 5 questions that will be displayed in the game
+- The request for `/api/game/:bankId/:gameSessionId/result` must be like this:
+
+![img_8.png](img_8.png)
+
 ### Reward
 | Purpose           | Method | Route                    | Consumes                                                                                  | Returns                                      |
 |-------------------|--------|--------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------|
