@@ -32,13 +32,11 @@ Get profiles' names
 ![img_4.png](img_4.png)
 
 ### Kid
-| Purpose              | Method | Route                     | Consumes               | Returns                 |
-|----------------------|--------|---------------------------|------------------------|-------------------------|
-| Create kid profile   | POST   | `/api/kids/`              | JSON Object `{ name }` | JSON Kid profile object |
-| Kid study flashcards | ??     | api/kid/study/flashcards/ | ???                    | ???                     | 
-| Kid play game        | ??     | api/kid/play/game/        | ???                    | ???                     | 
-| get coins            |        |                           |                        |                         | 
-| get streak           |        |                           |                        |                         |
+| Purpose            | Method | Route              | Consumes               | Returns                 |
+|--------------------|--------|--------------------|------------------------|-------------------------|
+| Create kid profile | POST   | `/api/kids/`       | JSON Object `{ name }` | JSON Kid profile object |
+| get coins          | GET    | `/api/kids/coins`  | Nothing                | { coins }               | 
+| get streak         | GET    | `/api/kids/streak` | Nothing                | { streak }              |
 
 
 ### Questions bank
