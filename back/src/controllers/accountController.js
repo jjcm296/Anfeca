@@ -8,6 +8,11 @@ const { generateGuardianPayload, generateKidPayload } = require('../lib/auth/pay
 exports.switchProfile = async (req, res) => {
     const { targetProfile, password } = req.body;
     const { id, guardianId, profileType } = req.user;
+
+    if (!guardianId) {
+        return res.status(400).json({ error: 'guardianId is missing from the current session' });
+    }
+
     let payload;
     let newAccessToken;
     let newRefreshToken;

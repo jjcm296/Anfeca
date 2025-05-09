@@ -1,5 +1,6 @@
 const StudySession = require('../models/StudySession.js');
 const Flashcard = require('../models/Flashcard.js');
+const GameSession = require("../models/GameSession");
 
 exports.createStudySession = async ( bankId, kidId, cards ) => {
     let session = await StudySession.findOne({ bankId, kidId });
@@ -49,4 +50,12 @@ exports.getFlashcardFromSession = async (flashcardId) => {
     }
 
     return flashcard;
+};
+
+exports.deleteStudySession = async (bankId) => {
+
+    const session = await GameSession.find({bankId});
+
+    await GameSession.findByIdAndDelete(session._id);
+
 };
