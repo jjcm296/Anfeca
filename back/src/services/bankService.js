@@ -1,5 +1,7 @@
 const Bank = require('../models/Bank.js');
 const questionService =  require('./questionService.js');
+const studySessionService = require('./studySessionService.js');
+const gameSessionService = require('./gameSessionService.js');
 
 exports.getAllBanks = async ( guardianId ) => {
 
@@ -52,6 +54,10 @@ exports.deleteBank = async (bankId) => {
     await Bank.findByIdAndDelete(bankId);
 
     await questionService.deleteQuestionsByBankId(bankId);
+
+    await studySessionService.deleteStudySession(bankId);
+
+    await gameSessionService.deleteGameSession(bankId);
 
 };
 

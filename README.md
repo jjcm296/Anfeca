@@ -32,13 +32,11 @@ Get profiles' names
 ![img_4.png](img_4.png)
 
 ### Kid
-| Purpose              | Method | Route                     | Consumes               | Returns                 |
-|----------------------|--------|---------------------------|------------------------|-------------------------|
-| Create kid profile   | POST   | `/api/kids/`              | JSON Object `{ name }` | JSON Kid profile object |
-| Kid study flashcards | ??     | api/kid/study/flashcards/ | ???                    | ???                     | 
-| Kid play game        | ??     | api/kid/play/game/        | ???                    | ???                     | 
-| get coins            |        |                           |                        |                         | 
-| get streak           |        |                           |                        |                         |
+| Purpose            | Method | Route              | Consumes               | Returns                 |
+|--------------------|--------|--------------------|------------------------|-------------------------|
+| Create kid profile | POST   | `/api/kids/`       | JSON Object `{ name }` | JSON Kid profile object |
+| get coins          | GET    | `/api/kids/coins`  | Nothing                | { coins }               | 
+| get streak         | GET    | `/api/kids/streak` | Nothing                | { streak }              |
 
 
 ### Questions bank
@@ -68,26 +66,31 @@ Get profiles' names
 ![img_7.png](img_7.png)
 
 ## Game
-| Purpose          | Method | Route                          | Consumes | Returns                  |
-|------------------|--------|--------------------------------|----------|--------------------------|
-| Fetch questions  | GET    | `/api/game/:bankId/start-game` | Nothing  | { sessionId, questions } |
-| Send game result | POST   |                                |          |                          |
+| Purpose          | Method | Route                                     | Consumes                                                                | Returns                       |
+|------------------|--------|-------------------------------------------|-------------------------------------------------------------------------|-------------------------------|
+| Fetch questions  | GET    | `/api/game/:bankId/start-game`            | Nothing                                                                 | { sessionId, questions }      |
+| Send game result | POST   | `/api/game/:bankId/:gameSessionId/result` | { "questions": [{"question", "answeredCorrectly"}], "individualCoins" } | Success message, earned coins |
 
 - fetch questions returns this
 
 ![img_6.png](img_6.png)
 
 - `questions` is the array with the 5 questions that will be displayed in the game
+- The request for `/api/game/:bankId/:gameSessionId/result` must be like this:
+
+![img_8.png](img_8.png)
+
 ### Reward
-| Purpose           | Method | Route                    | Consumes                                                                                  | Returns                                      |
-|-------------------|--------|--------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------|
-| Get all rewards   | GET    | `/api/rewards/`          | Nothing                                                                                   | Success message, Array of JSON banks objects |
-| Create reward     | POST   | `/api/rewards/`          | JSON Object `{ name, price, type }` or `{ name, price, type, redemptionLimit }` if needed | Success message, JSON Reward object          |
-| Get a reward      | GET    | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message, JSON Reward object          |
-| Edit a reward     | PUT    | `/api/rewards/:rewardId` | { fields that are updated }                                                               | Success message, JSON updated reward         |
-| Delete a reward   | DELETE | `/api/rewards/:rewardId` | Nothing                                                                                   | Success message                              |
-| Kid only, redeems | POST   | /api/rewards/redeem/:id  | ???                                                                                       | ???                                          |
-| Guardian confirms | POST   | /api/rewards/confirm/:id | ???                                                                                       | ???                                          |
+| Purpose                           | Method | Route                                             | Consumes                                                                                  | Returns                                                   |
+|-----------------------------------|--------|---------------------------------------------------|-------------------------------------------------------------------------------------------|-----------------------------------------------------------|
+| Get all rewards                   | GET    | `/api/rewards/`                                   | Nothing                                                                                   | Success message, Array of JSON banks objects              |
+| Create reward                     | POST   | `/api/rewards/`                                   | JSON Object `{ name, price, type }` or `{ name, price, type, redemptionLimit }` if needed | Success message, JSON Reward object                       |
+| Get a reward                      | GET    | `/api/rewards/:rewardId`                          | Nothing                                                                                   | Success message, JSON Reward object                       |
+| Edit a reward                     | PUT    | `/api/rewards/:rewardId`                          | { fields that are updated }                                                               | Success message, JSON updated reward                      |
+| Delete a reward                   | DELETE | `/api/rewards/:rewardId`                          | Nothing                                                                                   | Success message                                           |
+| Redeems reward                    | POST   | `/api/rewards/:rewardId/redeem`                   | Nothing                                                                                   | ![img_9.png](img_9.png)                                   |
+| Get all redeemed reward           | GET    | `/api/rewards/redeemed-rewards`                   | Nothing                                                                                   | Array with the redeemed rewards ![img_12.png](img_12.png) |                     
+| Guardian confirms redeemed reward | POST   | `/api/rewards/redeemed-rewards/:redeemedRewardId` | Nothing                                                                                   | ![img_13.png](img_13.png)                                 |
 - `type` is an enum `[once, forever, custom]`, if the user selects `custom` then the front must send `redemptionLimit`
 
 Without `redemptionLimit`
@@ -96,13 +99,17 @@ Without `redemptionLimit`
 With `redemptionLimit`
 ![img_2.png](img_2.png)
 
+![img_10.png](img_10.png)
+
+
+![img_11.png](img_11.png)
 
 ## ConcentraTDA Google acc
 - anfecaconcentratda@gmail.com  
 - Password321
 
 ## command to install dependencies 
-`npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose sib-api-v3-sdk joi`
+`npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose sib-api-v3-sdk joi luxon`
 `npm i --save-dev chai@^4.3.7 chai-http@^4.3.0 chai-as-promised@^8.0.1 mocha@^11.1.0 sinon@^20.0.0 cross-env@^7.0.3 sinon`
 
 ## command to run the API

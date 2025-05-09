@@ -1,6 +1,7 @@
 const Flashcard = require('../models/Flashcard.js');
 const studySessionService = require('../services/studySessionService.js');
 const gameSessionService = require('../services/gameSessionService.js');
+const kidService = require('../services/kidService.js');
 const { studySessionSchema } = require('../lib/joischemas/studySessionJoi.js');
 const { newGameSchema } = require('../lib/joischemas/gameSessionJoi.js');
 const retrievalService = require('../services/retrievalService.js');
@@ -127,10 +128,10 @@ exports.initializeStudySession = async (bankId, kidId) => {
 exports.study = async (flashcardId, feedback, studySessionId) => {
     const session = await studySessionService.getSessionById(studySessionId);
 
-    // feedback = 1 muy difícil
-    // feedback = 2 difícil
-    // feedback = 3 fácil
-    // feedback = 4  muy fácil
+    // feedback = 1 very difficult
+    // feedback = 2 difficult
+    // feedback = 3 easy
+    // feedback = 4  very easy
 
     if (feedback === undefined || feedback === null) throw new Error("No feedback provided");
     if (feedback > 4 || feedback < 1) throw new Error("Invalid feedback, must be from 1 to 4");
@@ -152,7 +153,7 @@ exports.study = async (flashcardId, feedback, studySessionId) => {
 
     if (session.cards.length === 0) {
         await session.deleteOne();
-        // ADD A COIN TO THE KID
+        await kidService.addCoins(session.kidId, 1);
         return { message: "Study session complete!" };
     }
 

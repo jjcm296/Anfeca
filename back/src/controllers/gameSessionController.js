@@ -18,9 +18,9 @@ exports.processGameResult = async (req,res) => {
         const { gameSessionId } = req.params;
         const { questions, individualCoins } = req.body;
 
-        const message = await gameSessionService.processResult(gameSessionId, questions, individualCoins);
+        const earnedCoins = await gameSessionService.processResult(gameSessionId, questions, individualCoins);
 
-        res.status(200).json(message);
+        res.status(200).json({ message: 'Game successfully completed', earnedCoins });
     } catch (error) {
         res.status(400).json({ error: error.message });
 

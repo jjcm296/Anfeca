@@ -47,6 +47,11 @@ const rewardSchema = Schema({
             message: messageGreaterThanZero
         }
     },
+    active: {
+        type: Boolean,
+        default: true,
+        required: true,
+    },
     guardianId: { type: Schema.Types.ObjectId, ref: 'Guardian', required: true }
 });
 
