@@ -102,3 +102,36 @@ exports.deleteReward = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+exports.redeemReward = async (req, res) => {
+    try {
+        const { rewardId } = req.params;
+        const kidId = req.user.kidId;
+
+        const redeemedReward = await rewardService.redeemReward(rewardId, kidId);
+
+        res.status(200).json({
+            message: "Reward redeemed successfully",
+            redeemedReward
+        });
+
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+exports.confirmRedeemedReward = async (req, res) => {
+    try {
+        const { redeemedRewardId } = req.params;
+
+        const updatedReward = await rewardService.confirmRedeemedReward(redeemedRewardId);
+
+        res.status(200).json({
+            message: "Reward confirmed successfully",
+            updatedReward
+        });
+
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};

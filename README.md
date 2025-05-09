@@ -104,7 +104,7 @@ With `redemptionLimit`
 - Password321
 
 ## command to install dependencies 
-`npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose sib-api-v3-sdk joi`
+`npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose sib-api-v3-sdk joi luxon`
 `npm i --save-dev chai@^4.3.7 chai-http@^4.3.0 chai-as-promised@^8.0.1 mocha@^11.1.0 sinon@^20.0.0 cross-env@^7.0.3 sinon`
 
 ## command to run the API
