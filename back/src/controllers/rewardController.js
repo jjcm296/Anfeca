@@ -68,7 +68,7 @@ exports.editReward = async (req, res) => {
             return res.status(404).json({ error: "Reward not found" });
         }
 
-        const { _id, __v, redemptionCount, guardianId, ...cleanedReward } = existingReward.toObject();
+        const { _id, __v, redemptionCount, guardianId, active, ...cleanedReward } = existingReward.toObject();
 
         if (req.body.type === 'forever') {
             delete cleanedReward.redemptionLimit;
@@ -135,3 +135,19 @@ exports.confirmRedeemedReward = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+exports.getUnconfirmedRewards = async (req, res) => {
+    try {
+        const guardianId = req.user.guardianId;
+
+        if (!guardianId) {
+            return res.status(400).json({ error: "Guardian ID not found in token" });
+        }
+
+        const redeemedRewards = await rewardService.getAllUnconfirmedRedeemedRewards(guardianId);
+
+        res.status(200).json({ redeemedRewards });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}

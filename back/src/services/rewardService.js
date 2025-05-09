@@ -10,8 +10,8 @@ async function findRewardOrThrow(rewardId) {
     return reward;
 }
 
-async function createRedeemedReward(rewardId) {
-    return await RedeemedReward.create({ rewardId });
+async function createRedeemedReward(rewardId, guardianId) {
+    return await RedeemedReward.create({ rewardId, guardianId });
 }
 
 
@@ -23,13 +23,13 @@ exports.getAllRewards = async (guardianId) => {
 
 exports.createReward = async ({ name, price, type, redemptionLimit, guardianId }) => {
 
-    const duplicatedReward = await Reward.find({ name, price, type, redemptionLimit, guardianId });
+    const duplicatedReward = await Reward.find({ name, price, type, guardianId });
 
     if (duplicatedReward > 0) throw Error("The same exact reward already exists");
 
     await Reward.create({ name, price, type, redemptionLimit, guardianId });
 
-    const reward = await Reward.findOne({ name, price, type, redemptionLimit, guardianId }).lean();
+    const reward = await Reward.findOne({ name, price, type, guardianId }).lean();
 
     return reward;
 };
@@ -71,6 +71,8 @@ exports.redeemReward = async (rewardId, kidId) => {
     const reward = await findRewardOrThrow(rewardId);
     const kid = await kidService.getKid(kidId);
 
+    const guardianId = kid.guardianId;
+
     // check coin balance before anything
     if (kid.coins < reward.price) throw new Error("Insufficient coins");
 
@@ -78,7 +80,7 @@ exports.redeemReward = async (rewardId, kidId) => {
     if (!reward.active) throw new Error("This reward can no longer be redeemed; it has reached its redemption limit.");
 
     // create new redeemed reward document
-    const redeemedReward = await createRedeemedReward(rewardId);
+    const redeemedReward = await createRedeemedReward(rewardId, guardianId);
     if (!redeemedReward) throw new Error("The reward wasn't redeemed");
 
     // modify redemption count
@@ -90,8 +92,10 @@ exports.redeemReward = async (rewardId, kidId) => {
     await kidService.substractCoins(kidId, reward.price);
 
     return {
-        ...redeemedReward.toObject(),
-        redeemDateFormatted: redeemedReward.redeemDateFormatted
+        _id: redeemedReward._id,
+        redeemDate: redeemedReward.redeemDateFormatted,
+        confirm: redeemedReward.confirm,
+        rewardId: redeemedReward.rewardId
     };
 }
 
@@ -100,15 +104,33 @@ exports.confirmRedeemedReward = async (redeemedRewardId) => {
 
     if (!redeemedReward) throw new Error("The redeemed reward not found");
 
-    if (redeemedReward.checkDate !== undefined && redeemedReward.checkDate <= new Date()) throw new Error("This reward has already been checked");
+    if (redeemedReward.confirm || redeemedReward.confirmDate) throw new Error("This reward has already been checked");
 
-    redeemedReward.checkDate = new Date();
+    redeemedReward.confirmDate = new Date();
+    redeemedReward.confirm = true;
 
     await redeemedReward.save();
 
     return {
-        ...redeemedReward.toObject(),
-        redeemDateFormatted: redeemedReward.redeemDateFormatted,
-        checkDateFormatted: redeemedReward.checkDateFormatted
+        _id: redeemedReward._id,
+        redeemDate: redeemedReward.redeemDateFormatted,
+        confirm: redeemedReward.confirm,
+        confirmDate: redeemedReward.confirmDateFormatted,
+        rewardId: redeemedReward.rewardId
     };
+};
+
+exports.getAllUnconfirmedRedeemedRewards = async (guardianId) => {
+    const allRedeemedRewards = await RedeemedReward.find({ guardianId, confirm: false }).populate('rewardId', 'name price');;
+
+    if (allRedeemedRewards.length === 0) return "There aren't no rewards to confirm";
+
+    const reedemedRewards = allRedeemedRewards.map(reward => ({
+        _id: reward._id,
+        rewardName: reward.rewardId.name,
+        redeemDate: reward.redeemDateFormatted,
+        confirm: reward.confirm
+    }));
+
+    return reedemedRewards;
 }

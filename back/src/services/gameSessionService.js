@@ -126,3 +126,11 @@ exports.getGameSession = async (bankId, kidId) => {
 
     return session;
 }
+
+exports.deleteGameSession = async (bankId) => {
+
+    const session = await StudySession.find({bankId});
+
+    await StudySession.findByIdAndDelete(session._id);
+
+};

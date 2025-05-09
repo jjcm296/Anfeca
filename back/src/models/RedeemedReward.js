@@ -9,11 +9,10 @@ const redeemedRewardSchema = Schema({
         default: () => new Date(),
         immutable: true
     },
-    checkDate: {
-        type: Date,
-        immutable: true
+    confirmDate: {
+        type: Date
     },
-    checked: {
+    confirm: {
         type: Boolean,
         default: false,
         required: true
@@ -21,7 +20,14 @@ const redeemedRewardSchema = Schema({
     rewardId : {
         type: Schema.Types.ObjectId,
         ref: 'Reward',
-        required: true
+        required: true,
+        immutable: true
+    },
+    guardianId : {
+        type: Schema.Types.ObjectId,
+        ref: 'Guardian',
+        required: true,
+        immutable: true
     }
 }, {
     strict: 'throw'
@@ -34,8 +40,8 @@ redeemedRewardSchema.virtual('redeemDateFormatted').get(function () {
 });
 
 redeemedRewardSchema.virtual('checkDateFormatted').get(function () {
-    return this.checkDate
-        ? DateTime.fromJSDate(this.checkDate, { zone: 'America/Mexico_City' })
+    return this.confirmDate
+        ? DateTime.fromJSDate(this.confirmDate, { zone: 'America/Mexico_City' })
             .toFormat('dd-MM-yyyy HH:mm')
         : null;
 });
