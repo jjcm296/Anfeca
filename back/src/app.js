@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const connectToDB = require('./lib/db/dbConnection.js');
+const job = require('./lib/cron/cron.js');
 const mongoose = require("mongoose");
 const apiRoutes = require('./routes/apiRoutes.js');
 
@@ -10,6 +11,8 @@ require('dotenv').config({ path: '../.env' });
 const app = express();
 
 const initializeApp = async () => {
+    job.start();
+
     try {
         const dbConnection = await connectToDB();
 
