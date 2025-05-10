@@ -1,28 +1,29 @@
-import React, { useState, useEffect , useCallback} from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+
 import QuestionBankCard from "./components/QuestionBankCard";
 import AddButton from "../ui/components/AddButton";
 import WebButton from "./components/WebButton";
-import {getAllBanks} from "../../api/ApiBank";
-import {ApiRefreshAccessToken} from "../../api/ApiLogin";
 import SkeletonQuestionBankCard from "./components/skeletons/SkeletonQuestionBankCard";
+import { getAllBanks } from "../../api/ApiBank";
+import { ApiRefreshAccessToken } from "../../api/ApiLogin";
+import { SessionContext } from "../../context/SessionContext";
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = () => {
     const [loading, setLoading] = useState(true);
     const [questionBanks, setQuestionBanks] = useState([]);
-
+    const { session } = useContext(SessionContext);
+    const navigation = useNavigation();
 
     useEffect(() => {
         const fetchBanks = async () => {
             setLoading(true);
             await ApiRefreshAccessToken();
             const banks = await getAllBanks();
-            console.log("Nombres de los bancos:", banks.banksArray.map(bank => bank.name));
             setQuestionBanks(banks.banksArray);
             setLoading(false);
         };
-
         fetchBanks();
     }, []);
 
@@ -31,13 +32,32 @@ const HomeScreen = ({ navigation }) => {
             const fetchBanks = async () => {
                 await ApiRefreshAccessToken();
                 const banks = await getAllBanks();
-                console.log("Nombres de los bancos:", banks.banksArray.map(bank => bank.name));
                 setQuestionBanks(banks.banksArray);
             };
-
             fetchBanks();
         }, [])
     );
+
+    const handleBankPress = (item) => {
+        console.log("🟡 Banco tocado:", item._id, item.name);
+
+        if (session.profileType === 'guardian') {
+            console.log("🔐 Perfil tutor, navegando a Questions");
+            navigation.navigate("Questions", { bankId: item._id });
+        } else if (session.profileType === 'kid') {
+            console.log("🧒 Perfil niño, navegando a GameSelector con:", item._id, item.name);
+            navigation.navigate("GameSelector", {
+                bankId: item._id,
+                bankName: item.name,
+            });
+        }
+    };
+
+    const handleLongPress = (item) => {
+        if (session.profileType === 'guardian') {
+            navigation.navigate("EditQuestionBank", { bankId: item._id });
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -53,23 +73,19 @@ const HomeScreen = ({ navigation }) => {
                     keyExtractor={(item) => item._id}
                     renderItem={({ item }) => (
                         <TouchableOpacity
-                            onPress={() =>
-                                navigation.navigate("Questions", { bankId: item._id, name: item.name })
-                            }
-                            onLongPress={() =>
-                                navigation.navigate("EditQuestionBank", { bankId: item._id })
-                            }
+                            onPress={() => handleBankPress(item)}
+                            onLongPress={() => handleLongPress(item)}
                         >
                             <QuestionBankCard category={item.name} questions={item.questions} />
                         </TouchableOpacity>
                     )}
                     contentContainerStyle={styles.listContainer}
-                    ItemSeparatorComponent={() => <View style={styles.separator} />}
-                    showsVerticalScrollIndicator={false}
                 />
             )}
 
-            <AddButton onPress={() => navigation.navigate("AddQuestionBank")} />
+            {session.profileType === 'guardian' && (
+                <AddButton onPress={() => navigation.navigate("AddQuestionBank")} />
+            )}
 
             <WebButton
                 imageSource={require('../../images/Logo-png.png')}
@@ -77,20 +93,14 @@ const HomeScreen = ({ navigation }) => {
             />
         </View>
     );
-
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
+    container: { flex: 1 },
     listContainer: {
         paddingVertical: 20,
         paddingHorizontal: 15,
         paddingBottom: 80,
-    },
-    separator: {
-        height: 5,
     },
 });
 

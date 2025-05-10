@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import RewardCard from './compoonents/RewardCard';
@@ -7,12 +7,15 @@ import { ApiRefreshAccessToken } from "../../api/ApiLogin";
 import { getAllRewards } from "../../api/ApiRewards";
 
 import SkeletonRewardCard from './compoonents/skeletons/SkeletonsRewardCard';
+import {SessionContext} from "../../context/SessionContext";
 
 const Rewards = () => {
     const navigation = useNavigation();
     const [rewards, setRewards] = useState([]);
     const [loading, setLoading] = useState(false);
     const [hasLoaded, setHasLoaded] = useState(false);
+
+    const {session} = useContext(SessionContext);
 
     const fetchRewards = async () => {
         try {
@@ -93,7 +96,10 @@ const Rewards = () => {
                     contentContainerStyle={styles.list}
                 />
             )}
-            <AddButton onPress={() => navigation.navigate('AddReward')} />
+            {session.profileType === 'guardian' && (
+                <AddButton onPress={() => navigation.navigate('AddReward')} />
+            )}
+
         </View>
     );
 };

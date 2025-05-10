@@ -10,20 +10,15 @@ export const getAllRewards = async () => {
                 Authorization: `Bearer ${token}`,
             },
         });
-
-        console.log("Respuesta completa:", response.data);
         return response.data;
-
     } catch (error) {
-        console.error("Error en getAllRewards:", error.message);
         return error.response?.data || { error: "No se pudo conectar con el servidor" };
     }
-}
+};
 
 export const createReward = async (reward) => {
     try {
         const token = await SecureStore.getItemAsync('accessToken');
-        console.log("Token a enviar:", token);
         const response = await axios.post(
             `${API_BASE_URL}/api/rewards/`,
             reward,
@@ -35,10 +30,9 @@ export const createReward = async (reward) => {
         );
         return response.data;
     } catch (error) {
-        console.error("Error en createReward:", error);
         return error.response?.data || { error: "No se pudo conectar con el servidor" };
     }
-}
+};
 
 export const deleteReward = async (rewardId) => {
     try {
@@ -50,10 +44,9 @@ export const deleteReward = async (rewardId) => {
         });
         return response.data;
     } catch (error) {
-        console.error("Error en deleteReward:", error);
         return error.response?.data || { error: "No se pudo conectar con el servidor" };
     }
-}
+};
 
 export const getRewardById = async (rewardId) => {
     try {
@@ -64,11 +57,10 @@ export const getRewardById = async (rewardId) => {
             },
         });
         return response.data;
-    }catch (error) {
-        console.error("Error en getRewardById:", error);
+    } catch (error) {
         return error.response?.data || { error: "No se pudo conectar con el servidor" };
     }
-}
+};
 
 export const ApiEditReward = async (rewardId, reward) => {
     try {
@@ -80,7 +72,6 @@ export const ApiEditReward = async (rewardId, reward) => {
         });
         return response.data;
     } catch (error) {
-        console.error("Error en ApiEditReward:", error);
         return error.response?.data || { error: "No se pudo conectar con el servidor" };
     }
-}
+};
