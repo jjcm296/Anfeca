@@ -24,12 +24,12 @@
 
 Get current profile info
 
-![img_3.png](img_3.png)
+![img_3.png](readmeImages/img_3.png)
 
 
 Get profiles' names
 
-![img_4.png](img_4.png)
+![img_4.png](readmeImages/img_4.png)
 
 ### Kid
 | Purpose            | Method | Route              | Consumes               | Returns                 |
@@ -59,11 +59,11 @@ Get profiles' names
 - `answers` in JSON Object must be an array of objects, max of 4 answers, at least one correct and one incorrect
 - `feedback` must be a number from 1 to 4. E.g. { "feedback": 4 }
 - `front` is the text question, `back` is the correct answer(s) 
-![img.png](img.png)
+![img.png](readmeImages/img.png)
 
 - start study session returns this
 
-![img_7.png](img_7.png)
+![img_7.png](readmeImages/img_7.png)
 
 ## Game
 | Purpose          | Method | Route                                     | Consumes                                                                | Returns                       |
@@ -73,12 +73,12 @@ Get profiles' names
 
 - fetch questions returns this
 
-![img_6.png](img_6.png)
+![img_6.png](readmeImages/img_6.png)
 
 - `questions` is the array with the 5 questions that will be displayed in the game
 - The request for `/api/game/:bankId/:gameSessionId/result` must be like this:
 
-![img_8.png](img_8.png)
+![img_8.png](readmeImages/img_8.png)
 
 ### Reward
 | Purpose                           | Method | Route                                             | Consumes                                                                                  | Returns                                                   |
@@ -88,21 +88,21 @@ Get profiles' names
 | Get a reward                      | GET    | `/api/rewards/:rewardId`                          | Nothing                                                                                   | Success message, JSON Reward object                       |
 | Edit a reward                     | PUT    | `/api/rewards/:rewardId`                          | { fields that are updated }                                                               | Success message, JSON updated reward                      |
 | Delete a reward                   | DELETE | `/api/rewards/:rewardId`                          | Nothing                                                                                   | Success message                                           |
-| Redeems reward                    | POST   | `/api/rewards/:rewardId/redeem`                   | Nothing                                                                                   | ![img_9.png](img_9.png)                                   |
-| Get all redeemed reward           | GET    | `/api/rewards/redeemed-rewards`                   | Nothing                                                                                   | Array with the redeemed rewards ![img_12.png](img_12.png) |                     
-| Guardian confirms redeemed reward | POST   | `/api/rewards/redeemed-rewards/:redeemedRewardId` | Nothing                                                                                   | ![img_13.png](img_13.png)                                 |
+| Redeems reward                    | POST   | `/api/rewards/:rewardId/redeem`                   | Nothing                                                                                   | ![img_9.png](readmeImages/img_9.png)                                   |
+| Get all redeemed reward           | GET    | `/api/rewards/redeemed-rewards`                   | Nothing                                                                                   | Array with the redeemed rewards ![img_12.png](readmeImages/img_12.png) |                     
+| Guardian confirms redeemed reward | POST   | `/api/rewards/redeemed-rewards/:redeemedRewardId` | Nothing                                                                                   | ![img_13.png](readmeImages/img_13.png)                                 |
 - `type` is an enum `[once, forever, custom]`, if the user selects `custom` then the front must send `redemptionLimit`
 
 Without `redemptionLimit`
-![img_1.png](img_1.png)
+![img_1.png](readmeImages/img_1.png)
 
 With `redemptionLimit`
-![img_2.png](img_2.png)
+![img_2.png](readmeImages/img_2.png)
 
-![img_10.png](img_10.png)
+![img_10.png](readmeImages/img_10.png)
 
 
-![img_11.png](img_11.png)
+![img_11.png](readmeImages/img_11.png)
 
 ## ConcentraTDA Google acc
 - anfecaconcentratda@gmail.com  
