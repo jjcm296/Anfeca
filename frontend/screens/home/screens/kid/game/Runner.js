@@ -29,6 +29,8 @@ const Runner = () => {
     const navigation = useNavigation();
 
     const coinSound = useRef();
+    const correctSound = useRef();
+
 
     useEffect(() => {
         const lockLandscape = async () => {
@@ -52,20 +54,25 @@ const Runner = () => {
 
     useEffect(() => {
         const loadSound = async () => {
-            const { sound } = await Audio.Sound.createAsync(
+            const { sound: coin } = await Audio.Sound.createAsync(
                 require('../../../../../assets/sounds/coin_bueno.mp3')
             );
-            coinSound.current = sound;
+            coinSound.current = coin;
+
+            const { sound: correct } = await Audio.Sound.createAsync(
+                require('../../../../../assets/sounds/respuesta_correcta.mp3')
+            );
+            correctSound.current = correct;
         };
 
         loadSound();
 
         return () => {
-            if (coinSound.current) {
-                coinSound.current.unloadAsync();
-            }
+            if (coinSound.current) coinSound.current.unloadAsync();
+            if (correctSound.current) correctSound.current.unloadAsync();
         };
     }, []);
+
 
 
     const startGame = async () => {
@@ -227,6 +234,8 @@ const Runner = () => {
                                         const isCorrect = i === currentQuestion.correct;
 
                                         if (isCorrect) {
+                                            if (correctSound.current) correctSound.current.replayAsync();
+
                                             if (entities[checkpointKey]) {
                                                 entities[checkpointKey].used = true;
                                                 entities[checkpointKey].isActive = false;
