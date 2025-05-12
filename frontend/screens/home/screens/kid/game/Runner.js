@@ -30,7 +30,7 @@ const Runner = () => {
 
     const coinSound = useRef();
     const correctSound = useRef();
-
+    const jumpSound = useRef();
 
     useEffect(() => {
         const lockLandscape = async () => {
@@ -63,13 +63,20 @@ const Runner = () => {
                 require('../../../../../assets/sounds/respuesta_correcta.mp3')
             );
             correctSound.current = correct;
+
+            const { sound: jump } = await Audio.Sound.createAsync(
+                require('../../../../../assets/sounds/salto.mp3')
+            );
+            jumpSound.current = jump;
         };
+
 
         loadSound();
 
         return () => {
             if (coinSound.current) coinSound.current.unloadAsync();
             if (correctSound.current) correctSound.current.unloadAsync();
+            if (jumpSound.current) jumpSound.current.unloadAsync();
         };
     }, []);
 
@@ -194,6 +201,9 @@ const Runner = () => {
         if (!running || pressStartTime === null) return;
         const pressDuration = Date.now() - pressStartTime;
         const strength = Math.min(pressDuration / 100, 10);
+
+        if (jumpSound.current) jumpSound.current.replayAsync();
+        
         gameEngine.current.dispatch({ type: 'jump', strength });
         setPressStartTime(null);
     };
