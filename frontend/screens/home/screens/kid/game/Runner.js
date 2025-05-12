@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import {
     StyleSheet, View, Dimensions, Text,
@@ -11,6 +10,7 @@ import { Physics } from './Physics';
 import { useNavigation } from '@react-navigation/native';
 import { resetSpeed } from './GameConfig';
 import Matter from 'matter-js';
+import { Audio } from 'expo-av';
 
 const { width, height } = Dimensions.get('window');
 
@@ -27,6 +27,8 @@ const Runner = () => {
     const [currentQuestion, setCurrentQuestion] = useState(null);
     const [comingFromCheckpoint, setComingFromCheckpoint] = useState(false);
     const navigation = useNavigation();
+
+    const coinSound = useRef();
 
     useEffect(() => {
         const lockLandscape = async () => {
@@ -47,6 +49,24 @@ const Runner = () => {
             { question: 'HTML significa...', options: ['Lenguaje de Marcado', 'Red Social', 'API'], correct: 0 }
         ];
     };
+
+    useEffect(() => {
+        const loadSound = async () => {
+            const { sound } = await Audio.Sound.createAsync(
+                require('../../../../../assets/sounds/coin_bueno.mp3')
+            );
+            coinSound.current = sound;
+        };
+
+        loadSound();
+
+        return () => {
+            if (coinSound.current) {
+                coinSound.current.unloadAsync();
+            }
+        };
+    }, []);
+
 
     const startGame = async () => {
         resetSpeed();
@@ -125,7 +145,11 @@ const Runner = () => {
         }
         if (e.type === 'coin-collected' && e.coinId) {
             setCoins(prev => prev + 1);
+            if (coinSound.current) {
+                coinSound.current.replayAsync();
+            }
         }
+
         if (e.type === 'checkpoint-hit') {
             const index = parseInt(e.id.split('-')[1]);
             const checkpointKey = `checkpoint-${index}`;
