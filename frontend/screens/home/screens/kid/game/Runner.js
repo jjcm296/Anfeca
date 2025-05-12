@@ -30,7 +30,7 @@ const Runner = () => {
 
     const coinSound = useRef();
     const correctSound = useRef();
-    const jumpSound = useRef();
+    const wrongSound = useRef();
 
     useEffect(() => {
         const lockLandscape = async () => {
@@ -64,10 +64,11 @@ const Runner = () => {
             );
             correctSound.current = correct;
 
-            const { sound: jump } = await Audio.Sound.createAsync(
-                require('../../../../../assets/sounds/salto.mp3')
+            const { sound: wrong } = await Audio.Sound.createAsync(
+                require('../../../../../assets/sounds/respuesta_incorrecta.mp3')
             );
-            jumpSound.current = jump;
+            wrongSound.current = wrong;
+
         };
 
 
@@ -77,6 +78,7 @@ const Runner = () => {
             if (coinSound.current) coinSound.current.unloadAsync();
             if (correctSound.current) correctSound.current.unloadAsync();
             if (jumpSound.current) jumpSound.current.unloadAsync();
+            if (wrongSound.current) wrongSound.current.unloadAsync();
         };
     }, []);
 
@@ -202,8 +204,6 @@ const Runner = () => {
         const pressDuration = Date.now() - pressStartTime;
         const strength = Math.min(pressDuration / 100, 10);
 
-        if (jumpSound.current) jumpSound.current.replayAsync();
-        
         gameEngine.current.dispatch({ type: 'jump', strength });
         setPressStartTime(null);
     };
@@ -256,6 +256,7 @@ const Runner = () => {
                                             gameEngine.current.dispatch({ type: 'resume-after-checkpoint' });
                                             setRunning(true);
                                         } else {
+                                            if (wrongSound.current) wrongSound.current.replayAsync(); // 🔊 sonido de error
                                             setGameOver(true);
                                         }
                                     }}
