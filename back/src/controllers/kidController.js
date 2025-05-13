@@ -14,7 +14,12 @@ exports.createKid = async (req, res) => {
 
 exports.getStreak = async (req, res) => {
     try {
-        const kidId = req.user.kidId;
+        let kidId = req.user.kidId;
+
+        if (!kidId) {
+            const kid = await kidService.getKidByGuardianId(req.user.guardianId);
+            kidId = kid._id;
+        }
 
         const streak = await kidService.getStreak(kidId);
 
@@ -26,7 +31,12 @@ exports.getStreak = async (req, res) => {
 
 exports.getCoins = async (req, res) => {
     try {
-        const kidId = req.user.kidId;
+        let kidId = req.user.kidId;
+
+        if (!kidId) {
+            const kid = await kidService.getKidByGuardianId(req.user.guardianId);
+            kidId = kid._id;
+        }
 
         const coins = await kidService.getCoins(kidId);
 
