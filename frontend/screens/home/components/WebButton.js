@@ -58,8 +58,8 @@ const WebButton = ({ url, imageSource }) => {
 const styles = StyleSheet.create({
     button: {
         position: 'absolute',
-        width: 80,
-        height: 80,
+        width: 100,
+        height: 100,
         borderRadius: 40,
         justifyContent: 'center',
         alignItems: 'center',

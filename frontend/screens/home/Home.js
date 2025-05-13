@@ -39,13 +39,9 @@ const HomeScreen = () => {
     );
 
     const handleBankPress = (item) => {
-        console.log("🟡 Banco tocado:", item._id, item.name);
-
         if (session.profileType === 'guardian') {
-            console.log("🔐 Perfil tutor, navegando a Questions");
             navigation.navigate("Questions", { bankId: item._id });
         } else if (session.profileType === 'kid') {
-            console.log("🧒 Perfil niño, navegando a GameSelector con:", item._id, item.name);
             navigation.navigate("GameSelector", {
                 bankId: item._id,
                 bankName: item.name,
@@ -88,7 +84,7 @@ const HomeScreen = () => {
             )}
 
             <WebButton
-                imageSource={require('../../images/Logo-png.png')}
+                imageSource={require('../../assets/logo/Logo .png')}
                 url={'https://concentra-tda-kqrwj8g59-jjcm296s-projects.vercel.app'}
             />
         </View>
