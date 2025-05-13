@@ -10,12 +10,15 @@ import {
     Alert
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+
 import RewardCard from './compoonents/RewardCard';
 import AddButton from '../ui/components/AddButton';
 import { ApiRefreshAccessToken } from "../../api/ApiLogin";
 import { getAllRewards, redeemReward } from "../../api/ApiRewards";
 import SkeletonRewardCard from './compoonents/skeletons/SkeletonsRewardCard';
 import { SessionContext } from "../../context/SessionContext";
+import {Ionicons} from "@expo/vector-icons";
 
 const Rewards = () => {
     const navigation = useNavigation();
@@ -35,8 +38,7 @@ const Rewards = () => {
             setRewards(response.rewardsArray);
             setHasLoaded(true);
             setLoading(false);
-        } catch (error) {
-            console.error("Error fetching rewards:", error);
+        } catch {
             setLoading(false);
         }
     };
@@ -58,9 +60,8 @@ const Rewards = () => {
                         setHasLoaded(true);
                         setLoading(false);
                     }
-                } catch (error) {
+                } catch {
                     if (isActive) {
-                        console.error("Error fetching rewards:", error);
                         setLoading(false);
                     }
                 }
@@ -77,29 +78,45 @@ const Rewards = () => {
 
     const handleConfirmRedeem = async () => {
         if (!selectedReward) return;
+
+        if (session.kid?.coins < selectedReward.price) {
+            Alert.alert("¡Ups!", "No tienes suficientes monedas para canjear esta recompensa.");
+            return;
+        }
+
         try {
             await ApiRefreshAccessToken();
-            await redeemReward(selectedReward._id);
-            Alert.alert("Éxito", "La recompensa fue canjeada");
-            setModalVisible(false);
+            const response = await redeemReward(selectedReward._id);
+
+            if (response?.redeemedReward) {
+                Alert.alert("Éxito", "La recompensa fue canjeada");
+                setModalVisible(false);
+                await fetchRewards();
+            } else {
+                throw new Error("Respuesta inesperada del servidor");
+            }
         } catch (error) {
-            console.error("Error al canjear:", error);
-            Alert.alert("Error", error.error || "No se pudo canjear la recompensa");
-        }
-    };
+                Alert.alert("Error", error?.error || "No se pudo canjear la recompensa");
+                setModalVisible(false);
+            }
+
+        };
+
 
 
     return (
-        <View style={styles.container}>
+        <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.container}>
             {session.profileType === 'guardian' && (
                 <TouchableOpacity
                     onPress={() => navigation.navigate('RedeemedRewards')}
-                    style={{ marginBottom: 15, alignSelf: 'flex-end' }}
+                    style={{ marginBottom: 15, alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center' }}
                 >
-                    <Text style={{ color: '#6200EE', fontWeight: 'bold' }}>
-                        Ver recompensas canjeadas
+                    <Ionicons name="gift-outline" size={18} color="#ffffff" style={{ marginRight: 6 }} />
+                    <Text style={{ color: '#ffffff', fontWeight: 'bold' }}>
+                        recompensas canjeadas
                     </Text>
                 </TouchableOpacity>
+
             )}
 
             {loading && !hasLoaded ? (
@@ -175,7 +192,7 @@ const Rewards = () => {
                     </View>
                 </View>
             </Modal>
-        </View>
+        </LinearGradient>
     );
 };
 
