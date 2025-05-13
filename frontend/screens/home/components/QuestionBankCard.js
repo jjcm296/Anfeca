@@ -1,97 +1,231 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useState } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Image,
+    Modal,
+    Alert,
+} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
+import { deleteBank } from '../../../api/ApiBank'; // Asegúrate que esta ruta sea correcta
 
-const QuestionBankCard = ({ category, questions }) => {
+const QuestionBankCard = ({
+                              category,
+                              questions,
+                              canPlayMiniGame,
+                              profileType,
+                              bankId,
+                              bankName,
+                              onBankDeleted,
+                          }) => {
+    const navigation = useNavigation();
+    const canStudy = !canPlayMiniGame;
+    const isKid = profileType === 'kid';
+    const isGuardian = profileType === 'guardian';
+
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const handleStudy = () => {
+        navigation.navigate('FlashCardGame', { bankId, bankName });
+    };
+
+    const handlePlayGame = () => {
+        navigation.navigate('RunnerGame', { bankId, bankName });
+    };
+
+    const handleGuardianMenu = () => {
+        setModalVisible(true);
+    };
+
+    const handleEdit = () => {
+        setModalVisible(false);
+        navigation.navigate('EditQuestionBank', { bankId });
+    };
+
+    const handleDelete = async () => {
+        try {
+            await deleteBank(bankId);
+            Alert.alert('Eliminado', 'El banco ha sido eliminado correctamente.');
+            if (onBankDeleted) onBankDeleted(bankId);
+        } catch (error) {
+            console.error('Error al eliminar banco:', error);
+            Alert.alert('Error', 'No se pudo eliminar el banco.');
+        } finally {
+            setModalVisible(false);
+        }
+    };
+
     return (
         <View style={styles.card}>
-            <View style={styles.textContainer}>
-                {/* Categoría dinámica */}
-                <Text style={styles.categoryText}>{category}</Text>
+            <View style={styles.headerRow}>
+                <Text style={styles.categoryText} numberOfLines={1}>{category}</Text>
 
-                {/* Coins (valor fijo) */}
-                <View style={styles.priceContainer}>
-                    <Image source={require('../../../images/Coins_bueno.png')} style={styles.coinImage} />
-                    <Text style={styles.priceText}>1</Text>
-                </View>
+                {isKid && (
+                    <View style={styles.priceContainer}>
+                        <Image source={require('../../../images/Coins_bueno.png')} style={styles.coinImage} />
+                        <Text style={styles.priceText}>1</Text>
+                    </View>
+                )}
 
-                {/* Número de Preguntas dinámico */}
-                <Text style={styles.questionsText}>Preguntas: {questions}</Text>
+                {isGuardian && (
+                    <TouchableOpacity onPress={handleGuardianMenu}>
+                        <Ionicons name="menu" size={26} color="#555" />
+                    </TouchableOpacity>
+                )}
             </View>
 
-            {/* Imagen (valor fijo) */}
-            <Image
-                source={{ uri: 'https://via.placeholder.com/150' }} // Imagen estática
-                style={styles.image}
-            />
+            {isKid && (
+                <View style={styles.buttonsRow}>
+                    <TouchableOpacity
+                        style={[styles.button, canStudy ? styles.active : styles.disabled]}
+                        disabled={!canStudy}
+                        onPress={handleStudy}
+                    >
+                        <Ionicons name={canStudy ? 'book' : 'lock-closed'} size={26} color="white" />
+                        <Text style={styles.buttonText}>Estudiar</Text>
+                    </TouchableOpacity>
 
-            {/* Botón de Play */}
-            <TouchableOpacity style={styles.playButton}>
-                <Ionicons name="play" size={24} color="white" />
-            </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.button, canPlayMiniGame ? styles.active : styles.disabled]}
+                        disabled={!canPlayMiniGame}
+                        onPress={handlePlayGame}
+                    >
+                        <Ionicons name={canPlayMiniGame ? 'game-controller' : 'lock-closed'} size={26} color="white" />
+                        <Text style={styles.buttonText}>Minijuego</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
+            {isGuardian && (
+                <Text style={styles.questionsText}>Preguntas: {questions}</Text>
+            )}
+
+            <Modal
+                animationType="fade"
+                transparent
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <TouchableOpacity style={styles.modalButton} onPress={handleEdit}>
+                            <Ionicons name="create-outline" size={24} color="#3E9697" />
+                            <Text style={styles.modalText}>Editar banco</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.modalButton} onPress={handleDelete}>
+                            <Ionicons name="trash-outline" size={24} color="#FF4E4E" />
+                            <Text style={styles.modalText}>Eliminar banco</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
+                            <Ionicons name="close-circle-outline" size={24} color="#888" />
+                            <Text style={styles.modalText}>Cancelar</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     card: {
-        flexDirection: 'row',
-        backgroundColor: '#FFFFFF', // Blanco para mejor contraste
-        borderRadius: 20, // Esquinas más redondeadas
-        padding: 15,
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        backgroundColor: '#FFF',
+        borderRadius: 20,
+        padding: 20,
+        marginVertical: 12,
         marginHorizontal: 10,
-        marginTop: 5, // Mayor separación entre tarjetas
+        minHeight: 160,
+        justifyContent: 'space-between',
     },
-    playButton: {
-        width: 60,
-        height: 60,
-        borderRadius: 15,
-        backgroundColor: '#A0A0A0',
-        justifyContent: 'center',
+    headerRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        marginRight: 10, // Espaciado entre imagen y botón
+        marginBottom: 12,
     },
-    textContainer: {
+    categoryText: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#333',
         flex: 1,
-        marginLeft: 5,
     },
     priceContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 1, // Mayor separación con "Preguntas"
     },
     coinImage: {
-        width: 25, // Tamaño reducido de la moneda
-        height: 25,
+        width: 26,
+        height: 26,
         resizeMode: 'contain',
-        marginRight: -5, // Mueve la moneda más a la izquierda
     },
     priceText: {
-        fontSize: 16,
+        fontSize: 17,
         fontWeight: 'bold',
         color: '#555',
-        marginLeft: 5, // Reduce el espacio entre la moneda y el número
-        lineHeight: 20, // Aumenta el espacio entre líneas
-    },
-    categoryText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 2, // Mayor separación con el precio
-        lineHeight: 28, // Aumenta el interlineado
+        marginLeft: 6,
     },
     questionsText: {
         fontSize: 16,
-        color: '#555',
-        lineHeight: 22, // Espaciado entre líneas del texto
+        color: '#666',
+        marginTop: 10,
     },
-    image: {
-        width: 80,
-        height: 80,
-        borderRadius: 10,
-        marginLeft: 10, // Espaciado entre imagen y botón
+    buttonsRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10,
+    },
+    button: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderRadius: 14,
+        flex: 0.48,
+        justifyContent: 'center',
+    },
+    active: {
+        backgroundColor: '#3E9697',
+    },
+    disabled: {
+        backgroundColor: '#BDBDBD',
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 16,
+        marginLeft: 8,
+        fontWeight: 'bold',
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 20,
+        width: '80%',
+        alignItems: 'center',
+    },
+    modalButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f1f1f1',
+        borderRadius: 12,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        marginVertical: 8,
+        width: '100%',
+    },
+    modalText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginLeft: 10,
+        color: '#333',
     },
 });
 

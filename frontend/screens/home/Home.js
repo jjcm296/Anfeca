@@ -40,25 +40,18 @@ const HomeScreen = () => {
     );
 
     const handleBankPress = (item) => {
-        if (session.profileType === 'guardian') {
-            navigation.navigate("Questions", { bankId: item._id });
-        } else if (session.profileType === 'kid') {
-            navigation.navigate("GameSelector", {
-                bankId: item._id,
-                bankName: item.name,
-            });
-        }
+        navigation.navigate("Questions", { bankId: item._id });
     };
 
-    const handleLongPress = (item) => {
-        if (session.profileType === 'guardian') {
-            navigation.navigate("EditQuestionBank", { bankId: item._id });
-        }
+    const handleBankDeleted = (deletedBankId) => {
+        setTimeout(() => {
+            setQuestionBanks(prev => prev.filter(bank => bank._id !== deletedBankId));
+        }, 800);
     };
 
     return (
         <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.container}>
-        {loading ? (
+            {loading ? (
                 <View style={styles.listContainer}>
                     {[1, 2, 3, 4, 5].map((_, index) => (
                         <SkeletonQuestionBankCard key={index} />
@@ -68,14 +61,29 @@ const HomeScreen = () => {
                 <FlatList
                     data={questionBanks}
                     keyExtractor={(item) => item._id}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity
-                            onPress={() => handleBankPress(item)}
-                            onLongPress={() => handleLongPress(item)}
-                        >
-                            <QuestionBankCard category={item.name} questions={item.questions} />
-                        </TouchableOpacity>
-                    )}
+                    renderItem={({ item }) => {
+                        const commonProps = {
+                            category: item.name,
+                            questions: item.questions,
+                            profileType: session.profileType,
+                            bankId: item._id,
+                            bankName: item.name,
+                            canPlayMiniGame: false,
+                            onBankDeleted: handleBankDeleted,
+                        };
+
+                        if (session.profileType === 'guardian') {
+                            return (
+                                <TouchableOpacity
+                                    onPress={() => handleBankPress(item)}
+                                >
+                                    <QuestionBankCard {...commonProps} />
+                                </TouchableOpacity>
+                            );
+                        }
+
+                        return <QuestionBankCard {...commonProps} />;
+                    }}
                     contentContainerStyle={styles.listContainer}
                 />
             )}
