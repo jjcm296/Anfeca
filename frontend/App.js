@@ -5,6 +5,7 @@
     import { createStackNavigator } from '@react-navigation/stack';
     import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
     import Ionicons from 'react-native-vector-icons/Ionicons';
+    import { useContext } from 'react';
 
     // Pantallas principales
     import HomeScreen from './screens/home/Home';
@@ -124,6 +125,9 @@
     }
 
     function MainTabs() {
+        const { session } = useContext(SessionContext);
+        const isKid = session?.profileType === 'kid';
+
         return (
             <Tab.Navigator
                 initialRouteName="Home"
@@ -136,7 +140,7 @@
                         else if (route.name === 'Profile') iconName = 'person';
                         return <Ionicons name={iconName} size={size} color={color} />;
                     },
-                    tabBarActiveTintColor: '#2F5C98', // azul institucional oscuro
+                    tabBarActiveTintColor: '#2F5C98',
                     tabBarInactiveTintColor: 'gray',
                     tabBarStyle: {
                         backgroundColor: '#ffffff',
@@ -154,7 +158,9 @@
             >
                 <Tab.Screen name="Rewards" component={RewardsStackWrapper} options={{ unmountOnBlur: true }} />
                 <Tab.Screen name="Home" component={HomeStackWrapper} options={{ unmountOnBlur: true }} />
-                <Tab.Screen name="Premium" component={PremiumStackWrapper} options={{ unmountOnBlur: true }} />
+                {!isKid && (
+                    <Tab.Screen name="Premium" component={PremiumStackWrapper} options={{ unmountOnBlur: true }} />
+                )}
                 <Tab.Screen name="Profile" component={ProfileScreen} options={{ unmountOnBlur: true }} />
             </Tab.Navigator>
         );
