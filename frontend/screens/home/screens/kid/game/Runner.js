@@ -77,7 +77,6 @@ const Runner = () => {
         return () => {
             if (coinSound.current) coinSound.current.unloadAsync();
             if (correctSound.current) correctSound.current.unloadAsync();
-            if (jumpSound.current) jumpSound.current.unloadAsync();
             if (wrongSound.current) wrongSound.current.unloadAsync();
         };
     }, []);
