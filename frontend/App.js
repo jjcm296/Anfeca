@@ -61,8 +61,6 @@
                 <Stack.Screen name="AddQuestion" component={AddQuestionScreen} />
                 <Stack.Screen name="EditQuestion" component={EditQuestion} />
                 <Stack.Screen name="GameSelector" component={GameSelector} />
-                <Stack.Screen name="FlashCardGame" component={FlashCardGame} />
-                <Stack.Screen name="RunnerGame" component={Runner} />
             </Stack.Navigator>
         );
     }
@@ -147,10 +145,13 @@
                 <Stack.Screen name="VerificationCode" component={VerificationCode} />
                 <Stack.Screen name="Login" component={Login} />
                 <Stack.Screen name="MainTabs" component={MainTabs} />
+                <Stack.Screen name="FlashCardGame" component={FlashCardGame} options={{ headerShown: false }} />
+                <Stack.Screen name="RunnerGame" component={Runner} options={{ headerShown: false }} />
                 <Stack.Screen name="Profile" component={ProfileScreen} />
             </Stack.Navigator>
         );
     }
+
 
     export default function App() {
         return (
