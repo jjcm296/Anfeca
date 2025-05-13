@@ -39,6 +39,7 @@
     import Profile from "./screens/profile/Profile";
     import {AuthContext, AuthProvider} from "./context/AuthContext";
     import {SessionContext, SessionProvider} from "./context/SessionContext";
+    import RedeemedRewards from "./screens/rewards/screens/RedeemedRewards";
 
     const Stack = createStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -88,6 +89,7 @@
                     <Stack.Screen name="RewardsMain" component={Rewards} />
                     <Stack.Screen name="AddReward" component={AddReward} />
                     <Stack.Screen name="EditReward" component={EditReward} />
+                    <Stack.Screen name="RedeemedRewards" component={RedeemedRewards} options={{ title: 'Recompensas canjeadas' }} />
                 </Stack.Navigator>
             </View>
         );
