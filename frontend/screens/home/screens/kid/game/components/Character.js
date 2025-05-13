@@ -1,22 +1,21 @@
-import React from 'react';
-import { View, Image } from 'react-native';
+import { Image as ExpoImage } from 'expo-image';
 
 export const Character = ({ body }) => {
-    const width = 50, height = 50;
+    const width = 80, height = 80;
     const x = body.position.x - width / 2;
     const y = body.position.y - height / 2;
 
     return (
-        <Image
-            source={require('../../../../../../images/Logo-png.png')}
+        <ExpoImage
+            source={require('../../../../../../assets/mascota/fox_run.gif')}
             style={{
                 position: 'absolute',
                 width,
                 height,
                 left: x,
                 top: y,
-                resizeMode: 'contain'
             }}
+            contentFit="contain"
         />
     );
 };

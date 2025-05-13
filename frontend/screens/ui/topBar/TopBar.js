@@ -1,18 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, StyleSheet, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import CoinsDisplay from '../components/CoinsDisplay';
-import ProfileImage from "../components/ProfileImage";
-import StreakDisplay from "../components/StreakDisplay";
+import StreakDisplay from '../components/StreakDisplay';
+import { ApiGetCoins, ApiGetStreaks } from '../../../api/UserStats';
+import { SessionContext } from '../../../context/SessionContext';
+import { ApiRefreshAccessToken } from "../../../api/ApiLogin";
 
-const TopBar = ({ coins }) => {
+const TopBar = () => {
     const navigation = useNavigation();
+    const { session } = useContext(SessionContext);
+    const [coins, setCoins] = useState(0);
+    const [streak, setStreak] = useState(0);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                await ApiRefreshAccessToken();
+                const coinsRes = await ApiGetCoins();
+                const streakRes = await ApiGetStreaks();
+                if (coinsRes?.coins != null) setCoins(coinsRes.coins);
+                if (streakRes?.streak != null) setStreak(streakRes.streak);
+            } catch (error) {
+            }
+        };
+
+        fetchStats();
+    }, [session.profileType]);
 
     return (
         <View style={styles.topBar}>
             <StatusBar backgroundColor="#2faaf6" barStyle="light-content" />
             <CoinsDisplay coins={coins} />
-            <StreakDisplay streak={5} />
+            <StreakDisplay streak={streak} />
         </View>
     );
 };

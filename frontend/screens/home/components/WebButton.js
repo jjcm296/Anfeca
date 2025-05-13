@@ -4,7 +4,7 @@ import { Animated, PanResponder, TouchableOpacity, Image, StyleSheet, Linking, D
 const { width, height } = Dimensions.get('window');
 
 const WebButton = ({ url, imageSource }) => {
-    const position = useRef(new Animated.ValueXY({ x: width - 90, y: height * 0.02 })).current;
+    const position = useRef(new Animated.ValueXY({ x: width - 95, y: height * 0.02 })).current;
     const [isDragging, setIsDragging] = useState(false);
 
     const handlePress = () => {
@@ -29,11 +29,8 @@ const WebButton = ({ url, imageSource }) => {
                 setIsDragging(false);
                 position.flattenOffset();
 
-                let newX = gesture.moveX < width / 2 ? 10 : width - 90;
+                let newX = gesture.moveX < width / 2 ? -21 : width - 95;
                 let newY = Math.max(height * 0.02, Math.min(gesture.moveY, height - 250));
-                // 🔥 newY:
-                // - `height * 0.05` → Límite superior aún más arriba
-                // - `height - 250` → Límite inferior antes del botón de agregar
 
                 Animated.spring(position, {
                     toValue: { x: newX, y: newY },
@@ -58,8 +55,8 @@ const WebButton = ({ url, imageSource }) => {
 const styles = StyleSheet.create({
     button: {
         position: 'absolute',
-        width: 100,
-        height: 100,
+        width: 120,
+        height: 120,
         borderRadius: 40,
         justifyContent: 'center',
         alignItems: 'center',

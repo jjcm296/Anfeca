@@ -5,6 +5,7 @@
     import { createStackNavigator } from '@react-navigation/stack';
     import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
     import Ionicons from 'react-native-vector-icons/Ionicons';
+    import { useContext } from 'react';
 
     // Pantallas principales
     import HomeScreen from './screens/home/Home';
@@ -39,6 +40,7 @@
     import Profile from "./screens/profile/Profile";
     import {AuthContext, AuthProvider} from "./context/AuthContext";
     import {SessionContext, SessionProvider} from "./context/SessionContext";
+    import RedeemedRewards from "./screens/rewards/screens/RedeemedRewards";
 
     const Stack = createStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -88,6 +90,7 @@
                     <Stack.Screen name="RewardsMain" component={Rewards} />
                     <Stack.Screen name="AddReward" component={AddReward} />
                     <Stack.Screen name="EditReward" component={EditReward} />
+                    <Stack.Screen name="RedeemedRewards" component={RedeemedRewards} options={{ title: 'Recompensas canjeadas' }} />
                 </Stack.Navigator>
             </View>
         );
@@ -103,7 +106,7 @@
 
         return (
             <View style={{ flex: 1 }}>
-                {shouldShowTopBar && <TopBar coins={100} />}
+                {shouldShowTopBar && <TopBar/>}
                 <RewardsStack />
             </View>
         );
@@ -115,13 +118,16 @@
 
         return (
             <View style={{ flex: 1 }}>
-                {shouldShowTopBar && <TopBar coins={100} />}
+                {shouldShowTopBar && <TopBar/>}
                 <PremiumScreen />
             </View>
         );
     }
 
     function MainTabs() {
+        const { session } = useContext(SessionContext);
+        const isKid = session?.profileType === 'kid';
+
         return (
             <Tab.Navigator
                 initialRouteName="Home"
@@ -134,7 +140,7 @@
                         else if (route.name === 'Profile') iconName = 'person';
                         return <Ionicons name={iconName} size={size} color={color} />;
                     },
-                    tabBarActiveTintColor: '#2F5C98', // azul institucional oscuro
+                    tabBarActiveTintColor: '#2F5C98',
                     tabBarInactiveTintColor: 'gray',
                     tabBarStyle: {
                         backgroundColor: '#ffffff',
@@ -152,7 +158,9 @@
             >
                 <Tab.Screen name="Rewards" component={RewardsStackWrapper} options={{ unmountOnBlur: true }} />
                 <Tab.Screen name="Home" component={HomeStackWrapper} options={{ unmountOnBlur: true }} />
-                <Tab.Screen name="Premium" component={PremiumStackWrapper} options={{ unmountOnBlur: true }} />
+                {!isKid && (
+                    <Tab.Screen name="Premium" component={PremiumStackWrapper} options={{ unmountOnBlur: true }} />
+                )}
                 <Tab.Screen name="Profile" component={ProfileScreen} options={{ unmountOnBlur: true }} />
             </Tab.Navigator>
         );
