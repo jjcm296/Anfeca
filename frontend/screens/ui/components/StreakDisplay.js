@@ -21,9 +21,10 @@ const styles = StyleSheet.create({
     streakText: {
         fontSize: 19,
         fontWeight: 'bold',
-        color: '#FF4500',
+        color: '#ffffff',
         marginLeft: 5,
     },
+
 });
 
 export default StreakDisplay;
