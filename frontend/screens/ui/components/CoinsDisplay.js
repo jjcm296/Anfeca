@@ -25,9 +25,10 @@ const styles = StyleSheet.create({
     coinText: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#000000',
+        color: '#ffffff',
         marginLeft: 2,
     },
+
 });
 
 export default CoinsDisplay;
