@@ -106,7 +106,7 @@
 
         return (
             <View style={{ flex: 1 }}>
-                {shouldShowTopBar && <TopBar coins={100} />}
+                {shouldShowTopBar && <TopBar/>}
                 <RewardsStack />
             </View>
         );
@@ -118,7 +118,7 @@
 
         return (
             <View style={{ flex: 1 }}>
-                {shouldShowTopBar && <TopBar coins={100} />}
+                {shouldShowTopBar && <TopBar/>}
                 <PremiumScreen />
             </View>
         );
