@@ -1,23 +1,44 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    Image,
+    Animated,
+    Easing,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import CustonButton from '../ui/components/CustomButton';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const Authentication = () => {
     const navigation = useNavigation();
+    const translateYAnim = useRef(new Animated.Value(100)).current; // parte desde abajo
+
+    useEffect(() => {
+        Animated.timing(translateYAnim, {
+            toValue: 0,
+            duration: 1800,
+            easing: Easing.out(Easing.exp),
+            useNativeDriver: true,
+        }).start();
+    }, []);
 
     return (
-        <LinearGradient
-            colors={['#2faaf6', '#ffffff']}
-            style={styles.container}
-        >
+        <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.container}>
             <View style={styles.topSection}>
-                <Image
-                    source={require('../../assets/logo/Logo .png')}
-                    style={styles.image}
-                    resizeMode="contain"
-                />
+                <Animated.View
+                    style={{
+                        transform: [{ translateY: translateYAnim }],
+                    }}
+                >
+                    <Image
+                        source={require('../../assets/logo/Logo .png')}
+                        style={styles.image}
+                        resizeMode="contain"
+                    />
+                </Animated.View>
+
                 <Text style={styles.text}>Bienvenido</Text>
             </View>
 
