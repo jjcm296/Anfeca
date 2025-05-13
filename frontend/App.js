@@ -109,6 +109,18 @@
         );
     }
 
+    function PremiumStackWrapper() {
+        const currentRouteName = useNavigationState(getActiveRouteName);
+        const shouldShowTopBar = true;
+
+        return (
+            <View style={{ flex: 1 }}>
+                {shouldShowTopBar && <TopBar coins={100} />}
+                <PremiumScreen />
+            </View>
+        );
+    }
+
     function MainTabs() {
         return (
             <Tab.Navigator
@@ -122,15 +134,25 @@
                         else if (route.name === 'Profile') iconName = 'person';
                         return <Ionicons name={iconName} size={size} color={color} />;
                     },
-                    tabBarActiveTintColor: '#6200EE',
+                    tabBarActiveTintColor: '#2F5C98', // azul institucional oscuro
                     tabBarInactiveTintColor: 'gray',
-                    tabBarStyle: { backgroundColor: '#f8f8f8', paddingBottom: 5 },
+                    tabBarStyle: {
+                        backgroundColor: '#ffffff',
+                        borderTopColor: '#e0e0e0',
+                        height: 60,
+                        paddingBottom: 5,
+                        elevation: 10,
+                    },
+                    tabBarLabelStyle: {
+                        fontSize: 12,
+                        fontWeight: '600',
+                    },
                     headerShown: false,
                 })}
             >
                 <Tab.Screen name="Rewards" component={RewardsStackWrapper} options={{ unmountOnBlur: true }} />
                 <Tab.Screen name="Home" component={HomeStackWrapper} options={{ unmountOnBlur: true }} />
-                <Tab.Screen name="Premium" component={PremiumScreen} options={{ unmountOnBlur: true }} />
+                <Tab.Screen name="Premium" component={PremiumStackWrapper} options={{ unmountOnBlur: true }} />
                 <Tab.Screen name="Profile" component={ProfileScreen} options={{ unmountOnBlur: true }} />
             </Tab.Navigator>
         );
