@@ -4,7 +4,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
 const { CronJob } = require('cron');
 const https = require('https');
 
-const job = new CronJob('*/14 * * * * *', function () {
+const job = new CronJob('*/14 * * * *', function () {
     https
         .get(process.env.API_URL, (res) => {
             if (res.statusCode === 200) {
