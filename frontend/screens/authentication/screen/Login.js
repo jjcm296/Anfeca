@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import {
-    ScrollView,
     View,
     Text,
     StyleSheet,
-    TouchableOpacity,
     TextInput,
+    TouchableOpacity,
     Modal,
+    ScrollView,
+    Image,
 } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -16,6 +17,7 @@ import { SessionContext } from '../../../context/SessionContext';
 
 import CustomButton from '../../ui/components/CustomButton';
 import EyeToggleButton from '../../ui/components/EyeToggleButton';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { ApiLogin } from '../../../api/ApiLogin';
 
@@ -35,29 +37,20 @@ const Login = ({ route }) => {
     }, [route?.params?.email]);
 
     const handleLogin = async () => {
-        if (!email || !password) {
-            console.log('Por favor ingresa el correo y la contraseña');
-            return;
-        }
+        if (!email || !password) return;
 
         try {
             const response = await ApiLogin(email, password);
-
-            if (response.error) {
-                console.log("❌ Error en login:", response.error);
-                return;
-            }
+            if (response.error) return;
 
             await SecureStore.setItemAsync('accessToken', response.accessToken);
             await SecureStore.setItemAsync('refreshToken', response.refreshToken);
-            console.log("✅ Tokens guardados correctamente");
 
             const decoded = jwtDecode(response.accessToken);
             updateSessionFromToken(response.accessToken, decoded);
 
             navigation.navigate('MainTabs');
         } catch (error) {
-            console.error('❌ Error inesperado al iniciar sesión:', error.message);
         }
     };
 
@@ -72,7 +65,7 @@ const Login = ({ route }) => {
                         </Text>
                         <CustomButton
                             text="Entendido"
-                            color="#000"
+                            color="#2faaf6"
                             textColor="#FFF"
                             onPress={() => setShowModal(false)}
                         />
@@ -80,70 +73,86 @@ const Login = ({ route }) => {
                 </View>
             </Modal>
 
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <View style={styles.card}>
-                    <Text style={styles.title}>Iniciar Sesión</Text>
-
-                    <View style={styles.inputContainer}>
-                        <Ionicons name="mail-outline" size={20} color="#555" style={styles.icon} />
-                        <TextInput
-                            style={styles.flexInput}
-                            placeholder="Correo electrónico"
-                            value={email}
-                            onChangeText={setEmail}
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                        />
-                    </View>
-
-                    <View style={styles.inputContainer}>
-                        <Ionicons
-                            name={showPassword ? 'lock-open-outline' : 'lock-closed-outline'}
-                            size={20}
-                            color="#555"
-                            style={styles.icon}
-                        />
-                        <TextInput
-                            style={styles.flexInput}
-                            placeholder="Contraseña"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry={!showPassword}
-                        />
-                        <EyeToggleButton
-                            isVisible={showPassword}
-                            onPress={() => setShowPassword(!showPassword)}
-                        />
-                    </View>
-
-                    <TouchableOpacity>
-                        <Text style={styles.forgotText}>¿Olvidaste tu contraseña?</Text>
-                    </TouchableOpacity>
-
-                    <CustomButton
-                        text="Iniciar sesión"
-                        color="#000"
-                        textColor="#FFF"
-                        onPress={handleLogin}
+            <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.container}>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <Image
+                        source={require('../../../assets/mascota/Feliz.png')}
+                        style={styles.image}
+                        resizeMode="contain"
                     />
 
-                    <TouchableOpacity style={{ marginTop: 20 }} onPress={() => navigation.navigate('RegisterAccount')}>
-                        <Text style={styles.registerText}>
-                            ¿Aún no tienes cuenta? <Text style={{ textDecorationLine: 'underline' }}>Regístrate</Text>
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
+                    <View style={styles.card}>
+                        <Text style={styles.title}>Iniciar Sesión</Text>
+
+                        <View style={styles.inputContainer}>
+                            <Ionicons name="mail-outline" size={20} color="#2f5c98" style={styles.icon} />
+                            <TextInput
+                                style={styles.flexInput}
+                                placeholder="Correo electrónico"
+                                value={email}
+                                onChangeText={setEmail}
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                            />
+                        </View>
+
+                        <View style={styles.inputContainer}>
+                            <Ionicons
+                                name={showPassword ? 'lock-open-outline' : 'lock-closed-outline'}
+                                size={20}
+                                color="#2f5c98"
+                                style={styles.icon}
+                            />
+                            <TextInput
+                                style={styles.flexInput}
+                                placeholder="Contraseña"
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={!showPassword}
+                            />
+                            <EyeToggleButton
+                                isVisible={showPassword}
+                                onPress={() => setShowPassword(!showPassword)}
+                            />
+                        </View>
+
+                        <TouchableOpacity>
+                            <Text style={styles.forgotText}>¿Olvidaste tu contraseña?</Text>
+                        </TouchableOpacity>
+
+                        <CustomButton
+                            text="Iniciar sesión"
+                            color="#2faaf6"
+                            textColor="#FFF"
+                            onPress={handleLogin}
+                        />
+
+                        <TouchableOpacity style={{ marginTop: 20 }} onPress={() => navigation.navigate('RegisterAccount')}>
+                            <Text style={styles.registerText}>
+                                ¿Aún no tienes cuenta? <Text style={{ textDecorationLine: 'underline' }}>Regístrate</Text>
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </LinearGradient>
         </>
     );
 };
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
     scrollContainer: {
         flexGrow: 1,
-        justifyContent: 'center',
-        padding: 20,
-        backgroundColor: '#f2f2f2',
+        justifyContent: 'flex-start',
+        paddingTop: 90,
+        paddingHorizontal: 20,
+        alignItems: 'center',
+    },
+    image: {
+        width: 160,
+        height: 160,
     },
     card: {
         backgroundColor: '#fff',
@@ -151,7 +160,6 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         width: '100%',
         maxWidth: 400,
-        alignSelf: 'center',
         shadowColor: '#000',
         shadowOpacity: 0.1,
         shadowRadius: 10,
@@ -162,13 +170,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
         textAlign: 'center',
+        color: '#2f5c98',
     },
     inputContainer: {
         height: 45,
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: '#2faaf6',
         borderRadius: 10,
         paddingHorizontal: 10,
         marginBottom: 10,
@@ -184,12 +193,13 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         fontSize: 13,
         textDecorationLine: 'underline',
-        color: '#333',
+        color: '#2f5c98',
+        marginBottom: 10,
     },
     registerText: {
         fontSize: 14,
         textAlign: 'center',
-        color: '#333',
+        color: '#2f5c98',
     },
     modalBackground: {
         flex: 1,
@@ -209,6 +219,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 10,
         textAlign: 'center',
+        color: '#2f5c98',
     },
     modalText: {
         fontSize: 14,
