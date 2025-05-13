@@ -78,15 +78,31 @@ const Rewards = () => {
 
     const handleConfirmRedeem = async () => {
         if (!selectedReward) return;
+
+        if (session.kid?.coins < selectedReward.price) {
+            Alert.alert("¡Ups!", "No tienes suficientes monedas para canjear esta recompensa.");
+            return;
+        }
+
         try {
             await ApiRefreshAccessToken();
-            await redeemReward(selectedReward._id);
-            Alert.alert("Éxito", "La recompensa fue canjeada");
-            setModalVisible(false);
+            const response = await redeemReward(selectedReward._id);
+
+            if (response?.redeemedReward) {
+                Alert.alert("Éxito", "La recompensa fue canjeada");
+                setModalVisible(false);
+                await fetchRewards();
+            } else {
+                throw new Error("Respuesta inesperada del servidor");
+            }
         } catch (error) {
-            Alert.alert("Error", error.error || "No se pudo canjear la recompensa");
-        }
-    };
+                Alert.alert("Error", error?.error || "No se pudo canjear la recompensa");
+                setModalVisible(false);
+            }
+
+        };
+
+
 
     return (
         <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.container}>
