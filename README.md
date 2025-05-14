@@ -1,5 +1,25 @@
 # Anfeca
 
+## 📚 Index
+
+- [API Routes](#api-routes)
+    - [Authentication](#authentication)
+    - [Account](#account)
+    - [Kid](#kid)
+    - [Questions bank](#questions-bank)
+    - [Game](#game)
+    - [Reward](#reward)
+    - [Premium](#premium)
+- [ConcentraTDA Google acc](#concentratda-google-acc)
+- [Command to install dependencies](#command-to-install-dependencies)
+- [Command to run the API](#command-to-run-the-api)
+- [Account registered](#account-registered)
+- [Technologies used](#technologies-used)
+- [Docs I've been using](#docs-ive-been-using)
+- [Frontend commands for ANFECA project (React Native + Expo)](#frontend-commands-for-anfeca-project-react-native--expo)
+- [Useful Git commands](#useful-git-commands)
+
+
 ## API Routes
 ### Authentication
 | Purpose                | Method | Route                                | Consumes                                          | Returns                                            |
@@ -93,6 +113,12 @@ Get profiles' names
 | Guardian confirms redeemed reward | POST   | `/api/rewards/redeemed-rewards/:redeemedRewardId` | Nothing                                                                                   | ![img_13.png](readmeImages/img_13.png)                                 |
 - `type` is an enum `[once, forever, custom]`, if the user selects `custom` then the front must send `redemptionLimit`
 
+### Premium
+| Purpose                               | Method | Route                                  | Consumes | Returns                  |
+|---------------------------------------|--------|----------------------------------------|----------|--------------------------|
+| Get premium banks                     | GET    | `/api/premium/banks`                   | Nothing  | Array with the banks     | 
+| Get premium bank (visualize one bank) | GET    | `/api/premium/banks/:bankId`           | Nothing  | Bank JSON object         | 
+| Get questions of a premium bank       | GET    | `/api/premium/banks/:bankId/questions` | Nothing  | Array with the questions | 
 Without `redemptionLimit`
 ![img_1.png](readmeImages/img_1.png)
 

@@ -7,5 +7,6 @@ router.use('/banks', require('./bankRoutes.js'));
 router.use('/rewards', require('./rewardRoutes.js'));
 router.use('/account', require('./accountRoutes.js'));
 router.use('/game', require('./gameRoutes.js'));
+router.use('/premium', require('./premiumRoutes.js'));
 
 module.exports = router;
