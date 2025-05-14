@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getAllBanks, createBank, getBank, editBank, deleteBank } = require('../controllers/bankController.js');
-const { getAllQuestions, createQuestion, editQuestion, getQuestion,  deleteQuestion} = require('../controllers/questionController.js');
+const { getAllQuestions, createQuestion, editQuestion, getQuestion,  deleteQuestion, createMultipleQuestions} = require('../controllers/questionController.js');
 const {startStudySession, study} = require('../controllers/flashcardController.js');
 const { authMiddleware } = require('../middlewares/authMiddleware.js');
 const { checkOwnership } = require('../middlewares/ownershipMiddleware.js');
@@ -27,6 +27,8 @@ router.post('/:bankId/questions/', checkBankOwnership, allowOnly(['guardian']) ,
 router.get('/:bankId/questions/:questionId', checkBankOwnership, allowOnly(['guardian']) , getQuestion);
 router.put('/:bankId/questions/:questionId', checkBankOwnership, allowOnly(['guardian']) , editQuestion);
 router.delete('/:bankId/questions/:questionId', checkBankOwnership, allowOnly(['guardian']) , deleteQuestion);
+
+router.post('/:bankId/questions/many', checkBankOwnership, allowOnly(['guardian']) , createMultipleQuestions);
 
 // flashcards only for kids
 router.get('/:bankId/flashcards/study-session', allowOnly(['kid']), startStudySession);

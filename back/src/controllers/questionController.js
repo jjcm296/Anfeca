@@ -77,3 +77,25 @@ exports.deleteQuestion = async (req, res) => {
     }
 
 };
+
+exports.createMultipleQuestions = async (req, res) => {
+
+    try {
+        const {bankId}  = req.params;
+        const questionsArray = req.body;
+
+        if (!Array.isArray(questionsArray) || questionsArray.length === 0) {
+            return res.status(400).json({ error: 'Request body must be a non-empty array of questions.' });
+        }
+
+        const createdQuestions = await questionService.createMultipleQuestions(questionsArray, bankId);
+
+        return res.status(201).json({
+            message: `${createdQuestions.length} questions created successfully.`,
+            createdQuestions
+        });
+
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}

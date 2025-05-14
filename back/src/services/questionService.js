@@ -84,3 +84,22 @@ exports.deleteQuestionsByBankId = async (bankId) => {
 
     return `Number of questions deleted ${deletedDocs}`;
 };
+
+// for premium
+exports.createMultipleQuestions = async (questionsArray, bankId) => {
+    const createdQuestions = [];
+
+    for (const question of questionsArray) {
+        const { textQuestion, answers, priority } = question;
+
+        const duplicated = await Question.findOne({ textQuestion, answers, priority, bankId });
+
+        if (duplicated) continue; // Skip duplicated question
+
+        const newQuestion = await Question.create({ textQuestion, answers, priority, bankId });
+
+        createdQuestions.push(newQuestion);
+    }
+
+    return createdQuestions;
+};
