@@ -18,7 +18,7 @@ import { ApiRefreshAccessToken } from "../../api/ApiLogin";
 import { getAllRewards, redeemReward } from "../../api/ApiRewards";
 import SkeletonRewardCard from './compoonents/skeletons/SkeletonsRewardCard';
 import { SessionContext } from "../../context/SessionContext";
-import {Ionicons} from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 const Rewards = () => {
     const navigation = useNavigation();
@@ -27,7 +27,6 @@ const Rewards = () => {
     const [hasLoaded, setHasLoaded] = useState(false);
     const [selectedReward, setSelectedReward] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
-
     const { session } = useContext(SessionContext);
 
     const fetchRewards = async () => {
@@ -35,10 +34,11 @@ const Rewards = () => {
             setLoading(true);
             await ApiRefreshAccessToken();
             const response = await getAllRewards();
-            setRewards(response.rewardsArray);
-            setHasLoaded(true);
-            setLoading(false);
+            setRewards(Array.isArray(response.rewardsArray) ? response.rewardsArray : []);
         } catch {
+            Alert.alert("Error", "No se pudieron cargar las recompensas.");
+        } finally {
+            setHasLoaded(true);
             setLoading(false);
         }
     };
@@ -56,14 +56,14 @@ const Rewards = () => {
                     await ApiRefreshAccessToken();
                     const response = await getAllRewards();
                     if (isActive) {
-                        setRewards(response.rewardsArray);
-                        setHasLoaded(true);
-                        setLoading(false);
+                        setRewards(Array.isArray(response.rewardsArray) ? response.rewardsArray : []);
                     }
                 } catch {
                     if (isActive) {
-                        setLoading(false);
+                        Alert.alert("Error", "No se pudieron actualizar las recompensas.");
                     }
+                } finally {
+                    if (isActive) setLoading(false);
                 }
             };
 
@@ -91,27 +91,25 @@ const Rewards = () => {
             if (response?.redeemedReward) {
                 Alert.alert("Éxito", "La recompensa fue canjeada");
                 setModalVisible(false);
-                await fetchRewards();
+                fetchRewards();
             } else {
                 throw new Error("Respuesta inesperada del servidor");
             }
         } catch (error) {
-                Alert.alert("Error", error?.error || "No se pudo canjear la recompensa");
-                setModalVisible(false);
-            }
-        };
+            Alert.alert("Error", error?.error || "No se pudo canjear la recompensa");
+            setModalVisible(false);
+        }
+    };
 
     return (
         <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.container}>
             {session.profileType === 'guardian' && (
                 <TouchableOpacity
                     onPress={() => navigation.navigate('RedeemedRewards')}
-                    style={{ marginBottom: 15, alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center' }}
+                    style={styles.linkToRedeemed}
                 >
                     <Ionicons name="gift-outline" size={18} color="#ffffff" style={{ marginRight: 6 }} />
-                    <Text style={{ color: '#ffffff', fontWeight: 'bold' }}>
-                        recompensas canjeadas
-                    </Text>
+                    <Text style={styles.linkText}>recompensas canjeadas</Text>
                 </TouchableOpacity>
             )}
 
@@ -136,28 +134,17 @@ const Rewards = () => {
                             />
                         );
 
-                        if (session.profileType === 'guardian') {
-                            return (
-                                <TouchableOpacity
-                                    onPress={() => navigation.navigate("EditReward", { rewardId: item._id })}
-                                >
-                                    {content}
-                                </TouchableOpacity>
-                            );
-                        } else if (session.profileType === 'kid') {
-                            return (
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        setSelectedReward(item);
-                                        setModalVisible(true);
-                                    }}
-                                >
-                                    {content}
-                                </TouchableOpacity>
-                            );
-                        } else {
-                            return <View>{content}</View>;
-                        }
+                        return (
+                            <TouchableOpacity
+                                onPress={() =>
+                                    session.profileType === 'guardian'
+                                        ? navigation.navigate("EditReward", { rewardId: item._id })
+                                        : (setSelectedReward(item), setModalVisible(true))
+                                }
+                            >
+                                {content}
+                            </TouchableOpacity>
+                        );
                     }}
                     contentContainerStyle={styles.list}
                 />
@@ -176,12 +163,15 @@ const Rewards = () => {
                 <View style={styles.modalBackdrop}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>¿Canjear esta recompensa?</Text>
-                        <Text style={styles.modalName}>{selectedReward?.name}</Text>
+                        <Text style={styles.modalName}>{selectedReward?.name || ''}</Text>
                         <View style={styles.modalButtons}>
                             <Pressable style={styles.btn} onPress={handleConfirmRedeem}>
                                 <Text style={styles.btnText}>Sí</Text>
                             </Pressable>
-                            <Pressable style={[styles.btn, { backgroundColor: '#ccc' }]} onPress={() => setModalVisible(false)}>
+                            <Pressable
+                                style={[styles.btn, { backgroundColor: '#ccc' }]}
+                                onPress={() => setModalVisible(false)}
+                            >
                                 <Text style={[styles.btnText, { color: '#333' }]}>Cancelar</Text>
                             </Pressable>
                         </View>
@@ -197,6 +187,16 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: 20,
         paddingVertical: 10,
+    },
+    linkToRedeemed: {
+        marginBottom: 15,
+        alignSelf: 'flex-end',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    linkText: {
+        color: '#ffffff',
+        fontWeight: 'bold',
     },
     list: {
         paddingBottom: 20,

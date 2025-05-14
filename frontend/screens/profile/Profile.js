@@ -15,6 +15,7 @@ import CustomButton from '../ui/components/CustomButton';
 import CloseButton from '../ui/components/CloseButton';
 import EyeToggleButton from '../ui/components/EyeToggleButton';
 import * as SecureStore from "expo-secure-store";
+import { LinearGradient } from 'expo-linear-gradient';
 
 const Profile = () => {
     const navigate = useNavigation();
@@ -118,7 +119,6 @@ const Profile = () => {
                                         Alert.alert("Error", result?.error || "No se pudo eliminar la cuenta.");
                                     }
                                 } catch (err) {
-                                    console.error("Error al eliminar la cuenta:", err);
                                     Alert.alert("Error", "Ocurrió un error al intentar eliminar la cuenta.");
                                 }
                             }
@@ -130,7 +130,7 @@ const Profile = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.container}>
             <View style={styles.profileContainer}>
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
                     <ProfileImage width={100} height={100} />
@@ -144,7 +144,6 @@ const Profile = () => {
                 )}
             </View>
 
-            {/* Modal de selección de perfil */}
             <Modal
                 visible={modalVisible}
                 animationType="slide"
@@ -177,7 +176,6 @@ const Profile = () => {
                 </TouchableWithoutFeedback>
             </Modal>
 
-            {/* Modal para ingresar la contraseña */}
             <Modal
                 visible={passwordModalVisible}
                 animationType="slide"
@@ -208,7 +206,6 @@ const Profile = () => {
                 </TouchableWithoutFeedback>
             </Modal>
 
-            {/* Opciones */}
             <FlatList
                 data={options}
                 renderItem={({ item }) => (
@@ -222,7 +219,7 @@ const Profile = () => {
                 )}
                 keyExtractor={item => item.id}
             />
-        </View>
+        </LinearGradient>
     );
 };
 

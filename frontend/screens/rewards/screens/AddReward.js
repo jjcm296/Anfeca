@@ -34,26 +34,30 @@ const AddReward = ({ navigation }) => {
             return;
         }
 
-        const body = {
-            name: name,
-            price: parseInt(coins),
-            type: redemptionType === 'custom' ? 'custom' : redemptionType === '1' ? 'once' : 'forever',
-            ...(redemptionType === 'custom' && { redemptionLimit: parseInt(redemptions) }),
-            ...(redemptionType === '' && { redemptionLimit: 0 }) // si es "forever"
-        }
+        const type = redemptionType === 'custom'
+            ? 'custom'
+            : redemptionType === '1'
+                ? 'once'
+                : 'forever';
 
-        if (body.type === 'custom') {
+        const body = {
+            name: name.trim(),
+            price: parseInt(coins),
+            type,
+            ...(type === 'custom' && { redemptionLimit: parseInt(redemptions) })
+            // 🔴 NO pongas redemptionLimit si es 'forever'
+        };
+
+        if (type === 'custom') {
             const limit = parseInt(redemptions);
             if (!limit || limit <= 0) {
                 Alert.alert("Error", "Debes especificar un número de canjes válido mayor a 0.");
                 return;
             }
-            body.redemptionLimit = limit;
         }
 
         try {
             await ApiRefreshAccessToken();
-
             const response = await createReward(body);
 
             if (response.error) {
@@ -70,6 +74,7 @@ const AddReward = ({ navigation }) => {
             Alert.alert("Error", "No se pudo conectar con el servidor");
         }
     };
+
 
     return (
         <View style={styles.container}>
@@ -132,14 +137,15 @@ const AddReward = ({ navigation }) => {
                     !name.trim() ||
                     !coins.trim() ||
                     parseInt(coins) <= 0 ||
-                    coinError ||
+                    !!coinError ||
                     (redemptionType === "custom" && (
                         !redemptions.trim() ||
                         parseInt(redemptions) <= 0 ||
-                        redemptionsError
+                        !!redemptionsError
                     ))
                 }
             />
+
         </View>
     );
 };

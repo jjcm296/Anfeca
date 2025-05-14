@@ -28,7 +28,7 @@ const RedeemedRewards = () => {
             setLoading(true);
             await ApiRefreshAccessToken();
             const response = await getUnconfirmedRewards();
-            setRewards(response.redeemedRewards || []);
+            setRewards(Array.isArray(response.redeemedRewards) ? response.redeemedRewards : []);
         } catch (error) {
             Alert.alert('Error', 'No se pudieron obtener las recompensas.');
         } finally {
