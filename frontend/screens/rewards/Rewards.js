@@ -101,8 +101,6 @@ const Rewards = () => {
             }
         };
 
-
-
     return (
         <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.container}>
             {session.profileType === 'guardian' && (
@@ -115,7 +113,6 @@ const Rewards = () => {
                         recompensas canjeadas
                     </Text>
                 </TouchableOpacity>
-
             )}
 
             {loading && !hasLoaded ? (

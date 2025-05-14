@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ApiRefreshAccessToken } from '../../../api/ApiLogin';
 import { getUnconfirmedRewards, confirmRedeemedReward } from '../../../api/ApiRewards';
 import { SessionContext } from '../../../context/SessionContext';
+import RedeemedRewardCard from '../compoonents/RedeemedRewardCard';
 
 const RedeemedRewards = () => {
     const [loading, setLoading] = useState(true);
@@ -27,7 +28,7 @@ const RedeemedRewards = () => {
             setLoading(true);
             await ApiRefreshAccessToken();
             const response = await getUnconfirmedRewards();
-            setRewards(response.rewards || []);
+            setRewards(response.redeemedRewards || []);
         } catch (error) {
             Alert.alert('Error', 'No se pudieron obtener las recompensas.');
         } finally {
@@ -51,19 +52,11 @@ const RedeemedRewards = () => {
     };
 
     const renderItem = ({ item }) => (
-        <View style={styles.rewardItem}>
-            <View>
-                <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.details}>Niño: {item.kidName}</Text>
-                <Text style={styles.details}>Precio: {item.price} monedas</Text>
-            </View>
-            <TouchableOpacity
-                style={styles.confirmButton}
-                onPress={() => handleConfirm(item.redeemedRewardId)}
-            >
-                <Text style={styles.confirmText}>Confirmar</Text>
-            </TouchableOpacity>
-        </View>
+        <RedeemedRewardCard
+            rewardName={item.rewardName}
+            redeemDate={item.redeemDate}
+            onConfirm={() => handleConfirm(item._id)}
+        />
     );
 
     return (
@@ -81,8 +74,8 @@ const RedeemedRewards = () => {
                 <Text style={styles.noData}>No hay recompensas por confirmar.</Text>
             ) : (
                 <FlatList
-                    data={rewards}
-                    keyExtractor={(item) => item.redeemedRewardId}
+                    data={rewards.filter(r => r.confirm === false)}
+                    keyExtractor={(item) => item.redeemedRewardId || item._id}
                     renderItem={renderItem}
                     contentContainerStyle={styles.list}
                 />
@@ -99,12 +92,12 @@ const styles = StyleSheet.create({
     backButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 5,
     },
     backText: {
         color: '#fff',
         fontSize: 16,
-        marginLeft: 6,
+        marginLeft: 4,
     },
     title: {
         fontSize: 22,
@@ -114,33 +107,6 @@ const styles = StyleSheet.create({
     },
     list: {
         paddingBottom: 20,
-    },
-    rewardItem: {
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        padding: 15,
-        marginBottom: 12,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    name: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    details: {
-        fontSize: 14,
-        color: '#555',
-    },
-    confirmButton: {
-        backgroundColor: '#3E9697',
-        paddingVertical: 6,
-        paddingHorizontal: 14,
-        borderRadius: 8,
-    },
-    confirmText: {
-        color: '#fff',
-        fontWeight: 'bold',
     },
     noData: {
         fontSize: 16,
