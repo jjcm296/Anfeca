@@ -35,7 +35,6 @@ const Rewards = () => {
             setLoading(true);
             await ApiRefreshAccessToken();
             const response = await getAllRewards();
-            console.log(response);
             setRewards(response.rewardsArray);
             setHasLoaded(true);
             setLoading(false);
@@ -56,7 +55,6 @@ const Rewards = () => {
                 try {
                     await ApiRefreshAccessToken();
                     const response = await getAllRewards();
-                    console.log(response);
                     if (isActive) {
                         setRewards(response.rewardsArray);
                         setHasLoaded(true);
