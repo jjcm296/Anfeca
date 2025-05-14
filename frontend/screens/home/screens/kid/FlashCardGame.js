@@ -30,9 +30,6 @@ const FlashCardGame = () => {
 
     useEffect(() => {
         const incomingId = route?.params?.bankId;
-        console.log("📦 route.params:", route.params);
-        console.log("✅ Banco ID recibido:", incomingId);
-
         if (incomingId) {
             setBankId(incomingId);
         } else {
@@ -49,8 +46,6 @@ const FlashCardGame = () => {
 
             try {
                 const res = await ApiStartStudySession(bankId);
-                console.log("📥 Respuesta al iniciar sesión:", res);
-
                 if (res?.firstFlashcard && res?.sessionId) {
                     setStudySessionId(res.sessionId);
                     setCurrentFlashcard({
@@ -62,7 +57,6 @@ const FlashCardGame = () => {
                     throw new Error(res?.error || "Respuesta inválida");
                 }
             } catch (err) {
-                console.error("❌ Error iniciando sesión:", err);
                 Alert.alert("Error", err.message || "No se pudo iniciar la sesión de estudio.");
             }
 
@@ -83,10 +77,12 @@ const FlashCardGame = () => {
                 currentFlashcard.id,
                 feedbackValue
             );
-            console.log("🟡 Respuesta al calificar:", res);
 
             if (res?.message === "Study session complete!") {
                 setSessionFinished(true);
+                if (route.params?.onStudyComplete) {
+                    route.params.onStudyComplete();
+                }
             } else if (res?._id && res?.front && res?.back) {
                 setCurrentFlashcard({
                     id: res._id,
@@ -97,7 +93,6 @@ const FlashCardGame = () => {
                 throw new Error("Respuesta inesperada");
             }
         } catch (err) {
-            console.error("❌ Error al continuar sesión:", err);
             Alert.alert("Error", err.message || "No se pudo continuar la sesión.");
         }
 
@@ -231,3 +226,4 @@ const styles = StyleSheet.create({
 });
 
 export default FlashCardGame;
+// Compare this snippet from pagina/src/screen/inicio/Inicio.jsx:

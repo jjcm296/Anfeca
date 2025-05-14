@@ -15,25 +15,34 @@ import { deleteBank } from '../../../api/ApiBank';
 const QuestionBankCard = ({
                               category,
                               questions,
-                              canPlayMiniGame,
                               profileType,
                               bankId,
                               bankName,
                               onBankDeleted,
                           }) => {
     const navigation = useNavigation();
-    const canStudy = !canPlayMiniGame;
     const isKid = profileType === 'kid';
     const isGuardian = profileType === 'guardian';
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [studyCompleted, setStudyCompleted] = useState(false);
 
     const handleStudy = () => {
-        navigation.navigate('FlashCardGame', { bankId, bankName });
+        navigation.navigate('FlashCardGame', {
+            bankId,
+            bankName,
+            onStudyComplete: () => setStudyCompleted(true),
+        });
     };
 
     const handlePlayGame = () => {
-        navigation.navigate('RunnerGame', { bankId, bankName });
+        navigation.navigate('RunnerGame', {
+            bankId,
+            bankName,
+            onGameFinished: () => {
+                console.log("Minijuego terminado, resultados enviados");
+            },
+        });
     };
 
     const handleGuardianMenu = () => {
@@ -79,20 +88,20 @@ const QuestionBankCard = ({
             {isKid && (
                 <View style={styles.buttonsRow}>
                     <TouchableOpacity
-                        style={[styles.button, canStudy ? styles.active : styles.disabled]}
-                        disabled={!canStudy}
+                        style={[styles.button, !studyCompleted ? styles.active : styles.disabled]}
+                        disabled={studyCompleted}
                         onPress={handleStudy}
                     >
-                        <Ionicons name={canStudy ? 'book' : 'lock-closed'} size={26} color="white" />
+                        <Ionicons name={!studyCompleted ? 'book' : 'lock-closed'} size={26} color="white" />
                         <Text style={styles.buttonText}>Estudiar</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={[styles.button, canPlayMiniGame ? styles.active : styles.disabled]}
-                        disabled={!canPlayMiniGame}
+                        style={[styles.button, studyCompleted ? styles.active : styles.disabled]}
+                        disabled={!studyCompleted}
                         onPress={handlePlayGame}
                     >
-                        <Ionicons name={canPlayMiniGame ? 'game-controller' : 'lock-closed'} size={26} color="white" />
+                        <Ionicons name={studyCompleted ? 'game-controller' : 'lock-closed'} size={26} color="white" />
                         <Text style={styles.buttonText}>Minijuego</Text>
                     </TouchableOpacity>
                 </View>
@@ -161,11 +170,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#555',
         marginLeft: 6,
-    },
-    questionsText: {
-        fontSize: 16,
-        color: '#666',
-        marginTop: 10,
     },
     buttonsRow: {
         flexDirection: 'row',

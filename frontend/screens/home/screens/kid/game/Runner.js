@@ -114,7 +114,7 @@ const Runner = () => {
 
         for (let i = 0; i < 5; i++) {
             const checkpoint = Matter.Bodies.rectangle(
-                1400 + i * 600,
+                1400 + i * 800 + 100,
                 230,
                 40,
                 10,
