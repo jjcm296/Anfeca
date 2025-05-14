@@ -1,12 +1,23 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    ScrollView,
+    KeyboardAvoidingView,
+    Platform,
+    Dimensions,
+    Alert
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import FakeDatabase from '../../../fakeDataBase/FakeDataBase';
-import CustomButton from '../../ui/components/CustomButton';
+import { LinearGradient } from 'expo-linear-gradient';
 import CoinIcon from '../../ui/components/CoinIcon';
+import CustomButton from '../../ui/components/CustomButton';
 import CustomInput from '../../ui/components/CustomInput';
-import {ApiRefreshAccessToken} from "../../../api/ApiLogin";
-import {createQuestion} from "../../../api/ApiQuestions";
+import { ApiRefreshAccessToken } from '../../../api/ApiLogin';
+import { createQuestion } from '../../../api/ApiQuestions';
+
+const { height } = Dimensions.get('window');
 
 const AddQuestion = ({ route, navigation }) => {
     const { bankId, name } = route.params;
@@ -21,16 +32,18 @@ const AddQuestion = ({ route, navigation }) => {
         setAnswers(newAnswers);
     };
 
+    const isFormIncomplete = () =>
+        !question.trim() ||
+        answers.some(answer => !answer.trim());
+
     const handleSubmit = async () => {
         const trimmedAnswers = answers.map(a => a.trim());
 
-        // Validar campos vacíos
-        if (question.trim() === '' || trimmedAnswers.some(ans => ans === '')) {
+        if (isFormIncomplete()) {
             Alert.alert("Error", "Todos los campos son obligatorios.");
             return;
         }
 
-        // Validar cantidad mínima de respuestas: 1 correcta y 1 incorrecta
         const hasCorrect = trimmedAnswers[0] !== '';
         const incorrectCount = trimmedAnswers.slice(1).filter(ans => ans !== '').length;
 
@@ -39,9 +52,7 @@ const AddQuestion = ({ route, navigation }) => {
             return;
         }
 
-        // Construir respuestas como arreglo (no como objeto con índices)
         const finalAnswers = [];
-
         trimmedAnswers.forEach((ans, index) => {
             if (ans !== '') {
                 finalAnswers.push({
@@ -59,93 +70,125 @@ const AddQuestion = ({ route, navigation }) => {
 
         try {
             await ApiRefreshAccessToken();
-
             const response = await createQuestion(body, bankId);
+
             if (response.error) {
-                console.log("Error:", response.error);
                 Alert.alert("Error", "Error al agregar la pregunta.");
                 return;
             }
 
-            console.log("Respuesta:", response);
             Alert.alert("Éxito", "Pregunta agregada correctamente.");
             navigation.goBack();
-
         } catch (error) {
-            console.error("Error inesperado:", error);
             Alert.alert("Error", "Error al agregar la pregunta.");
         }
     };
 
+    const handleCancel = () => {
+        navigation.goBack();
+    };
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>
-                Agregar Pregunta a <Text style={styles.categoryText}>{String(name) || 'Sin Categoría'}</Text>
-            </Text>
+        <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.gradient}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                style={{ flex: 1 }}
+            >
+                <ScrollView contentContainerStyle={styles.scroll}>
+                    <View style={styles.card}>
+                        <Text style={styles.title}>Agregar Pregunta</Text>
 
-            <CustomInput
-                placeholder="Escribe la pregunta..."
-                value={String(question)}
-                onChangeText={setQuestion}
-                required={true}
-            />
+                        <CustomInput
+                            placeholder="Escribe la pregunta..."
+                            value={question}
+                            onChangeText={setQuestion}
+                            required
+                        />
 
-            <Text style={styles.correctLabel}>Respuesta Correcta:</Text>
-            <CustomInput
-                placeholder="Respuesta Correcta"
-                value={String(answers[0])}
-                onChangeText={(text) => handleAnswerChange(text, 0)}
-                required={true}
-                customStyle={styles.correctAnswer}
-            />
+                        <Text style={styles.label}>Respuesta Correcta</Text>
+                        <CustomInput
+                            placeholder="Respuesta Correcta"
+                            value={answers[0]}
+                            onChangeText={(text) => handleAnswerChange(text, 0)}
+                            required
+                            customStyle={styles.correctAnswer}
+                        />
 
-            <Text style={styles.incorrectLabel}>Respuestas Incorrectas:</Text>
-            {answers.slice(1).map((answer, index) => (
-                <CustomInput
-                    key={index + 1}
-                    placeholder={`Respuesta Incorrecta ${index + 1}`}
-                    value={String(answer)}
-                    onChangeText={(text) => handleAnswerChange(text, index + 1)}
-                    required={true}
-                    customStyle={styles.incorrectAnswer}
-                />
-            ))}
+                        <Text style={styles.label}>Respuestas Incorrectas</Text>
+                        {answers.slice(1).map((answer, index) => (
+                            <CustomInput
+                                key={index}
+                                placeholder={`Respuesta Incorrecta ${index + 1}`}
+                                value={answer}
+                                onChangeText={(text) => handleAnswerChange(text, index + 1)}
+                                required
+                                customStyle={styles.incorrectAnswer}
+                            />
+                        ))}
 
-            <Text style={styles.label}>Selecciona Dificultad:</Text>
-            <View style={styles.pickerContainer}>
-                <Picker
-                    selectedValue={String(difficulty)}
-                    onValueChange={(itemValue) => setDifficulty(String(itemValue))}
-                    style={styles.picker}
-                >
-                    <Picker.Item label="1 Coin" value="1" />
-                    <Picker.Item label="2 Coins" value="2" />
-                    <Picker.Item label="3 Coins" value="3" />
-                </Picker>
-                <CoinIcon size={30} />
-            </View>
+                        <Text style={styles.label}>Dificultad</Text>
+                        <View style={styles.pickerWrapper}>
+                            <Picker
+                                selectedValue={difficulty}
+                                onValueChange={(value) => setDifficulty(value)}
+                                style={styles.picker}
+                            >
+                                <Picker.Item label="1 Moneda" value="1" />
+                                <Picker.Item label="2 Monedas" value="2" />
+                                <Picker.Item label="3 Monedas" value="3" />
+                            </Picker>
+                            <CoinIcon size={30} />
+                        </View>
 
-            <CustomButton
-                color="#6200EE"
-                text="Agregar Pregunta"
-                onPress={handleSubmit}
-                disabled={question.trim() === '' || answers.some(ans => ans.trim() === '')}
-            />
-        </View>
+                        <View style={styles.buttons}>
+                            <CustomButton
+                                color="#3E9697"
+                                text="Agregar Pregunta"
+                                textColor="#FFFFFF"
+                                onPress={handleSubmit}
+                                disabled={isFormIncomplete()}
+                            />
+                            <CustomButton
+                                color="#B3E5FC"
+                                text="Cancelar"
+                                textColor="#003F5C"
+                                onPress={handleCancel}
+                            />
+                        </View>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </LinearGradient>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    gradient: {
         flex: 1,
+    },
+    scroll: {
+        flexGrow: 1,
         padding: 20,
-        backgroundColor: '#f8f8f8'
+        justifyContent: 'center',
+    },
+    card: {
+        backgroundColor: '#ffffff',
+        borderRadius: 16,
+        padding: 20,
+        minHeight: height * 0.80,
+        justifyContent: 'flex-start',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 4,
     },
     title: {
         fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 15,
-        textAlign: 'center'
+        marginBottom: 20,
+        textAlign: 'center',
+        color: '#333',
     },
     categoryText: {
         fontWeight: 'bold',
@@ -153,41 +196,36 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: 16,
-        fontWeight: 'bold',
-        marginTop: 10
-    },
-    correctLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: 'green',
-        marginTop: 15
-    },
-    incorrectLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: 'red',
-        marginTop: 15
+        fontWeight: '600',
+        marginTop: 18,
+        marginBottom: 5,
+        color: '#333',
     },
     correctAnswer: {
-        backgroundColor: '#DFFFD6',
-        borderColor: 'green',
+        backgroundColor: '#E6FFE6',
+        borderColor: '#4CAF50',
     },
     incorrectAnswer: {
-        backgroundColor: '#FFD6D6',
-        borderColor: 'red',
+        backgroundColor: '#FFE6E6',
+        borderColor: '#E53935',
     },
-    pickerContainer: {
+    pickerWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: '#f4f4f4',
         borderRadius: 10,
-        marginTop: 5,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        paddingHorizontal: 10
+        borderWidth: 1.5,
+        borderColor: '#3E9697',
+        overflow: 'hidden',
+        marginBottom: 25,
+        paddingHorizontal: 10,
     },
     picker: {
-        flex: 1
+        flex: 1,
+        height: 48,
+    },
+    buttons: {
+        marginTop: 10,
     },
 });
 

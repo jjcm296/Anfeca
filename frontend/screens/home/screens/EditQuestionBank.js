@@ -6,12 +6,13 @@ import {
     StyleSheet,
     Alert,
     ActivityIndicator,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView
 } from 'react-native';
-import {
-    getBankById,
-    updateBank,
-    deleteBank,
-} from '../../../api/ApiBank';
+import { LinearGradient } from 'expo-linear-gradient';
+
+import { getBankById, updateBank } from '../../../api/ApiBank';
 import { ApiRefreshAccessToken } from '../../../api/ApiLogin';
 import CustomButton from '../../ui/components/CustomButton';
 
@@ -72,34 +73,8 @@ const EditQuestionBank = ({ route, navigation }) => {
         }
     };
 
-    const handleDelete = () => {
-        Alert.alert(
-            'Confirmar eliminación',
-            '¿Estás seguro de que deseas eliminar este banco de preguntas?',
-            [
-                { text: 'Cancelar', style: 'cancel' },
-                {
-                    text: 'Eliminar',
-                    style: 'destructive',
-                    onPress: async () => {
-                        try {
-                            await ApiRefreshAccessToken();
-                            const deleted = await deleteBank(bankId);
-
-                            if (deleted) {
-                                Alert.alert('✅ Eliminado', 'Banco de preguntas eliminado correctamente.');
-                                navigation.goBack();
-                            } else {
-                                Alert.alert('Error', 'No se pudo eliminar el banco.');
-                            }
-                        } catch (error) {
-                            console.error('❌ Error al eliminar banco:', error);
-                            Alert.alert('Error', 'No se pudo eliminar el banco.');
-                        }
-                    },
-                },
-            ]
-        );
+    const handleCancel = () => {
+        navigation.goBack();
     };
 
     if (loading) {
@@ -111,61 +86,85 @@ const EditQuestionBank = ({ route, navigation }) => {
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Editar Banco de Preguntas</Text>
+        <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.container}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                style={{ flex: 1 }}
+            >
+                <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+                    <View style={styles.card}>
+                        <Text style={styles.title}>✏️ Editar Categoría</Text>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Nombre de la categoría..."
-                value={category}
-                onChangeText={setCategory}
-            />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Nombre de la categoría..."
+                            value={category}
+                            onChangeText={setCategory}
+                            placeholderTextColor="#aaa"
+                        />
+                    </View>
+                </ScrollView>
 
-            <CustomButton
-                color="#FF0000"
-                text="Eliminar"
-                textColor="#FFFFFF"
-                onPress={handleDelete}
-            />
-
-            <CustomButton
-                color="#6200EE"
-                text="Actualizar"
-                textColor="#FFFFFF"
-                onPress={handleUpdate}
-                disabled={
-                    updating || !category || category.trim() === '' || category === originalName
-                }
-            />
-        </View>
+                <View style={styles.footer}>
+                    <CustomButton
+                        color="#3E9697"
+                        text="Actualizar pregunta"
+                        textColor="#ffffff"
+                        onPress={handleUpdate}
+                        disabled={
+                            updating || !category || category.trim() === '' || category === originalName
+                        }
+                    />
+                    <CustomButton
+                        color="#B3E5FC"
+                        text="Cancelar"
+                        textColor="#003F5C"
+                        onPress={handleCancel}
+                    />
+                </View>
+            </KeyboardAvoidingView>
+        </LinearGradient>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
-        backgroundColor: '#f8f8f8',
     },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+    scrollContent: {
+        flexGrow: 1,
+        padding: 10,
+    },
+    card: {
+        marginTop: 10,
+        backgroundColor: '#ffffff',
+        borderRadius: 16,
+        padding: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 4,
     },
     title: {
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 15,
         textAlign: 'center',
+        color: '#333',
     },
     input: {
-        backgroundColor: '#fff',
-        padding: 10,
-        borderRadius: 10,
+        backgroundColor: '#f4f4f4',
+        padding: 12,
+        borderRadius: 12,
         fontSize: 16,
-        marginBottom: 10,
-        borderWidth: 1,
-        borderColor: '#ddd',
+        borderWidth: 1.5,
+        borderColor: '#3E9697',
+        color: '#000',
+    },
+    footer: {
+        padding: 20,
+        backgroundColor: 'transparent',
     },
 });
 

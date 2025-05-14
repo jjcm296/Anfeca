@@ -1,33 +1,45 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 
-const RedemptionOptionButton = ({ selected, onPress, text }) => {
+const RedemptionOptionButton = ({ text, selected, onPress }) => {
     return (
         <TouchableOpacity
-            style={[styles.optionButton, selected && styles.optionButtonSelected]}
+            style={[styles.button, selected && styles.buttonSelected]}
             onPress={onPress}
+            activeOpacity={0.7}
         >
-            <Text style={styles.optionText}>{text}</Text>
+            <Text style={[styles.text, selected && styles.textSelected]}>
+                {text}
+            </Text>
         </TouchableOpacity>
     );
 };
 
 const styles = StyleSheet.create({
-    optionButton: {
-        flex: 1,
-        padding: 12,
-        backgroundColor: '#DDD',
-        borderRadius: 8,
-        marginHorizontal: 5,
+    button: {
+        backgroundColor: '#f0f0f0',
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderRadius: 12,
         alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOpacity: 0.05,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
     },
-    optionButtonSelected: {
-        backgroundColor: '#FFFFFF',
+    buttonSelected: {
+        backgroundColor: '#3E9697',
+        elevation: 4,
     },
-    optionText: {
+    text: {
         fontSize: 14,
-        fontWeight: 'bold',
-        color: '#000000',
+        color: '#333',
+        fontWeight: '600',
+    },
+    textSelected: {
+        color: '#fff',
     },
 });
 

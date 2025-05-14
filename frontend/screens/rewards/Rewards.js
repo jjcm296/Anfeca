@@ -123,29 +123,19 @@ const Rewards = () => {
                 <FlatList
                     data={rewards.filter(item => item.active)}
                     keyExtractor={(item) => item._id}
-                    renderItem={({ item }) => {
-                        const content = (
-                            <RewardCard
-                                name={item.name}
-                                coins={item.price}
-                                type={item.type}
-                                redemptionLimit={item.redemptionLimit ?? 0}
-                                redemptionCount={item.redemptionCount ?? 0}
-                            />
-                        );
-
-                        return (
-                            <TouchableOpacity
-                                onPress={() =>
-                                    session.profileType === 'guardian'
-                                        ? navigation.navigate("EditReward", { rewardId: item._id })
-                                        : (setSelectedReward(item), setModalVisible(true))
-                                }
-                            >
-                                {content}
-                            </TouchableOpacity>
-                        );
-                    }}
+                    renderItem={({ item }) => (
+                        <RewardCard
+                            _id={item._id}
+                            name={item.name}
+                            coins={item.price}
+                            type={item.type}
+                            redemptionLimit={item.redemptionLimit ?? 0}
+                            redemptionCount={item.redemptionCount ?? 0}
+                            onDeleted={(deletedId) =>
+                                setRewards(prev => prev.filter(r => r._id !== deletedId))
+                            }
+                        />
+                    )}
                     contentContainerStyle={styles.list}
                 />
             )}

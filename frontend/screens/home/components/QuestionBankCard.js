@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import { deleteBank } from '../../../api/ApiBank'; // Asegúrate que esta ruta sea correcta
+import { deleteBank } from '../../../api/ApiBank';
 
 const QuestionBankCard = ({
                               category,
@@ -51,7 +51,6 @@ const QuestionBankCard = ({
             Alert.alert('Eliminado', 'El banco ha sido eliminado correctamente.');
             if (onBankDeleted) onBankDeleted(bankId);
         } catch (error) {
-            console.error('Error al eliminar banco:', error);
             Alert.alert('Error', 'No se pudo eliminar el banco.');
         } finally {
             setModalVisible(false);
@@ -99,10 +98,6 @@ const QuestionBankCard = ({
                 </View>
             )}
 
-            {isGuardian && (
-                <Text style={styles.questionsText}>Preguntas: {questions}</Text>
-            )}
-
             <Modal
                 animationType="fade"
                 transparent
@@ -135,8 +130,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
         borderRadius: 20,
         padding: 20,
-        marginVertical: 12,
-        marginHorizontal: 10,
+        marginVertical: 5,
+        marginHorizontal: 15,
         minHeight: 160,
         justifyContent: 'space-between',
     },

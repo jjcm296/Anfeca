@@ -1,13 +1,23 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    StyleSheet,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import CustomButton from '../../ui/components/CustomButton';
-import CloseButton from "../../ui/components/CloseButton";
-import {createBank} from "../../../api/ApiBank";
-import {ApiRefreshAccessToken} from "../../../api/ApiLogin";
+import { createBank } from "../../../api/ApiBank";
+import { ApiRefreshAccessToken } from "../../../api/ApiLogin";
 
 const AddQuestionBank = ({ navigation }) => {
     const [category, setCategory] = useState('');
+    const [submitting, setSubmitting] = useState(false);
 
     const handleSubmit = async () => {
         if (category.trim() === '') {
@@ -16,8 +26,8 @@ const AddQuestionBank = ({ navigation }) => {
         }
 
         try {
+            setSubmitting(true);
             await ApiRefreshAccessToken();
-
             const response = await createBank({ name: category });
 
             if (response.error) {
@@ -27,65 +37,96 @@ const AddQuestionBank = ({ navigation }) => {
                 Alert.alert("Éxito", "Banco de preguntas agregado correctamente.");
                 navigation.goBack();
             }
-
         } catch (error) {
             console.error("Error inesperado:", error);
             Alert.alert("Error", "Error al agregar el banco de preguntas.");
+        } finally {
+            setSubmitting(false);
         }
     };
 
+    const handleCancel = () => {
+        navigation.goBack();
+    };
+
     return (
-        <View style={styles.container}>
-            <CloseButton/>
-            <Text style={styles.title}>Agregar Nuevo Banco de Preguntas</Text>
+        <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.container}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                style={{ flex: 1 }}
+            >
+                <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+                    <View style={styles.card}>
+                        <Text style={styles.title}>Agregar Categoría</Text>
 
-            {/* Campo para ingresar el nombre del banco de preguntas */}
-            <TextInput
-                style={styles.input}
-                placeholder="Nombre de la categoría..."
-                value={category}
-                onChangeText={setCategory}
-            />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Nombre de la categoría..."
+                            placeholderTextColor="#aaa"
+                            value={category}
+                            onChangeText={setCategory}
+                        />
+                    </View>
+                </ScrollView>
 
-            <View style={styles.buttons}>
-                <CustomButton
-                    color="#000000"
-                    text="Agregar Banco"
-                    onPress={handleSubmit}
-                    disabled={category.trim() === ''}
-                />
-            </View>
-        </View>
+                <View style={styles.footer}>
+                    <CustomButton
+                        color="#3E9697"
+                        text="Agregar banco de preguntas"
+                        textColor="#ffffff"
+                        onPress={handleSubmit}
+                        disabled={submitting || category.trim() === ''}
+                    />
+                    <CustomButton
+                        color="#B3E5FC"
+                        text="Cancelar"
+                        textColor="#003F5C"
+                        onPress={handleCancel}
+                    />
+                </View>
+            </KeyboardAvoidingView>
+        </LinearGradient>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    scrollContent: {
+        flexGrow: 1,
+        padding: 10,
+    },
+    card: {
+        marginTop: 10,
+        backgroundColor: '#ffffff',
+        borderRadius: 16,
         padding: 20,
-        backgroundColor: '#f8f8f8'
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 4,
     },
     title: {
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 15,
-        textAlign: 'center'
+        textAlign: 'center',
+        color: '#333',
     },
     input: {
-        backgroundColor: '#fff',
-        padding: 10,
-        borderRadius: 10,
+        backgroundColor: '#f4f4f4',
+        padding: 12,
+        borderRadius: 12,
         fontSize: 16,
-        marginBottom: 10,
-        borderWidth: 1,
-        borderColor: '#ddd'
+        borderWidth: 1.5,
+        borderColor: '#3E9697',
+        color: '#000',
     },
-    buttons: {
-        marginTop: 20,
-        position: 'absolute',
-        bottom: 20,
-        left: 20,
-        right: 20,
+    footer: {
+        paddingHorizontal: 10,
+        paddingBottom: 20,
     },
 });
 

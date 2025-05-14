@@ -94,7 +94,7 @@ const HomeScreen = () => {
 
             <WebButton
                 imageSource={require('../../assets/mascota/frente.png')}
-                url={'https://concentra-tda-kqrwj8g59-jjcm296s-projects.vercel.app'}
+                url={'https://concentra-tda-web.vercel.app'}
             />
         </LinearGradient>
     );
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     },
     listContainer: {
         paddingVertical: 20,
-        paddingHorizontal: 15,
+        paddingHorizontal: 5,
         paddingBottom: 80,
     },
 });
