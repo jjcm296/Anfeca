@@ -68,7 +68,7 @@ const HomeScreen = () => {
                             profileType: session.profileType,
                             bankId: item._id,
                             bankName: item.name,
-                            canPlayMiniGame: false,
+                            canPlayMiniGame: true,
                             onBankDeleted: handleBankDeleted,
                         };
 

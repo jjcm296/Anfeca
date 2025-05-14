@@ -108,3 +108,35 @@ export const ApiGetTheFollowingFlashcard = async (bankId, studySessionId, flashc
         return error.response?.data || { error: "No se pudo conectar con el servidor" };
     }
 };
+
+export const ApiStartGame = async (bankId) => {
+    try {
+        const token = await SecureStore.getItemAsync('accessToken');
+        const response = await axios.get(`${API_BASE_URL}/api/game/${bankId}/start-game`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        return error.response?.data || { error: "No se pudo iniciar el juego" };
+    }
+};
+
+export const ApiSendGameResult = async (bankId, gameSessionId, resultData) => {
+    try {
+        const token = await SecureStore.getItemAsync('accessToken');
+        const response = await axios.post(
+            `${API_BASE_URL}/api/game/${bankId}/${gameSessionId}/result`,
+            resultData,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        return response.data;
+    } catch (error) {
+        return error.response?.data || { error: "No se pudo enviar el resultado del juego" };
+    }
+};

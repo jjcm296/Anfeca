@@ -1,16 +1,19 @@
 import React, { useRef, useState, useEffect } from 'react';
 import {
     StyleSheet, View, Dimensions, Text,
-    TouchableWithoutFeedback, Modal, TouchableOpacity
+    TouchableWithoutFeedback, Modal, TouchableOpacity, Animated
 } from 'react-native';
 import { GameEngine } from 'react-native-game-engine';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { getEntities } from './entities';
 import { Physics } from './Physics';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { resetSpeed } from './GameConfig';
 import Matter from 'matter-js';
 import { Audio } from 'expo-av';
+import { ApiStartGame, ApiSendGameResult } from '../../../../../api/ApiBank';
+import CoinsDisplay from '../../../../ui/components/CoinsDisplay';
+import { ApiRefreshAccessToken } from '../../../../../api/ApiLogin';
 
 const { width, height } = Dimensions.get('window');
 
@@ -19,14 +22,22 @@ const Runner = () => {
     const [running, setRunning] = useState(false);
     const [score, setScore] = useState(0);
     const [coins, setCoins] = useState(0);
+    const [runningCoins, setRunningCoins] = useState(0);
     const [gameOver, setGameOver] = useState(false);
+    const [gameWon, setGameWon] = useState(false);
     const [entities, setEntities] = useState({});
     const [pressStartTime, setPressStartTime] = useState(null);
     const [questions, setQuestions] = useState([]);
+    const [answeredQuestions, setAnsweredQuestions] = useState([]);
     const [questionModalVisible, setQuestionModalVisible] = useState(false);
     const [currentQuestion, setCurrentQuestion] = useState(null);
     const [comingFromCheckpoint, setComingFromCheckpoint] = useState(false);
+    const [gameSessionId, setGameSessionId] = useState(null);
+    const [resultSent, setResultSent] = useState(false);
+    const [coinAnim] = useState(new Animated.Value(1));
     const navigation = useNavigation();
+    const route = useRoute();
+    const { bankId } = route.params;
 
     const coinSound = useRef();
     const correctSound = useRef();
@@ -42,14 +53,20 @@ const Runner = () => {
         };
     }, []);
 
-    const loadQuestionsFromAPI = async () => {
-        return [
-            { question: '¿Capital de Francia?', options: ['Madrid', 'París', 'Roma'], correct: 1 },
-            { question: '2 + 2 = ?', options: ['3', '4', '5'], correct: 1 },
-            { question: 'Color del cielo', options: ['Verde', 'Azul', 'Rojo'], correct: 1 },
-            { question: 'React es...', options: ['Librería', 'Framework', 'Base de datos'], correct: 0 },
-            { question: 'HTML significa...', options: ['Lenguaje de Marcado', 'Red Social', 'API'], correct: 0 }
-        ];
+    const loadQuestionsFromAPI = async (bankId) => {
+        await ApiRefreshAccessToken();
+        const response = await ApiStartGame(bankId);
+        if (response?.questions && response?.sessionId) {
+            setGameSessionId(response.sessionId);
+            return response.questions.map((q, i) => ({
+                question: q.textQuestion,
+                options: q.answers.map(a => a.textAnswer),
+                correct: q.answers.findIndex(a => a.isCorrect),
+                priority: q.priority || 1,
+                index: i
+            }));
+        }
+        return [];
     };
 
     useEffect(() => {
@@ -68,28 +85,32 @@ const Runner = () => {
                 require('../../../../../assets/sounds/respuesta_incorrecta.mp3')
             );
             wrongSound.current = wrong;
-
         };
-
-
         loadSound();
-
         return () => {
-            if (coinSound.current) coinSound.current.unloadAsync();
-            if (correctSound.current) correctSound.current.unloadAsync();
-            if (jumpSound.current) jumpSound.current.unloadAsync();
-            if (wrongSound.current) wrongSound.current.unloadAsync();
+            coinSound.current?.unloadAsync();
+            correctSound.current?.unloadAsync();
+            wrongSound.current?.unloadAsync();
         };
     }, []);
 
-
+    const animateCoin = () => {
+        Animated.sequence([
+            Animated.timing(coinAnim, { toValue: 1.5, duration: 200, useNativeDriver: true }),
+            Animated.timing(coinAnim, { toValue: 1, duration: 200, useNativeDriver: true })
+        ]).start();
+    };
 
     const startGame = async () => {
         resetSpeed();
         const newEntities = getEntities(gameEngine.current?.dispatch);
-        const apiQuestions = await loadQuestionsFromAPI();
-        apiQuestions.forEach((q, i) => q.index = i);
-        setQuestions(apiQuestions);
+        const questionsFromAPI = await loadQuestionsFromAPI(bankId);
+        if (!questionsFromAPI.length) return;
+
+        setQuestions(questionsFromAPI);
+        setAnsweredQuestions([]);
+        setResultSent(false);
+        setRunningCoins(0);
 
         for (let i = 0; i < 5; i++) {
             const checkpoint = Matter.Bodies.rectangle(
@@ -97,11 +118,7 @@ const Runner = () => {
                 230,
                 40,
                 10,
-                {
-                    isStatic: true,
-                    label: `checkpoint-${i}`,
-                    isSensor: false // asegura colisión real
-                }
+                { isStatic: true, label: `checkpoint-${i}`, isSensor: false }
             );
             Matter.World.add(newEntities.physics.world, [checkpoint]);
             newEntities[`checkpoint-${i}`] = {
@@ -112,10 +129,23 @@ const Runner = () => {
             };
         }
 
+        const finishLine = Matter.Bodies.rectangle(
+            1400 + 20 * 600,
+            230,
+            40,
+            40,
+            { isStatic: true, label: 'finish-line' }
+        );
+        Matter.World.add(newEntities.physics.world, [finishLine]);
+        newEntities['finish-line'] = {
+            body: finishLine,
+            renderer: require('./components/FinishLine').FinishLine,
+        };
 
         setEntities(newEntities);
         setScore(0);
         setCoins(0);
+        setGameWon(false);
         setRunning(true);
         gameEngine.current.swap(newEntities);
     };
@@ -128,51 +158,49 @@ const Runner = () => {
             const currentSpeed = entities?.state?.currentSpeed || 3;
             setScore(prev => {
                 const newScore = prev + Math.floor(currentSpeed * 0.5);
-
-                if (newScore % 20 === 0 && gameEngine.current) {
-                    gameEngine.current.dispatch({ type: 'increase-speed' });
-                }
-
-                const coinExists = Object.keys(entities).some(key => key.startsWith('coin-'));
-                if (!coinExists && gameEngine.current) {
-                    gameEngine.current.dispatch({ type: 'spawn-coin' });
-                }
-
+                if (newScore % 20 === 0) gameEngine.current?.dispatch({ type: 'increase-speed' });
+                if (!Object.keys(entities).some(key => key.startsWith('coin-')))
+                    gameEngine.current?.dispatch({ type: 'spawn-coin' });
                 return newScore;
             });
 
-            const delay = Math.max(1000 / currentSpeed, 100);
-            setTimeout(tick, delay);
+            setTimeout(tick, Math.max(1000 / currentSpeed, 100));
         };
-
-        if (running) {
-            tick();
-        }
-
-        return () => {
-            cancelled = true;
-        };
+        if (running) tick();
+        return () => { cancelled = true; };
     }, [running, entities]);
+
+    useEffect(() => {
+        if (gameWon && !resultSent && gameSessionId) {
+            const payload = {
+                questions: answeredQuestions,
+                individualCoins: runningCoins
+            };
+            ApiSendGameResult(bankId, gameSessionId, payload);
+            setResultSent(true);
+        }
+    }, [gameWon]);
 
     const onEvent = (e) => {
         if (e.type === 'game-over') {
             setRunning(false);
             setGameOver(true);
         }
+        if (e.type === 'game-won') {
+            setRunning(false);
+            setGameWon(true);
+        }
         if (e.type === 'coin-collected' && e.coinId) {
             setCoins(prev => prev + 1);
-            if (coinSound.current) {
-                coinSound.current.replayAsync();
-            }
+            setRunningCoins(prev => prev + 1);
+            coinSound.current?.replayAsync();
+            animateCoin();
         }
-
         if (e.type === 'checkpoint-hit') {
             const index = parseInt(e.id.split('-')[1]);
             const checkpointKey = `checkpoint-${index}`;
             const checkpoint = entities[checkpointKey];
-
             if (!checkpoint || !checkpoint.isActive) return;
-
             setCurrentQuestion(questions[index]);
             setQuestionModalVisible(true);
             setRunning(false);
@@ -180,19 +208,39 @@ const Runner = () => {
         }
     };
 
-    const handleRestart = () => {
-        setGameOver(false);
-        startGame();
-    };
+    const handleAnswer = (isCorrect, index) => {
+        const checkpointKey = `checkpoint-${index}`;
+        const priority = questions[index]?.priority || 1;
+        const coinsToAdd = priority;
 
-    const handleExit = () => {
-        setGameOver(false);
-        setRunning(false);
-        navigation.goBack();
+        if (isCorrect) {
+            correctSound.current?.replayAsync();
+            setCoins(prev => prev + coinsToAdd);
+            animateCoin();
+            gameEngine.current.dispatch({ type: 'resume-after-checkpoint' });
+            setRunning(true);
+        } else {
+            wrongSound.current?.replayAsync();
+            gameEngine.current.dispatch({ type: 'resume-after-checkpoint' });
+            setRunning(true);
+        }
+
+        if (entities[checkpointKey]) {
+            entities[checkpointKey].used = true;
+            entities[checkpointKey].isActive = false;
+            entities[checkpointKey].renderer = (props) =>
+                require('./components/Checkpoint').Checkpoint({ ...props, isActive: false });
+        }
+
+        setEntities({ ...entities });
+        setAnsweredQuestions(prev => [...prev, {
+            question: questions[index].question,
+            answeredCorrectly: isCorrect
+        }]);
     };
 
     const handlePressIn = () => {
-        if (!running && !gameOver && !comingFromCheckpoint) {
+        if (!running && !gameOver && !comingFromCheckpoint && !gameWon) {
             startGame();
         }
         setComingFromCheckpoint(false);
@@ -203,7 +251,6 @@ const Runner = () => {
         if (!running || pressStartTime === null) return;
         const pressDuration = Date.now() - pressStartTime;
         const strength = Math.min(pressDuration / 100, 10);
-
         gameEngine.current.dispatch({ type: 'jump', strength });
         setPressStartTime(null);
     };
@@ -212,8 +259,9 @@ const Runner = () => {
         <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
             <View style={styles.container}>
                 <Text style={styles.score}>Score: {score}</Text>
-                <Text style={styles.coin}>Coins: {coins}</Text>
-
+                <Animated.View style={[styles.coinAnimated, { transform: [{ scale: coinAnim }] }]}>
+                    <CoinsDisplay coins={coins}/>
+                </Animated.View>
                 <GameEngine
                     ref={gameEngine}
                     style={styles.gameContainer}
@@ -222,67 +270,58 @@ const Runner = () => {
                     entities={entities}
                     onEvent={onEvent}
                 />
-
-                {!running && !gameOver && (
+                {!running && !gameOver && !gameWon && (
                     <View style={styles.overlay}>
                         <Text style={styles.fullScreenText}>Toca para comenzar</Text>
                     </View>
                 )}
-
                 <Modal visible={questionModalVisible} transparent animationType="slide">
                     <View style={styles.modalContainer}>
                         <View style={styles.modalContent}>
                             <Text style={styles.modalTitle}>{currentQuestion?.question}</Text>
-                            {currentQuestion?.options.map((opt, i) => (
-                                <TouchableOpacity
-                                    key={i}
-                                    style={styles.modalButton}
-                                    onPress={() => {
-                                        setQuestionModalVisible(false);
-
-                                        const checkpointKey = `checkpoint-${currentQuestion.index}`;
-                                        const isCorrect = i === currentQuestion.correct;
-
-                                        if (isCorrect) {
-                                            if (correctSound.current) correctSound.current.replayAsync();
-
-                                            if (entities[checkpointKey]) {
-                                                entities[checkpointKey].used = true;
-                                                entities[checkpointKey].isActive = false;
-                                                entities[checkpointKey].renderer = (props) =>
-                                                    require('./components/Checkpoint').Checkpoint({ ...props, isActive: false });
-                                            }
-                                            setEntities({ ...entities });
-                                            gameEngine.current.dispatch({ type: 'resume-after-checkpoint' });
-                                            setRunning(true);
-                                        } else {
-                                            if (wrongSound.current) wrongSound.current.replayAsync(); // 🔊 sonido de error
-                                            setGameOver(true);
-                                        }
-                                    }}
-                                >
-                                    <Text style={styles.modalButtonText}>{opt}</Text>
+                            <Text style={{ fontSize: 16, marginBottom: 10 }}>
+                                {currentQuestion?.priority ? `Recompensa: +${currentQuestion.priority} moneda${currentQuestion.priority > 1 ? 's' : ''}` : ''}
+                            </Text>
+                            {Array.isArray(currentQuestion?.options) &&
+                                currentQuestion.options.map((opt, i) => (
+                                    <TouchableOpacity
+                                        key={i}
+                                        style={styles.modalButton}
+                                        onPress={() => {
+                                            setQuestionModalVisible(false);
+                                            handleAnswer(i === currentQuestion.correct, currentQuestion.index);
+                                        }}
+                                    >
+                                        <Text style={styles.modalButtonText}>{opt}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                        </View>
+                    </View>
+                </Modal>
+                {(gameOver || gameWon) && (
+                    <Modal visible={true} transparent animationType="fade">
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalTitle}>{gameWon ? '¡Ganaste!' : '¡Perdiste!'}</Text>
+                                <Text style={styles.modalScore}>Puntaje: {score}</Text>
+                                <Text style={styles.modalScore}>Monedas: {coins}</Text>
+                                <TouchableOpacity style={styles.modalButton} onPress={() => {
+                                    setGameOver(false);
+                                    setGameWon(false);
+                                    startGame();
+                                }}>
+                                    <Text style={styles.modalButtonText}>Reintentar</Text>
                                 </TouchableOpacity>
-                            ))}
+                                <TouchableOpacity
+                                    style={[styles.modalButton, { backgroundColor: '#ccc' }]}
+                                    onPress={() => navigation.goBack()}
+                                >
+                                    <Text style={styles.modalButtonText}>Salir</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                    </View>
-                </Modal>
-
-                <Modal visible={gameOver} transparent animationType="fade">
-                    <View style={styles.modalContainer}>
-                        <View style={styles.modalContent}>
-                            <Text style={styles.modalTitle}>¡Perdiste!</Text>
-                            <Text style={styles.modalScore}>Puntaje: {score}</Text>
-                            <Text style={styles.modalScore}>Monedas: {coins}</Text>
-                            <TouchableOpacity style={styles.modalButton} onPress={handleRestart}>
-                                <Text style={styles.modalButtonText}>Reintentar</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: '#ccc' }]} onPress={handleExit}>
-                                <Text style={styles.modalButtonText}>Salir</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </Modal>
+                    </Modal>
+                )}
             </View>
         </TouchableWithoutFeedback>
     );
@@ -323,13 +362,11 @@ const styles = StyleSheet.create({
         zIndex: 10,
         fontWeight: 'bold',
     },
-    coin: {
-        fontSize: 20,
+    coinAnimated: {
         position: 'absolute',
         top: 20,
         right: 20,
         zIndex: 10,
-        fontWeight: 'bold',
     },
     modalContainer: {
         flex: 1,
