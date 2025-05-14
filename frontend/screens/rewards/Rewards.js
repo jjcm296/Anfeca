@@ -35,6 +35,7 @@ const Rewards = () => {
             setLoading(true);
             await ApiRefreshAccessToken();
             const response = await getAllRewards();
+            console.log(response);
             setRewards(response.rewardsArray);
             setHasLoaded(true);
             setLoading(false);
@@ -55,6 +56,7 @@ const Rewards = () => {
                 try {
                     await ApiRefreshAccessToken();
                     const response = await getAllRewards();
+                    console.log(response);
                     if (isActive) {
                         setRewards(response.rewardsArray);
                         setHasLoaded(true);
@@ -99,7 +101,6 @@ const Rewards = () => {
                 Alert.alert("Error", error?.error || "No se pudo canjear la recompensa");
                 setModalVisible(false);
             }
-
         };
 
 
@@ -127,7 +128,7 @@ const Rewards = () => {
                 </View>
             ) : (
                 <FlatList
-                    data={rewards}
+                    data={rewards.filter(item => item.active)}
                     keyExtractor={(item) => item._id}
                     renderItem={({ item }) => {
                         const content = (
