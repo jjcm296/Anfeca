@@ -22,7 +22,7 @@ const RewardCard = ({
                         redemptionLimit = 0,
                         redemptionCount = 0,
                         onDeleted,
-                        onRedeem // ← IMPORTANTE para que el niño pueda canjear
+                        onRedeem
                     }) => {
     const navigation = useNavigation();
     const { session } = useContext(SessionContext);
@@ -33,7 +33,8 @@ const RewardCard = ({
             ? '∞ ilimitado'
             : type === 'once'
                 ? '1 vez'
-                : `${redemptionLimit} canjes`;
+                : `${Math.max(0, redemptionLimit - redemptionCount)} canjes restantes`;
+
 
     const handleEdit = () => {
         setModalVisible(false);
@@ -152,10 +153,11 @@ const styles = StyleSheet.create({
     name: {
         fontSize: 19,
         fontWeight: '500',
-        color: '#000',
+        color: '#2f5c98',
+        fontFamily: 'sans-serif-medium',
     },
     expirationBox: {
-        backgroundColor: '#000000',
+            backgroundColor: '#3E9697', // azul claro muy suave (armoniza con `#3E9697`)
         paddingHorizontal: 12,
         paddingVertical: 4,
         borderRadius: 10,

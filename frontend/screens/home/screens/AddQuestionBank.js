@@ -57,7 +57,7 @@ const AddQuestionBank = ({ navigation }) => {
             >
                 <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
                     <View style={styles.card}>
-                        <Text style={styles.title}>Agregar Categoría</Text>
+                        <Text style={styles.title}>✨ Agregar Banco</Text>
 
                         <TextInput
                             style={styles.input}

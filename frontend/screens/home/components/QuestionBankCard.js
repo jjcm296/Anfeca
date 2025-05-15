@@ -64,9 +64,17 @@ const QuestionBankCard = ({
     };
 
     return (
-        <View style={styles.card}>
+        <View style={[styles.card, isGuardian && styles.cardTutor]}>
             <View style={styles.headerRow}>
-                <Text style={styles.categoryText} numberOfLines={1}>{category}</Text>
+                <Text
+                    style={[
+                        styles.categoryText,
+                        isGuardian && styles.categoryTextTutorColor
+                    ]}
+                    numberOfLines={1}
+                >
+                    {category}
+                </Text>
 
                 {isKid && (
                     <View style={styles.priceContainer}>
@@ -143,6 +151,11 @@ const styles = StyleSheet.create({
         borderWidth: 1.5,
         borderColor: '#2f5c98',
     },
+    cardTutor: {
+        minHeight: 110,
+        paddingVertical: 14,
+        paddingHorizontal: 16,
+    },
     headerRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -152,8 +165,10 @@ const styles = StyleSheet.create({
     categoryText: {
         fontSize: 22,
         fontWeight: 'bold',
-        color: '#333',
         flex: 1,
+        fontFamily: 'sans-serif-medium',
+        letterSpacing: 0.5,
+        color: '#2f5c98',
     },
     priceContainer: {
         flexDirection: 'row',
@@ -169,6 +184,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#555',
         marginLeft: 6,
+        fontFamily: 'sans-serif-medium',
     },
     buttonsRow: {
         flexDirection: 'row',
@@ -195,6 +211,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginLeft: 8,
         fontWeight: 'bold',
+        fontFamily: 'sans-serif-medium',
+        letterSpacing: 0.3,
     },
     modalOverlay: {
         flex: 1,
@@ -221,9 +239,10 @@ const styles = StyleSheet.create({
     },
     modalText: {
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: '500',
         marginLeft: 10,
         color: '#333',
+        fontFamily: 'sans-serif-medium',
     },
 });
 

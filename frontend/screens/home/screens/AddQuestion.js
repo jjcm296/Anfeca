@@ -96,7 +96,7 @@ const AddQuestion = ({ route, navigation }) => {
             >
                 <ScrollView contentContainerStyle={styles.scroll}>
                     <View style={styles.card}>
-                        <Text style={styles.title}>Agregar Pregunta</Text>
+                        <Text style={styles.title}>📝 Agregar Pregunta</Text>
 
                         <CustomInput
                             placeholder="Escribe la pregunta..."

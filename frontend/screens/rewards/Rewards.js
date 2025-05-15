@@ -55,6 +55,7 @@ const Rewards = () => {
                 try {
                     await ApiRefreshAccessToken();
                     const response = await getAllRewards();
+                    console.log("recompensas: ", response);
                     if (isActive) {
                         setRewards(Array.isArray(response.rewardsArray) ? response.rewardsArray : []);
                     }
@@ -223,7 +224,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     btn: {
-        backgroundColor: '#6200EE',
+        backgroundColor: '#3E9697',
         paddingVertical: 8,
         paddingHorizontal: 20,
         borderRadius: 8,

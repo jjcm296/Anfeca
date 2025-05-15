@@ -2,12 +2,13 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as SecureStore from 'expo-secure-store';
 
 import QuestionBankCard from "./components/QuestionBankCard";
 import AddButton from "../ui/components/AddButton";
 import WebButton from "./components/WebButton";
 import SkeletonQuestionBankCard from "./components/skeletons/SkeletonQuestionBankCard";
-import {ApiStartStudySession, getAllBanks} from "../../api/ApiBank";
+import { ApiStartStudySession, getAllBanks } from "../../api/ApiBank";
 import { ApiRefreshAccessToken } from "../../api/ApiLogin";
 import { SessionContext } from "../../context/SessionContext";
 
@@ -17,40 +18,23 @@ const HomeScreen = () => {
     const { session } = useContext(SessionContext);
     const navigation = useNavigation();
 
-    const [firstLoadDone, setFirstLoadDone] = useState(false);
-
-    const fetchBanks = async (isFirstTime = false) => {
-        if (isFirstTime) setLoading(true);
+    const fetchBanks = async () => {
+        setLoading(true);
         await ApiRefreshAccessToken();
         const banks = await getAllBanks();
 
-        const banksWithSessionState = await Promise.all(
+        const banksWithState = await Promise.all(
             banks.banksArray.map(async (bank) => {
                 try {
                     const res = await ApiStartStudySession(bank._id);
-
-                    if (res?.firstFlashcard && res?.sessionId) {
-                        return {
-                            ...bank,
-                            canStudy: true,
-                            canPlayMiniGame: false,
-                            studySessionId: res.sessionId,
-                        };
-                    } else if (res?.error === "One game session for this bank already exists") {
-                        return {
-                            ...bank,
-                            canStudy: false,
-                            canPlayMiniGame: true,
-                            studySessionId: null,
-                        };
-                    } else {
-                        return {
-                            ...bank,
-                            canStudy: false,
-                            canPlayMiniGame: false,
-                            studySessionId: null,
-                        };
-                    }
+                    const canStudy = res?.firstFlashcard && res?.sessionId;
+                    const canPlayMiniGame = res?.error === "One game session for this bank already exists";
+                    return {
+                        ...bank,
+                        canStudy,
+                        canPlayMiniGame,
+                        studySessionId: res?.sessionId || null,
+                    };
                 } catch (error) {
                     return {
                         ...bank,
@@ -62,25 +46,9 @@ const HomeScreen = () => {
             })
         );
 
-        setQuestionBanks(banksWithSessionState);
+        setQuestionBanks(banksWithState);
         setLoading(false);
-        if (isFirstTime) setFirstLoadDone(true); // ya no volverá a cargar skeletons
     };
-
-
-    useEffect(() => {
-        fetchBanks(true); // primera vez
-    }, []);
-
-
-    useFocusEffect(
-        useCallback(() => {
-            if (firstLoadDone) {
-                fetchBanks(false);
-            }
-        }, [firstLoadDone])
-    );
-
 
     useEffect(() => {
         fetchBanks();
@@ -92,7 +60,6 @@ const HomeScreen = () => {
         }, [])
     );
 
-
     const handleBankPress = (item) => {
         navigation.navigate("Questions", { bankId: item._id });
     };
@@ -101,6 +68,10 @@ const HomeScreen = () => {
         setTimeout(() => {
             setQuestionBanks(prev => prev.filter(bank => bank._id !== deletedBankId));
         }, 800);
+    };
+
+    const handleSessionReset = async () => {
+        await fetchBanks();
     };
 
     return (
@@ -126,25 +97,13 @@ const HomeScreen = () => {
                             canPlayMiniGame: item.canPlayMiniGame,
                             studySessionId: item.studySessionId,
                             onBankDeleted: handleBankDeleted,
+                            onSessionReset: handleSessionReset,
                         };
 
                         if (session.profileType === 'guardian') {
                             return (
-                                <TouchableOpacity
-                                    onPress={() => handleBankPress(item)}
-                                >
-                                    <QuestionBankCard
-                                        category={item.name}
-                                        questions={item.questions}
-                                        profileType={session.profileType}
-                                        bankId={item._id}
-                                        bankName={item.name}
-                                        canStudy={item.canStudy}
-                                        canPlayMiniGame={item.canPlayMiniGame}
-                                        studySessionId={item.studySessionId}
-                                        onBankDeleted={handleBankDeleted}
-                                    />
-
+                                <TouchableOpacity onPress={() => handleBankPress(item)}>
+                                    <QuestionBankCard {...commonProps} />
                                 </TouchableOpacity>
                             );
                         }

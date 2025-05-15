@@ -1,6 +1,6 @@
-export let currentSpeed = 3;
+export let currentSpeed = 5;
 export const MAX_SPEED = 10;
-export const SPEED_INCREMENT = 0.05;
+export const SPEED_INCREMENT = 0.06;
 
 export const getSpeed = () => currentSpeed;
 

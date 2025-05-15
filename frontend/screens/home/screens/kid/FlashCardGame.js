@@ -91,8 +91,15 @@ const FlashCardGame = () => {
                 setCurrentFlashcard({ id: res._id, front: res.front, back: res.back });
             } else throw new Error("Respuesta inesperada");
         } catch (err) {
-            Alert.alert("Error", err.message || "No se pudo continuar la sesión.");
+            if (err.message?.toLowerCase().includes("session") || err.message?.toLowerCase().includes("not found")) {
+                Alert.alert("Sesión finalizada", "Parece que esta sesión ya no está disponible. Regresando al inicio.", [
+                    { text: "OK", onPress: () => navigation.goBack() }
+                ]);
+            } else {
+                Alert.alert("Error", err.message || "No se pudo continuar la sesión.");
+            }
         }
+
         setLoading(false);
     };
 
