@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef, useContext} from 'react';
 import {
     View, Text, StyleSheet, TouchableOpacity,
     ActivityIndicator, Alert, Animated, Image
@@ -10,6 +10,7 @@ import {
     ApiGetTheFollowingFlashcard
 } from '../../../../api/ApiBank';
 import CoinsDisplay from '../../../ui/components/CoinsDisplay';
+import {CoinUpdateContext} from "../../../../context/CoinUpdateContext";
 
 const mascots = [
     { image: require('../../../../assets/mascota/frente.png'), message: '¡Tú puedes lograrlo! 🦊' },
@@ -49,6 +50,8 @@ const FlashCardGame = () => {
 
     const randomMascot = mascots[Math.floor(Math.random() * mascots.length)];
 
+    const { triggerRefresh } = useContext(CoinUpdateContext);
+
     useEffect(() => {
         const incomingId = route?.params?.bankId;
         if (incomingId) setBankId(incomingId);
@@ -86,6 +89,9 @@ const FlashCardGame = () => {
             const res = await ApiGetTheFollowingFlashcard(bankId, studySessionId, currentFlashcard.id, feedbackValue);
             if (res?.message === "Study session complete!") {
                 setSessionFinished(true);
+                if (res.message === 'Study session complete!') {
+                    triggerRefresh();
+                }
                 if (route.params?.onStudyComplete) route.params.onStudyComplete();
             } else if (res?._id && res?.front && res?.back) {
                 setCurrentFlashcard({ id: res._id, front: res.front, back: res.back });

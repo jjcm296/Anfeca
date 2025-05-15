@@ -1,4 +1,4 @@
-import React, {useRef, useState, useEffect, useCallback} from 'react';
+import React, {useRef, useState, useEffect, useCallback, useContext} from 'react';
 import {
     StyleSheet, View, Dimensions, Text,
     TouchableWithoutFeedback, Modal, TouchableOpacity, Animated, ScrollView
@@ -15,6 +15,7 @@ import { ApiStartGame, ApiSendGameResult } from '../../../../../api/ApiBank';
 import CoinsDisplay from '../../../../ui/components/CoinsDisplay';
 import { ApiRefreshAccessToken } from '../../../../../api/ApiLogin';
 import { ImageBackground} from 'react-native';
+import {CoinUpdateContext} from "../../../../../context/CoinUpdateContext";
 
 const { width, height } = Dimensions.get('window');
 
@@ -47,6 +48,7 @@ const Runner = () => {
     const unansweredIndexRef = useRef(0);
 
     const { bankId } = route.params;
+    const { triggerRefresh } = useContext(CoinUpdateContext);
 
     const coinSound = useRef();
     const correctSound = useRef();
@@ -273,7 +275,7 @@ const Runner = () => {
                 individualCoins: runningCoins
             };
             ApiSendGameResult(bankId, gameSessionId, payload);
-            console.log("Enviando resultado:", payload);
+            triggerRefresh();
             setResultSent(true);
         }
     }, [gameWon]);
@@ -293,7 +295,8 @@ const Runner = () => {
                 };
                 const res = await ApiSendGameResult(bankId, gameSessionId, payload);
                 setResultSent(true);
-                setAlreadySubmitted(true); // desactiva reinicio
+                setAlreadySubmitted(true);
+                triggerRefresh();
             }
         }
 

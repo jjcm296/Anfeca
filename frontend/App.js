@@ -44,6 +44,7 @@
     import CardData from "./screens/premium/screens/CardData";
     import BankDetail from "./screens/premium/screens/BankDetail";
     import Premium from "./screens/premium/Premium";
+    import {CoinUpdateProvider} from "./context/CoinUpdateContext";
 
     const Stack = createStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -253,16 +254,18 @@
     export default function App() {
         return (
             <SessionProvider>
-                <AuthProvider>
-                    <AccountProvider>
-                        <GuardianProvider>
-                            <NavigationContainer>
-                                <StatusBar barStyle="light-content" backgroundColor="black" />
-                                <MainStack />
-                            </NavigationContainer>
-                        </GuardianProvider>
-                    </AccountProvider>
-                </AuthProvider>
+                <CoinUpdateProvider>
+                    <AuthProvider>
+                        <AccountProvider>
+                            <GuardianProvider>
+                                <NavigationContainer>
+                                    <StatusBar barStyle="light-content" backgroundColor="black" />
+                                    <MainStack />
+                                </NavigationContainer>
+                            </GuardianProvider>
+                        </AccountProvider>
+                    </AuthProvider>
+                </CoinUpdateProvider>
             </SessionProvider>
         );
     }
