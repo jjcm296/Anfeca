@@ -86,9 +86,9 @@ const EditReward = () => {
             price: parseInt(coins),
             type: redemptionType === 'custom' ? 'custom' : redemptionType === '1' ? 'once' : 'forever',
             ...(redemptionType === 'custom' && { redemptionLimit: parseInt(redemptions) }),
+            ...(redemptionType === '' && { redemptionLimit: 0 })
         };
 
-        
         try {
             await ApiRefreshAccessToken();
             const response = await ApiEditReward(rewardId, updatedReward);
