@@ -1,7 +1,7 @@
 import React, {useRef, useState, useEffect, useCallback} from 'react';
 import {
     StyleSheet, View, Dimensions, Text,
-    TouchableWithoutFeedback, Modal, TouchableOpacity, Animated
+    TouchableWithoutFeedback, Modal, TouchableOpacity, Animated, ScrollView
 } from 'react-native';
 import { GameEngine } from 'react-native-game-engine';
 import * as ScreenOrientation from 'expo-screen-orientation';
@@ -21,7 +21,7 @@ const { width, height } = Dimensions.get('window');
 const Runner = () => {
     const tickActiveRef = useRef(true);
     const animationFrameRef = useRef();
-
+    const tickCountRef = useRef(0);
 
     const gameEngine = useRef(null);
     const [running, setRunning] = useState(false);
@@ -220,50 +220,51 @@ const Runner = () => {
     }, [bankId]);
 
 
-useEffect(() => {
-        let cancelled = false;
+    useEffect(() => {
         const tick = () => {
             if (!tickActiveRef.current || questionModalVisible) return;
 
-            const currentSpeed = entities?.state?.currentSpeed || 3;
-            setScore(prev => {
-                const newScore = prev + Math.floor(currentSpeed * 0.5);
-                if (newScore % 20 === 0) gameEngine.current?.dispatch({ type: 'increase-speed' });
+            tickCountRef.current++;
+            if (tickCountRef.current % 3 === 0) {
+                setScore(prev => {
+                    const newScore = prev + 1;
 
-                // Spawn coin si no hay
-                if (!Object.keys(entities).some(key => key.startsWith('coin-')))
-                    gameEngine.current?.dispatch({ type: 'spawn-coin' });
+                    if (newScore % 20 === 0)
+                        gameEngine.current?.dispatch({ type: 'increase-speed' });
 
-                // Revisar si hay preguntas sin responder
-                const unanswered = questions.filter(
-                    (q) => !answeredQuestions.some((a) => a.question === q.question)
-                );
+                    // Spawn coin si no hay
+                    if (!Object.keys(entities).some(key => key.startsWith('coin-')))
+                        gameEngine.current?.dispatch({ type: 'spawn-coin' });
 
-                // Revisar si hay checkpoint activo
-                const activeCheckpoint = Object.keys(entities).find(
-                    (key) => key.startsWith('checkpoint-') && entities[key]?.isActive
-                );
+                    // Preguntas sin responder
+                    const unanswered = questions.filter(
+                        (q) => !answeredQuestions.some((a) => a.question === q.question)
+                    );
 
-                // Si no hay checkpoint activo y hay preguntas pendientes, genera uno nuevo
-                if (!activeCheckpoint && unanswered.length > 0 && checkpointCountRef.current < questions.length) {
-                    const newIndex = checkpointCountRef.current++;
-                    generateCheckpoint(newIndex, entities.physics.world, entities);
-                    setEntities({ ...entities });
-                }
+                    // Checkpoint activo
+                    const activeCheckpoint = Object.keys(entities).find(
+                        (key) => key.startsWith('checkpoint-') && entities[key]?.isActive
+                    );
 
+                    if (!activeCheckpoint && unanswered.length > 0 && checkpointCountRef.current < questions.length) {
+                        const newIndex = checkpointCountRef.current++;
+                        generateCheckpoint(newIndex, entities.physics.world, entities);
+                        setEntities({ ...entities });
+                    }
 
-                return newScore;
-            });
+                    return newScore;
+                });
+            }
 
             animationFrameRef.current = requestAnimationFrame(tick);
         };
 
         if (running) tick();
-    return () => {
-        cancelAnimationFrame(animationFrameRef.current);
-    };
 
-}, [running, entities]);
+        return () => {
+            cancelAnimationFrame(animationFrameRef.current);
+        };
+    }, [running, entities]);
 
     useEffect(() => {
         if (gameWon && !resultSent && gameSessionId) {
@@ -426,26 +427,33 @@ useEffect(() => {
                             <Text style={styles.fullScreenText}>Toca para comenzar</Text>
                         </View>
                     )}
-                    <Modal visible={questionModalVisible} transparent animationType="slide">
+                    <Modal visible={questionModalVisible} transparent animationType="fade">
                         <View style={styles.modalContainer}>
-                            <View style={styles.modalContent}>
-                                <Text style={styles.modalTitle}>{currentQuestion?.question}</Text>
-                                <Text style={{ fontSize: 16, marginBottom: 10 }}>
-                                    {currentQuestion?.priority ? `Recompensa: +${currentQuestion.priority} moneda${currentQuestion.priority > 1 ? 's' : ''}` : ''}
+                            <View style={[styles.victoryContent, styles.questionModal]}>
+                                <Text style={styles.victoryTitle}>❓ Pregunta</Text>
+                                <Text style={styles.victoryMessage}>{currentQuestion?.question}</Text>
+
+                                <Text style={styles.victoryScore}>
+                                    {currentQuestion?.priority
+                                        ? `Recompensa: +${currentQuestion.priority} moneda${currentQuestion.priority > 1 ? 's' : ''}`
+                                        : ''}
                                 </Text>
-                                {Array.isArray(currentQuestion?.options) &&
-                                    currentQuestion.options.map((opt, i) => (
-                                        <TouchableOpacity
-                                            key={i}
-                                            style={styles.modalButton}
-                                            onPress={() => {
-                                                setQuestionModalVisible(false);
-                                                handleAnswer(i === currentQuestion.correct);
-                                            }}
-                                        >
-                                            <Text style={styles.modalButtonText}>{opt}</Text>
-                                        </TouchableOpacity>
-                                    ))}
+
+                                <ScrollView style={styles.optionsContainer} contentContainerStyle={styles.scrollContent}>
+                                    {Array.isArray(currentQuestion?.options) &&
+                                        currentQuestion.options.map((opt, i) => (
+                                            <TouchableOpacity
+                                                key={i}
+                                                style={styles.victoryButton}
+                                                onPress={() => {
+                                                    setQuestionModalVisible(false);
+                                                    handleAnswer(i === currentQuestion.correct);
+                                                }}
+                                            >
+                                                <Text style={styles.victoryButtonText}>{opt}</Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                </ScrollView>
                             </View>
                         </View>
                     </Modal>
@@ -566,13 +574,15 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     victoryContent: {
-        width: 320,
-        backgroundColor: '#F4F4FA', // fondo claro suave
-        padding: 25,
+        width: '90%',
+        maxWidth: 400,
+        backgroundColor: '#F4F4FA',
+        paddingVertical: 25,
+        paddingHorizontal: 20,
         borderRadius: 20,
         alignItems: 'center',
         borderWidth: 2,
-        borderColor: '#A26BFA' // morado principal
+        borderColor: '#A26BFA',
     },
     victoryTitle: {
         fontSize: 26,
@@ -591,16 +601,45 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     victoryButton: {
-        marginTop: 20,
         backgroundColor: '#28A745',
-        paddingVertical: 12,
-        paddingHorizontal: 30,
+        paddingVertical: 10,
         borderRadius: 10,
+        alignItems: 'center',
+        marginTop: 5,
+        alignSelf: 'stretch',
+        maxWidth: '100%',
     },
     victoryButtonText: {
         color: '#FFF',
         fontSize: 16,
         fontWeight: '600',
+        textAlign: 'center',
+        flexWrap: 'wrap',
+    },
+    largeButton: {
+        width: '100%',
+        backgroundColor: '#A26BFA',
+        paddingVertical: 14,
+        paddingHorizontal: 10,
+        borderRadius: 10,
+        marginTop: 10,
+        alignItems: 'center',
+    },
+    questionModal: {
+        width: width * 0.8,
+        maxWidth: 400,
+        backgroundColor: '#F4F4FA',
+        padding: 20,
+        borderRadius: 20,
+        borderWidth: 2,
+        borderColor: '#A26BFA',
+        alignItems: 'center',
+        maxHeight: height * 0.85,
+        justifyContent: 'flex-start',
+    },
+    optionsContainer: {
+        width: '100%',
+        paddingHorizontal: 10, // 👈 opcional para margen interno
     },
 
 });
