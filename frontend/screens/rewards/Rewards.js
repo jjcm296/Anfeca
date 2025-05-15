@@ -55,6 +55,7 @@ const Rewards = () => {
                 try {
                     await ApiRefreshAccessToken();
                     const response = await getAllRewards();
+                    console.log("recompensas: ", response);
                     if (isActive) {
                         setRewards(Array.isArray(response.rewardsArray) ? response.rewardsArray : []);
                     }
