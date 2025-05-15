@@ -88,6 +88,7 @@ const EditReward = () => {
             ...(redemptionType === 'custom' && { redemptionLimit: parseInt(redemptions) }),
         };
 
+        
         try {
             await ApiRefreshAccessToken();
             const response = await ApiEditReward(rewardId, updatedReward);
