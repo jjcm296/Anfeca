@@ -139,7 +139,7 @@
     }
 
 
-    function MainTabs() {
+    function MainTabs({ navigation }) {
         const { session } = useContext(SessionContext);
         const isKid = session?.profileType === 'kid';
 
@@ -171,12 +171,63 @@
                     headerShown: false,
                 })}
             >
-                <Tab.Screen name="Rewards" component={RewardsStackWrapper} options={{ unmountOnBlur: true }} />
-                <Tab.Screen name="Home" component={HomeStackWrapper} options={{ unmountOnBlur: true }} />
+                <Tab.Screen
+                    name="Rewards"
+                    component={RewardsStackWrapper}
+                    options={{
+                        unmountOnBlur: true,
+                    }}
+                    listeners={({ navigation }) => ({
+                        tabPress: e => {
+                            navigation.navigate('Rewards', {
+                                screen: 'RewardsMain'
+                            });;
+                        },
+                    })}
+                />
+                <Tab.Screen
+                    name="Home"
+                    component={HomeStackWrapper}
+                    options={{
+                        unmountOnBlur: true,
+                    }}
+                    listeners={({ navigation }) => ({
+                        tabPress: e => {
+                            navigation.navigate('Home', {
+                                screen: 'HomeMain'
+                            });
+
+                        },
+                    })}
+                />
                 {!isKid && (
-                    <Tab.Screen name="Premium" component={PremiumStackWrapper} options={{ unmountOnBlur: true }} />
+                    <Tab.Screen
+                        name="Premium"
+                        component={PremiumStackWrapper}
+                        options={{
+                            unmountOnBlur: true,
+                        }}
+                        listeners={({ navigation }) => ({
+                            tabPress: e => {
+                                navigation.navigate('Premium', {
+                                    screen: 'PremiumMain'
+                                });
+                            },
+                        })}
+                    />
                 )}
-                <Tab.Screen name="Profile" component={ProfileScreen} options={{ unmountOnBlur: true }} />
+                <Tab.Screen
+                    name="Profile"
+                    component={ProfileScreen}
+                    options={{
+                        unmountOnBlur: true,
+                    }}
+                    listeners={({ navigation }) => ({
+                        tabPress: e => {
+                            navigation.navigate('Profile');
+                        },
+                    })}
+                />
             </Tab.Navigator>
         );
     }
