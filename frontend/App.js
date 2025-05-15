@@ -41,6 +41,9 @@
     import {AuthContext, AuthProvider} from "./context/AuthContext";
     import {SessionContext, SessionProvider} from "./context/SessionContext";
     import RedeemedRewards from "./screens/rewards/screens/RedeemedRewards";
+    import CardData from "./screens/premium/screens/CardData";
+    import BankDetail from "./screens/premium/screens/BankDetail";
+    import Premium from "./screens/premium/Premium";
 
     const Stack = createStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -119,13 +122,24 @@
 
         return (
             <View style={{ flex: 1 }}>
-                {shouldShowTopBar && <TopBar/>}
-                <PremiumScreen />
+                {shouldShowTopBar && <TopBar />}
+                <PremiumStack />
             </View>
         );
     }
 
-    function MainTabs() {
+
+    function PremiumStack() {
+        return (
+            <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="PremiumMain">
+                <Stack.Screen name="PremiumMain" component={Premium} />
+                <Stack.Screen name="BankDetail" component={BankDetail} />
+            </Stack.Navigator>
+        );
+    }
+
+
+    function MainTabs({ navigation }) {
         const { session } = useContext(SessionContext);
         const isKid = session?.profileType === 'kid';
 
@@ -157,12 +171,63 @@
                     headerShown: false,
                 })}
             >
-                <Tab.Screen name="Rewards" component={RewardsStackWrapper} options={{ unmountOnBlur: true }} />
-                <Tab.Screen name="Home" component={HomeStackWrapper} options={{ unmountOnBlur: true }} />
+                <Tab.Screen
+                    name="Rewards"
+                    component={RewardsStackWrapper}
+                    options={{
+                        unmountOnBlur: true,
+                    }}
+                    listeners={({ navigation }) => ({
+                        tabPress: e => {
+                            navigation.navigate('Rewards', {
+                                screen: 'RewardsMain'
+                            });;
+                        },
+                    })}
+                />
+                <Tab.Screen
+                    name="Home"
+                    component={HomeStackWrapper}
+                    options={{
+                        unmountOnBlur: true,
+                    }}
+                    listeners={({ navigation }) => ({
+                        tabPress: e => {
+                            navigation.navigate('Home', {
+                                screen: 'HomeMain'
+                            });
+
+                        },
+                    })}
+                />
                 {!isKid && (
-                    <Tab.Screen name="Premium" component={PremiumStackWrapper} options={{ unmountOnBlur: true }} />
+                    <Tab.Screen
+                        name="Premium"
+                        component={PremiumStackWrapper}
+                        options={{
+                            unmountOnBlur: true,
+                        }}
+                        listeners={({ navigation }) => ({
+                            tabPress: e => {
+                                navigation.navigate('Premium', {
+                                    screen: 'PremiumMain'
+                                });
+                            },
+                        })}
+                    />
                 )}
-                <Tab.Screen name="Profile" component={ProfileScreen} options={{ unmountOnBlur: true }} />
+                <Tab.Screen
+                    name="Profile"
+                    component={ProfileScreen}
+                    options={{
+                        unmountOnBlur: true,
+                    }}
+                    listeners={({ navigation }) => ({
+                        tabPress: e => {
+                            navigation.navigate('Profile');
+                        },
+                    })}
+                />
             </Tab.Navigator>
         );
     }
@@ -179,6 +244,7 @@
                 <Stack.Screen name="FlashCardGame" component={FlashCardGame} options={{ headerShown: false }} />
                 <Stack.Screen name="RunnerGame" component={Runner} options={{ headerShown: false }} />
                 <Stack.Screen name="Profile" component={ProfileScreen} />
+                <Stack.Screen name="CardData" component={CardData} />
             </Stack.Navigator>
         );
     }

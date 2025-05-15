@@ -182,6 +182,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 4,
+        borderWidth: 1.5,
+        borderColor: '#2f5c98',
     },
     title: {
         fontSize: 22,

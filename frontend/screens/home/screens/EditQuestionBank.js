@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     card: {
+        height: 130,
         marginTop: 10,
         backgroundColor: '#ffffff',
         borderRadius: 16,
@@ -145,6 +146,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 4,
+        borderWidth: 1.5,
+        borderColor: '#2f5c98',
     },
     title: {
         fontSize: 22,

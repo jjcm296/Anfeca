@@ -17,8 +17,10 @@ const HomeScreen = () => {
     const { session } = useContext(SessionContext);
     const navigation = useNavigation();
 
-    const fetchBanks = async () => {
-        setLoading(true);
+    const [firstLoadDone, setFirstLoadDone] = useState(false);
+
+    const fetchBanks = async (isFirstTime = false) => {
+        if (isFirstTime) setLoading(true);
         await ApiRefreshAccessToken();
         const banks = await getAllBanks();
 
@@ -62,18 +64,23 @@ const HomeScreen = () => {
 
         setQuestionBanks(banksWithSessionState);
         setLoading(false);
+        if (isFirstTime) setFirstLoadDone(true); // ya no volverá a cargar skeletons
     };
 
-// Luego la usas:
+
     useEffect(() => {
-        fetchBanks();
+        fetchBanks(true); // primera vez
     }, []);
+
 
     useFocusEffect(
         useCallback(() => {
-            fetchBanks();
-        }, [])
+            if (firstLoadDone) {
+                fetchBanks(false);
+            }
+        }, [firstLoadDone])
     );
+
 
     useEffect(() => {
         fetchBanks();

@@ -105,6 +105,8 @@ const styles = StyleSheet.create({
         elevation: 3,
         marginVertical: 5,
         marginHorizontal: 5,
+        borderWidth: 1.5,
+        borderColor: '#2f5c98',
     },
     textContainer: {
         flex: 1,
