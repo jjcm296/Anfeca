@@ -41,6 +41,7 @@
     import {AuthContext, AuthProvider} from "./context/AuthContext";
     import {SessionContext, SessionProvider} from "./context/SessionContext";
     import RedeemedRewards from "./screens/rewards/screens/RedeemedRewards";
+    import CardData from "./screens/premium/screens/CardData";
 
     const Stack = createStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -179,6 +180,7 @@
                 <Stack.Screen name="FlashCardGame" component={FlashCardGame} options={{ headerShown: false }} />
                 <Stack.Screen name="RunnerGame" component={Runner} options={{ headerShown: false }} />
                 <Stack.Screen name="Profile" component={ProfileScreen} />
+                <Stack.Screen name="CardData" component={CardData} />
             </Stack.Navigator>
         );
     }

@@ -16,6 +16,7 @@ import CloseButton from '../ui/components/CloseButton';
 import EyeToggleButton from '../ui/components/EyeToggleButton';
 import * as SecureStore from "expo-secure-store";
 import { LinearGradient } from 'expo-linear-gradient';
+import CardData from "../premium/screens/CardData";
 
 const Profile = () => {
     const navigate = useNavigation();
@@ -108,7 +109,7 @@ const Profile = () => {
                 title: 'Activar Premium',
                 color: '#FFD700',
                 textColor: '#333',
-                onPress: () => Alert.alert('Premium', 'Función de membresía premium pronto disponible.')
+                onPress: () => navigate.navigate('CardData'),
             },
             {
                 id: 'delete',
