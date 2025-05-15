@@ -5,12 +5,21 @@ export const Physics = (entities, { time, dispatch, events }) => {
     const engine = entities.physics.engine;
     Matter.Engine.update(engine, time.delta);
 
+    const maxUpwardSpeed = -8;
+    const charVelocity = entities.character.body.velocity;
+    if (charVelocity.y < maxUpwardSpeed) {
+        Matter.Body.setVelocity(entities.character.body, {
+            x: charVelocity.x,
+            y: maxUpwardSpeed
+        });
+    }
+
     for (let e of events) {
         if (e.type === 'jump') {
             const velocity = entities.character.body.velocity;
             const strength = Math.min(e.strength || 1, 10);
-            if (Math.abs(velocity.y) < 0.2) {
-                const jumpForce = -7 - strength * 1.1;
+            if (Math.abs(velocity.y) < 1) {
+                const jumpForce = -8 - strength * 1.1;
                 Matter.Body.setVelocity(entities.character.body, {
                     x: velocity.x,
                     y: jumpForce,
