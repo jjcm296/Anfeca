@@ -93,7 +93,7 @@ const EditQuestionBank = ({ route, navigation }) => {
             >
                 <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
                     <View style={styles.card}>
-                        <Text style={styles.title}>✏️ Editar Categoría</Text>
+                        <Text style={styles.title}>✏️ Editar Banco</Text>
 
                         <TextInput
                             style={styles.input}
