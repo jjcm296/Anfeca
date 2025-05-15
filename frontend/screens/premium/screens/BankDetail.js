@@ -10,6 +10,8 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRoute } from '@react-navigation/native';
 import { ApiGetPremiumBankById, ApiGetPremiumBankQuestions } from '../../../api/ApiPremium';
+import SkeletonPremiumQuestionCard from '../componens/skeletons/SkeletonPremiumQuestionCard';
+
 
 const BankDetail = () => {
     const route = useRoute();
@@ -36,12 +38,16 @@ const BankDetail = () => {
     if (loading) {
         return (
             <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.gradient}>
-                <View style={styles.loader}>
-                    <ActivityIndicator size="large" color="#2f5c98" />
-                </View>
+                <ScrollView contentContainerStyle={styles.container}>
+                    <Text style={styles.title}>Cargando banco...</Text>
+                    {[...Array(5)].map((_, i) => (
+                        <SkeletonPremiumQuestionCard key={i} />
+                    ))}
+                </ScrollView>
             </LinearGradient>
         );
     }
+
 
     return (
         <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.gradient}>
