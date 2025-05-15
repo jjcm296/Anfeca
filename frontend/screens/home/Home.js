@@ -7,7 +7,7 @@ import QuestionBankCard from "./components/QuestionBankCard";
 import AddButton from "../ui/components/AddButton";
 import WebButton from "./components/WebButton";
 import SkeletonQuestionBankCard from "./components/skeletons/SkeletonQuestionBankCard";
-import { getAllBanks } from "../../api/ApiBank";
+import {ApiStartStudySession, getAllBanks} from "../../api/ApiBank";
 import { ApiRefreshAccessToken } from "../../api/ApiLogin";
 import { SessionContext } from "../../context/SessionContext";
 
@@ -17,27 +17,74 @@ const HomeScreen = () => {
     const { session } = useContext(SessionContext);
     const navigation = useNavigation();
 
+    const fetchBanks = async () => {
+        setLoading(true);
+        await ApiRefreshAccessToken();
+        const banks = await getAllBanks();
+
+        const banksWithSessionState = await Promise.all(
+            banks.banksArray.map(async (bank) => {
+                try {
+                    const res = await ApiStartStudySession(bank._id);
+
+                    if (res?.firstFlashcard && res?.sessionId) {
+                        return {
+                            ...bank,
+                            canStudy: true,
+                            canPlayMiniGame: false,
+                            studySessionId: res.sessionId,
+                        };
+                    } else if (res?.error === "One game session for this bank already exists") {
+                        return {
+                            ...bank,
+                            canStudy: false,
+                            canPlayMiniGame: true,
+                            studySessionId: null,
+                        };
+                    } else {
+                        return {
+                            ...bank,
+                            canStudy: false,
+                            canPlayMiniGame: false,
+                            studySessionId: null,
+                        };
+                    }
+                } catch (error) {
+                    return {
+                        ...bank,
+                        canStudy: false,
+                        canPlayMiniGame: false,
+                        studySessionId: null,
+                    };
+                }
+            })
+        );
+
+        setQuestionBanks(banksWithSessionState);
+        setLoading(false);
+    };
+
+// Luego la usas:
     useEffect(() => {
-        const fetchBanks = async () => {
-            setLoading(true);
-            await ApiRefreshAccessToken();
-            const banks = await getAllBanks();
-            setQuestionBanks(banks.banksArray);
-            setLoading(false);
-        };
         fetchBanks();
     }, []);
 
     useFocusEffect(
         useCallback(() => {
-            const fetchBanks = async () => {
-                await ApiRefreshAccessToken();
-                const banks = await getAllBanks();
-                setQuestionBanks(banks.banksArray);
-            };
             fetchBanks();
         }, [])
     );
+
+    useEffect(() => {
+        fetchBanks();
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchBanks();
+        }, [])
+    );
+
 
     const handleBankPress = (item) => {
         navigation.navigate("Questions", { bankId: item._id });
@@ -68,7 +115,9 @@ const HomeScreen = () => {
                             profileType: session.profileType,
                             bankId: item._id,
                             bankName: item.name,
-                            canPlayMiniGame: true,
+                            canStudy: item.canStudy,
+                            canPlayMiniGame: item.canPlayMiniGame,
+                            studySessionId: item.studySessionId,
                             onBankDeleted: handleBankDeleted,
                         };
 
@@ -77,7 +126,18 @@ const HomeScreen = () => {
                                 <TouchableOpacity
                                     onPress={() => handleBankPress(item)}
                                 >
-                                    <QuestionBankCard {...commonProps} />
+                                    <QuestionBankCard
+                                        category={item.name}
+                                        questions={item.questions}
+                                        profileType={session.profileType}
+                                        bankId={item._id}
+                                        bankName={item.name}
+                                        canStudy={item.canStudy}
+                                        canPlayMiniGame={item.canPlayMiniGame}
+                                        studySessionId={item.studySessionId}
+                                        onBankDeleted={handleBankDeleted}
+                                    />
+
                                 </TouchableOpacity>
                             );
                         }
