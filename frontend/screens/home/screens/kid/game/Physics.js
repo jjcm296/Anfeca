@@ -5,7 +5,7 @@ export const Physics = (entities, { time, dispatch, events }) => {
     const engine = entities.physics.engine;
     Matter.Engine.update(engine, time.delta);
 
-    const maxUpwardSpeed = -8;
+    const maxUpwardSpeed = -10;
     const charVelocity = entities.character.body.velocity;
     if (charVelocity.y < maxUpwardSpeed) {
         Matter.Body.setVelocity(entities.character.body, {

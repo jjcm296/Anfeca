@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, {useRef, useState, useEffect, useCallback} from 'react';
 import {
     StyleSheet, View, Dimensions, Text,
     TouchableWithoutFeedback, Modal, TouchableOpacity, Animated
@@ -47,6 +47,12 @@ const Runner = () => {
     const coinSound = useRef();
     const correctSound = useRef();
     const wrongSound = useRef();
+    const [alreadySubmitted, setAlreadySubmitted] = useState(false);
+
+
+    useEffect(() => {
+        console.log("BANK ID ACTUAL:", bankId);
+    }, [bankId]);
 
     useEffect(() => {
         const lockLandscape = async () => {
@@ -64,6 +70,7 @@ const Runner = () => {
         if (response?.questions && response?.sessionId) {
             setGameSessionId(response.sessionId);
             return response.questions.map((q, i) => ({
+                id: q._id, // 👈 necesario para enviar después
                 question: q.textQuestion,
                 options: q.answers.map(a => a.textAnswer),
                 correct: q.answers.findIndex(a => a.isCorrect),
@@ -133,9 +140,26 @@ const Runner = () => {
         return next;
     };
 
-    const startGame = async () => {
+    const generateFinishLine = (world, entityMap, xPos = 2000) => {
+        const finishLine = Matter.Bodies.rectangle(
+            xPos,
+            230,
+            40,
+            40,
+            { isStatic: true, label: 'finish-line' }
+        );
+        Matter.World.add(world, [finishLine]);
+        entityMap['finish-line'] = {
+            body: finishLine,
+            renderer: require('./components/FinishLine').FinishLine,
+        };
+        setEntities({ ...entityMap });
+    };
+
+    const startGame = useCallback(async () => {
         resetSpeed();
         const newEntities = getEntities(gameEngine.current?.dispatch);
+        console.log("Cargando juego con bankId:", bankId);
         const questionsFromAPI = await loadQuestionsFromAPI(bankId);
         if (!questionsFromAPI.length) return;
 
@@ -147,22 +171,40 @@ const Runner = () => {
         unansweredIndexRef.current = 0;
 
         if (questionsFromAPI.length > 0) {
-            checkpointCountRef.current = 1;
-            generateCheckpoint(0, newEntities.physics.world, newEntities);
-        }
+            checkpointCountRef.current = 0;
 
-        const finishLine = Matter.Bodies.rectangle(
-            1400 + 20 * 600,
-            230,
-            40,
-            40,
-            { isStatic: true, label: 'finish-line' }
-        );
-        Matter.World.add(newEntities.physics.world, [finishLine]);
-        newEntities['finish-line'] = {
-            body: finishLine,
-            renderer: require('./components/FinishLine').FinishLine,
-        };
+            // Generar posiciones aleatorias para cada checkpoint
+            const startX = 1400;
+            const minSpacing = 800;
+            const maxSpacing = 1100;
+
+            let x = startX;
+            const checkpointPositions = [];
+
+            for (let i = 0; i < questionsFromAPI.length; i++) {
+                const spacing = Math.floor(Math.random() * (maxSpacing - minSpacing + 1)) + minSpacing;
+                x += spacing;
+                checkpointPositions.push(x);
+            }
+
+            // Crear los checkpoints con las posiciones generadas
+            checkpointPositions.forEach((pos, index) => {
+                const checkpoint = Matter.Bodies.rectangle(
+                    pos,
+                    230,
+                    40,
+                    10,
+                    { isStatic: true, label: `checkpoint-${index}`, isSensor: false }
+                );
+                Matter.World.add(newEntities.physics.world, [checkpoint]);
+                newEntities[`checkpoint-${index}`] = {
+                    body: checkpoint,
+                    used: false,
+                    isActive: true,
+                    renderer: require('./components/Checkpoint').Checkpoint,
+                };
+            });
+        }
 
         setEntities(newEntities);
         setScore(0);
@@ -170,9 +212,10 @@ const Runner = () => {
         setGameWon(false);
         setRunning(true);
         gameEngine.current.swap(newEntities);
-    };
+    }, [bankId]);
 
-    useEffect(() => {
+
+useEffect(() => {
         let cancelled = false;
         const tick = () => {
             if (!running) return;
@@ -197,11 +240,12 @@ const Runner = () => {
                 );
 
                 // Si no hay checkpoint activo y hay preguntas pendientes, genera uno nuevo
-                if (!activeCheckpoint && unanswered.length > 0) {
+                if (!activeCheckpoint && unanswered.length > 0 && checkpointCountRef.current < questions.length) {
                     const newIndex = checkpointCountRef.current++;
                     generateCheckpoint(newIndex, entities.physics.world, entities);
                     setEntities({ ...entities });
                 }
+
 
                 return newScore;
             });
@@ -220,15 +264,31 @@ const Runner = () => {
                 individualCoins: runningCoins
             };
             ApiSendGameResult(bankId, gameSessionId, payload);
+            console.log("Enviando resultado:", payload);
             setResultSent(true);
         }
     }, [gameWon]);
 
-    const onEvent = (e) => {
+    const onEvent = async (e) => {
         if (e.type === 'game-over') {
             setRunning(false);
             setGameOver(true);
+
+            const allAnswered = questions.length > 0 && answeredQuestions.length === questions.length;
+
+            if (allAnswered && !resultSent && gameSessionId) {
+                const payload = {
+                    questions: answeredQuestions,
+                    individualCoins: runningCoins,
+                };
+                console.log("Enviando resultado al perder tras contestar todo:", payload);
+                const res = await ApiSendGameResult(bankId, gameSessionId, payload);
+                console.log("Resultado enviado:", res);
+                setResultSent(true);
+                setAlreadySubmitted(true); // desactiva reinicio
+            }
         }
+
         if (e.type === 'game-won') {
             setRunning(false);
             setGameWon(true);
@@ -296,10 +356,20 @@ const Runner = () => {
 
         setEntities({ ...entities });
 
-        setAnsweredQuestions(prev => [...prev, {
-            question: currentQuestion.question,
-            answeredCorrectly: isCorrect
-        }]);
+        setAnsweredQuestions(prev => {
+            const updated = [...prev, {
+                questionId: currentQuestion.id || currentQuestion._id,
+                answeredCorrectly: isCorrect
+            }];
+
+            const totalQuestions = questions.length;
+            if (updated.length === totalQuestions && !entities['finish-line']) {
+                generateFinishLine(entities.physics.world, entities);
+            }
+
+            return updated;
+        });
+
 
         setLastCheckpointId(null);
 
@@ -371,25 +441,33 @@ const Runner = () => {
                             </View>
                         </View>
                     </Modal>
-                    {(gameOver || gameWon) && (
+
+                    {gameOver && (
                         <Modal visible={true} transparent animationType="fade">
                             <View style={styles.modalContainer}>
-                                <View style={styles.modalContent}>
-                                    <Text style={styles.modalTitle}>{gameWon ? '¡Ganaste!' : '¡Perdiste!'}</Text>
-                                    <Text style={styles.modalScore}>Puntaje: {score}</Text>
-                                    <Text style={styles.modalScore}>Monedas: {coins}</Text>
-                                    <TouchableOpacity style={styles.modalButton} onPress={() => {
-                                        setGameOver(false);
-                                        setGameWon(false);
-                                        startGame();
-                                    }}>
-                                        <Text style={styles.modalButtonText}>Reintentar</Text>
-                                    </TouchableOpacity>
+                                <View style={styles.victoryContent}>
+                                    <Text style={[styles.victoryTitle, { color: '#DC3545' }]}>💥 ¡Ups!</Text>
+                                    <Text style={styles.victoryMessage}>Has chocado con un obstáculo</Text>
+                                    <Text style={styles.victoryScore}>Puntaje: {score}</Text>
+                                    <Text style={styles.victoryScore}>Monedas: {coins}</Text>
+
+                                    {!alreadySubmitted && (
+                                        <TouchableOpacity
+                                            style={[styles.victoryButton, { backgroundColor: '#DC3545' }]}
+                                            onPress={() => {
+                                                setGameOver(false);
+                                                startGame();
+                                            }}
+                                        >
+                                            <Text style={styles.victoryButtonText}>Reintentar</Text>
+                                        </TouchableOpacity>
+                                    )}
+
                                     <TouchableOpacity
-                                        style={[styles.modalButton, { backgroundColor: '#ccc' }]}
+                                        style={[styles.victoryButton, { backgroundColor: '#6c757d', marginTop: 10 }]}
                                         onPress={() => navigation.goBack()}
                                     >
-                                        <Text style={styles.modalButtonText}>Salir</Text>
+                                        <Text style={styles.victoryButtonText}>Salir</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -479,6 +557,44 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
+    victoryContent: {
+        width: 320,
+        backgroundColor: '#F4F4FA', // fondo claro suave
+        padding: 25,
+        borderRadius: 20,
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: '#A26BFA' // morado principal
+    },
+    victoryTitle: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#A26BFA',
+        marginBottom: 5,
+    },
+    victoryMessage: {
+        fontSize: 18,
+        color: '#4A4A4A',
+        marginBottom: 20,
+    },
+    victoryScore: {
+        fontSize: 16,
+        color: '#333',
+        marginBottom: 10,
+    },
+    victoryButton: {
+        marginTop: 20,
+        backgroundColor: '#28A745',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 10,
+    },
+    victoryButtonText: {
+        color: '#FFF',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+
 });
 
 export default Runner;

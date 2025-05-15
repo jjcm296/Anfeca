@@ -20,8 +20,8 @@ export const getEntities = (dispatch) => {
         label: 'obstacle',
         isStatic: true,
     });
-    
-    const ground = Matter.Bodies.rectangle(480, 338, 960, 60, { // ← justo debajo del personaje y la piedra
+
+    const ground = Matter.Bodies.rectangle(480, 338, 960, 60, {
         label: 'ground',
         isStatic: true,
         render: { visible: false }
