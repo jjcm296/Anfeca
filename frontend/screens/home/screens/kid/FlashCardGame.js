@@ -46,6 +46,7 @@ const FlashCardGame = () => {
 
             try {
                 const res = await ApiStartStudySession(bankId);
+                console.log("Respuesta del backend al iniciar sesión de estudio:", res);
                 if (res?.firstFlashcard && res?.sessionId) {
                     setStudySessionId(res.sessionId);
                     setCurrentFlashcard({
