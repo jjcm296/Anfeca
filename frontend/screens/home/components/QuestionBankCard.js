@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     View,
     Text,
@@ -18,20 +18,22 @@ const QuestionBankCard = ({
                               profileType,
                               bankId,
                               bankName,
+                              canStudy,
+                              canPlayMiniGame,
+                              studySessionId,
                               onBankDeleted,
                           }) => {
     const navigation = useNavigation();
     const isKid = profileType === 'kid';
     const isGuardian = profileType === 'guardian';
 
-    const [modalVisible, setModalVisible] = useState(false);
-    const [studyCompleted, setStudyCompleted] = useState(false);
+    const [modalVisible, setModalVisible] = React.useState(false);
 
     const handleStudy = () => {
         navigation.navigate('FlashCardGame', {
             bankId,
             bankName,
-            onStudyComplete: () => setStudyCompleted(true),
+            sessionId: studySessionId,
         });
     };
 
@@ -39,15 +41,10 @@ const QuestionBankCard = ({
         navigation.navigate('RunnerGame', {
             bankId,
             bankName,
-            onGameFinished: () => {
-                console.log("Minijuego terminado, resultados enviados");
-            },
         });
     };
 
-    const handleGuardianMenu = () => {
-        setModalVisible(true);
-    };
+    const handleGuardianMenu = () => setModalVisible(true);
 
     const handleEdit = () => {
         setModalVisible(false);
@@ -88,20 +85,20 @@ const QuestionBankCard = ({
             {isKid && (
                 <View style={styles.buttonsRow}>
                     <TouchableOpacity
-                        style={[styles.button, !studyCompleted ? styles.active : styles.disabled]}
-                        disabled={studyCompleted}
+                        style={[styles.button, canStudy ? styles.active : styles.disabled]}
+                        disabled={!canStudy}
                         onPress={handleStudy}
                     >
-                        <Ionicons name={!studyCompleted ? 'book' : 'lock-closed'} size={26} color="white" />
+                        <Ionicons name={canStudy ? 'book' : 'lock-closed'} size={26} color="white" />
                         <Text style={styles.buttonText}>Estudiar</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={[styles.button, studyCompleted ? styles.active : styles.disabled]}
-                        disabled={!studyCompleted}
+                        style={[styles.button, canPlayMiniGame ? styles.active : styles.disabled]}
+                        disabled={!canPlayMiniGame}
                         onPress={handlePlayGame}
                     >
-                        <Ionicons name={studyCompleted ? 'game-controller' : 'lock-closed'} size={26} color="white" />
+                        <Ionicons name={canPlayMiniGame ? 'game-controller' : 'lock-closed'} size={26} color="white" />
                         <Text style={styles.buttonText}>Minijuego</Text>
                     </TouchableOpacity>
                 </View>
