@@ -6,27 +6,26 @@ import StreakDisplay from '../components/StreakDisplay';
 import { ApiGetCoins, ApiGetStreaks } from '../../../api/UserStats';
 import { SessionContext } from '../../../context/SessionContext';
 import { ApiRefreshAccessToken } from "../../../api/ApiLogin";
+import {CoinUpdateContext} from "../../../context/CoinUpdateContext";
 
 const TopBar = () => {
     const navigation = useNavigation();
     const { session } = useContext(SessionContext);
     const [coins, setCoins] = useState(0);
     const [streak, setStreak] = useState(0);
+    const { shouldRefresh } = useContext(CoinUpdateContext);
 
     useEffect(() => {
         const fetchStats = async () => {
-            try {
-                await ApiRefreshAccessToken();
-                const coinsRes = await ApiGetCoins();
-                const streakRes = await ApiGetStreaks();
-                if (coinsRes?.coins != null) setCoins(coinsRes.coins);
-                if (streakRes?.streak != null) setStreak(streakRes.streak);
-            } catch (error) {
-            }
+            await ApiRefreshAccessToken();
+            const coinsRes = await ApiGetCoins();
+            const streakRes = await ApiGetStreaks();
+            if (coinsRes?.coins != null) setCoins(coinsRes.coins);
+            if (streakRes?.streak != null) setStreak(streakRes.streak);
         };
 
         fetchStats();
-    }, [session.profileType]);
+    }, [session.profileType, shouldRefresh]);
 
     return (
         <View style={styles.topBar}>

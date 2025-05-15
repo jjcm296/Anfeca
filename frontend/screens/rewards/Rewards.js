@@ -19,6 +19,7 @@ import { getAllRewards, redeemReward } from "../../api/ApiRewards";
 import SkeletonRewardCard from './compoonents/skeletons/SkeletonsRewardCard';
 import { SessionContext } from "../../context/SessionContext";
 import { Ionicons } from "@expo/vector-icons";
+import {CoinUpdateContext} from "../../context/CoinUpdateContext";
 
 const Rewards = () => {
     const navigation = useNavigation();
@@ -28,6 +29,8 @@ const Rewards = () => {
     const [selectedReward, setSelectedReward] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
     const { session } = useContext(SessionContext);
+
+    const { triggerRefresh } = useContext(CoinUpdateContext);
 
     const fetchRewards = async () => {
         try {
@@ -91,6 +94,7 @@ const Rewards = () => {
 
             if (response?.redeemedReward) {
                 Alert.alert("Éxito", "La recompensa fue canjeada");
+                triggerRefresh();
                 setModalVisible(false);
                 fetchRewards();
             } else {
