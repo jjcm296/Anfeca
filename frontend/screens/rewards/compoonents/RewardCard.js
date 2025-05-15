@@ -153,10 +153,11 @@ const styles = StyleSheet.create({
     name: {
         fontSize: 19,
         fontWeight: '500',
-        color: '#000',
+        color: '#2f5c98',
+        fontFamily: 'sans-serif-medium',
     },
     expirationBox: {
-        backgroundColor: '#000000',
+            backgroundColor: '#3E9697', // azul claro muy suave (armoniza con `#3E9697`)
         paddingHorizontal: 12,
         paddingVertical: 4,
         borderRadius: 10,

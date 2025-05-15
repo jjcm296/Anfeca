@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     btn: {
-        backgroundColor: '#6200EE',
+        backgroundColor: '#3E9697',
         paddingVertical: 8,
         paddingHorizontal: 20,
         borderRadius: 8,
