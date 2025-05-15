@@ -1,4 +1,4 @@
-export let currentSpeed = 3;
+export let currentSpeed = 20;
 export const MAX_SPEED = 10;
 export const SPEED_INCREMENT = 0.05;
 

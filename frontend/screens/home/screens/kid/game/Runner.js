@@ -19,6 +19,10 @@ import { ImageBackground} from 'react-native';
 const { width, height } = Dimensions.get('window');
 
 const Runner = () => {
+    const tickActiveRef = useRef(true);
+    const animationFrameRef = useRef();
+
+
     const gameEngine = useRef(null);
     const [running, setRunning] = useState(false);
     const [score, setScore] = useState(0);
@@ -210,6 +214,7 @@ const Runner = () => {
         setScore(0);
         setCoins(0);
         setGameWon(false);
+        tickActiveRef.current = true;
         setRunning(true);
         gameEngine.current.swap(newEntities);
     }, [bankId]);
@@ -218,7 +223,7 @@ const Runner = () => {
 useEffect(() => {
         let cancelled = false;
         const tick = () => {
-            if (!running) return;
+            if (!tickActiveRef.current || questionModalVisible) return;
 
             const currentSpeed = entities?.state?.currentSpeed || 3;
             setScore(prev => {
@@ -250,12 +255,15 @@ useEffect(() => {
                 return newScore;
             });
 
-            setTimeout(tick, Math.max(1000 / currentSpeed, 100));
+            animationFrameRef.current = requestAnimationFrame(tick);
         };
 
         if (running) tick();
-        return () => { cancelled = true; };
-    }, [running, entities]);
+    return () => {
+        cancelAnimationFrame(animationFrameRef.current);
+    };
+
+}, [running, entities]);
 
     useEffect(() => {
         if (gameWon && !resultSent && gameSessionId) {
@@ -273,6 +281,7 @@ useEffect(() => {
         if (e.type === 'game-over') {
             setRunning(false);
             setGameOver(true);
+            tickActiveRef.current = false;
 
             const allAnswered = questions.length > 0 && answeredQuestions.length === questions.length;
 
@@ -281,9 +290,7 @@ useEffect(() => {
                     questions: answeredQuestions,
                     individualCoins: runningCoins,
                 };
-                console.log("Enviando resultado al perder tras contestar todo:", payload);
                 const res = await ApiSendGameResult(bankId, gameSessionId, payload);
-                console.log("Resultado enviado:", res);
                 setResultSent(true);
                 setAlreadySubmitted(true); // desactiva reinicio
             }
@@ -292,6 +299,7 @@ useEffect(() => {
         if (e.type === 'game-won') {
             setRunning(false);
             setGameWon(true);
+            tickActiveRef.current = false;
         }
         if (e.type === 'coin-collected' && e.coinId) {
             setCoins(prev => prev + 1);
