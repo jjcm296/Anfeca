@@ -98,7 +98,7 @@
 
     function RewardsStackWrapper() {
         const routesToHideTopBar = [
-            'AddReward', 'EditReward'
+            'AddReward', 'EditReward', 'RedeemedRewards'
         ];
 
         const currentRouteName = useNavigationState(getActiveRouteName);
@@ -106,11 +106,12 @@
 
         return (
             <View style={{ flex: 1 }}>
-                {shouldShowTopBar && <TopBar/>}
+                {shouldShowTopBar && <TopBar />}
                 <RewardsStack />
             </View>
         );
     }
+
 
     function PremiumStackWrapper() {
         const currentRouteName = useNavigationState(getActiveRouteName);

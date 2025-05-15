@@ -1,16 +1,16 @@
-import React, {useCallback, useContext, useEffect, useState} from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { View, FlatList, StyleSheet, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import QuestionCard from "../components/QuestionCard";
 import AddButton from "../../ui/components/AddButton";
 import { ApiRefreshAccessToken } from "../../../api/ApiLogin";
-import { getAllQuestions } from "../../../api/ApiQuestions";
+import { getAllQuestions, deleteQuestion } from "../../../api/ApiQuestions";
 import SkeletonQuestionCard from "../components/skeletons/SkeletonQuestionCard";
-import {SessionContext} from "../../../context/SessionContext";
+import { SessionContext } from "../../../context/SessionContext";
 
 const Questions = ({ route, navigation }) => {
     const { bankId, name } = route.params;
-    
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [hasLoaded, setHasLoaded] = useState(false);
@@ -24,7 +24,7 @@ const Questions = ({ route, navigation }) => {
             const response = await getAllQuestions(bankId);
             if (response.questions) {
                 setQuestions(response.questions);
-                setHasLoaded(true); // 🟢 marcamos como cargado
+                setHasLoaded(true);
             }
             setLoading(false);
         } catch (error) {
@@ -34,6 +34,7 @@ const Questions = ({ route, navigation }) => {
     };
 
     useEffect(() => {
+
         fetchQuestions();
     }, []);
 
@@ -44,7 +45,7 @@ const Questions = ({ route, navigation }) => {
     );
 
     return (
-        <View style={styles.container}>
+        <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.container}>
             {loading && !hasLoaded ? (
                 <View style={styles.listContainer}>
                     {[1, 2, 3, 4, 5].map((_, index) => (
@@ -56,30 +57,30 @@ const Questions = ({ route, navigation }) => {
                     data={questions}
                     keyExtractor={(item) => item._id || item.id}
                     renderItem={({ item, index }) => (
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={() =>
-                                navigation.navigate("EditQuestion", {
-                                    questionId: item._id || item.id,
-                                    bankId,
-                                    name,
-                                })
-                            }
-                        >
-                            <QuestionCard
-                                questionNumber={index + 1}
-                                questionText={item.textQuestion}
-                            />
-                        </TouchableOpacity>
+                        <QuestionCard
+                            questionNumber={index + 1}
+                            questionText={item.textQuestion}
+                            questionId={item._id || item.id}
+                            bankId={bankId}
+                            bankName={name}
+                            onDelete={() => {
+                                setQuestions(prev =>
+                                    prev.filter(q => (q._id || q.id) !== (item._id || item.id))
+                                );
+                            }}
+                        />
+
+
                     )}
                     contentContainerStyle={styles.listContainer}
                     showsVerticalScrollIndicator={false}
                 />
             )}
+
             {session.profileType === 'guardian' && (
                 <AddButton onPress={() => navigation.navigate("AddQuestion", { bankId, name })} />
             )}
-        </View>
+        </LinearGradient>
     );
 };
 

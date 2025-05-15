@@ -15,6 +15,7 @@ import CustomButton from '../ui/components/CustomButton';
 import CloseButton from '../ui/components/CloseButton';
 import EyeToggleButton from '../ui/components/EyeToggleButton';
 import * as SecureStore from "expo-secure-store";
+import { LinearGradient } from 'expo-linear-gradient';
 
 const Profile = () => {
     const navigate = useNavigation();
@@ -81,56 +82,73 @@ const Profile = () => {
         }
     };
 
+    // Lista de botones
     const options = [
         { id: '1', title: 'Cambiar perfil', onPress: () => setModalVisible(true) },
-        { id: '2', title: 'Ir a la página web' },
+        {
+            id: '2',
+            title: 'Ir a la página web',
+            onPress: () => {
+                import('react-native').then(({ Linking }) => {
+                    Linking.openURL('https://concentra-tda-web.vercel.app').catch(() =>
+                        Alert.alert("Error", "No se pudo abrir la página.")
+                    );
+                });
+            }
+        },
+
         { id: '3', title: 'Cerrar sesión', onPress: () => navigate.navigate("Authentication") },
     ];
 
+    // Si el usuario es tutor, agregar opciones extra
     if (session.profileType === 'guardian') {
-        options.push({
-            id: '4',
-            title: 'Eliminar cuenta',
-            color: '#FF0000',
-            textColor: '#FFFFFF',
-            onPress: () => {
-                Alert.alert(
-                    "Eliminar cuenta",
-                    "¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.",
-                    [
-                        { text: "Cancelar", style: "cancel" },
-                        {
-                            text: "Eliminar",
-                            style: "destructive",
-                            onPress: async () => {
-                                try {
-                                    const result = await ApiDeleteAccount();
-
-                                    if (result?.message) {
-                                        await SecureStore.deleteItemAsync('accessToken');
-                                        await SecureStore.deleteItemAsync('refreshToken');
-                                        Alert.alert("Cuenta eliminada", "Tu cuenta fue eliminada correctamente.");
-                                        navigate.reset({
-                                            index: 0,
-                                            routes: [{ name: 'Authentication' }],
-                                        });
-                                    } else {
-                                        Alert.alert("Error", result?.error || "No se pudo eliminar la cuenta.");
+        options.push(
+            {
+                id: 'premium',
+                title: 'Activar Premium',
+                color: '#FFD700',
+                textColor: '#333',
+                onPress: () => Alert.alert('Premium', 'Función de membresía premium pronto disponible.')
+            },
+            {
+                id: 'delete',
+                title: 'Eliminar cuenta',
+                color: '#FF4E4E',
+                textColor: '#FFFFFF',
+                onPress: () => {
+                    Alert.alert(
+                        "Eliminar cuenta",
+                        "¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.",
+                        [
+                            { text: "Cancelar", style: "cancel" },
+                            {
+                                text: "Eliminar",
+                                style: "destructive",
+                                onPress: async () => {
+                                    try {
+                                        const result = await ApiDeleteAccount();
+                                        if (result?.message) {
+                                            await SecureStore.deleteItemAsync('accessToken');
+                                            await SecureStore.deleteItemAsync('refreshToken');
+                                            Alert.alert("Cuenta eliminada", "Tu cuenta fue eliminada correctamente.");
+                                            navigate.reset({ index: 0, routes: [{ name: 'Authentication' }] });
+                                        } else {
+                                            Alert.alert("Error", result?.error || "No se pudo eliminar la cuenta.");
+                                        }
+                                    } catch (err) {
+                                        Alert.alert("Error", "Ocurrió un error al intentar eliminar la cuenta.");
                                     }
-                                } catch (err) {
-                                    console.error("Error al eliminar la cuenta:", err);
-                                    Alert.alert("Error", "Ocurrió un error al intentar eliminar la cuenta.");
                                 }
                             }
-                        }
-                    ]
-                );
+                        ]
+                    );
+                }
             }
-        });
+        );
     }
 
     return (
-        <View style={styles.container}>
+        <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.container}>
             <View style={styles.profileContainer}>
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
                     <ProfileImage width={100} height={100} />
@@ -144,7 +162,7 @@ const Profile = () => {
                 )}
             </View>
 
-            {/* Modal de selección de perfil */}
+            {/* Modal cambio de perfil */}
             <Modal
                 visible={modalVisible}
                 animationType="slide"
@@ -177,7 +195,7 @@ const Profile = () => {
                 </TouchableWithoutFeedback>
             </Modal>
 
-            {/* Modal para ingresar la contraseña */}
+            {/* Modal contraseña */}
             <Modal
                 visible={passwordModalVisible}
                 animationType="slide"
@@ -208,21 +226,23 @@ const Profile = () => {
                 </TouchableWithoutFeedback>
             </Modal>
 
-            {/* Opciones */}
+            {/* Lista de opciones */}
             <FlatList
                 data={options}
                 renderItem={({ item }) => (
-                    <CustomButton
-                        text={item.title}
-                        color={item.color}
-                        onPress={item.onPress}
-                        disabled={item.disabled}
-                        textColor={item.textColor}
-                    />
+                    <View style={{ marginBottom: 12 }}>
+                        <CustomButton
+                            text={item.title}
+                            color={item.color || '#3E9697'}
+                            textColor={item.textColor || '#FFFFFF'}
+                            onPress={item.onPress}
+                            disabled={item.disabled}
+                        />
+                    </View>
                 )}
                 keyExtractor={item => item.id}
             />
-        </View>
+        </LinearGradient>
     );
 };
 

@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    Alert,
+    ScrollView,
+    KeyboardAvoidingView,
+    Platform,
+    Dimensions
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { deleteQuestion, getQuestionById } from "../../../api/ApiQuestions";
+import { getQuestionById } from "../../../api/ApiQuestions";
 import { ApiEditQuestion } from "../../../api/ApiQuestions";
 import { ApiRefreshAccessToken } from "../../../api/ApiLogin";
 import CustomButton from '../../ui/components/CustomButton';
 import CustomInput from '../../ui/components/CustomInput';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const { height } = Dimensions.get('window');
 
 const EditQuestion = ({ route, navigation }) => {
     const { questionId, bankId, name } = route.params;
@@ -15,11 +27,7 @@ const EditQuestion = ({ route, navigation }) => {
 
     useEffect(() => {
         const fetchQuestion = async () => {
-            if (!questionId) {
-                console.warn("No se recibió questionId en EditQuestion.");
-                return;
-            }
-
+            if (!questionId) return;
             try {
                 await ApiRefreshAccessToken();
                 const response = await getQuestionById(bankId, questionId);
@@ -27,24 +35,19 @@ const EditQuestion = ({ route, navigation }) => {
 
                 if (questionData) {
                     setQuestion(questionData.textQuestion || '');
-
                     const safeAnswers = (questionData.answers || []).map(a => a.textAnswer || '');
                     while (safeAnswers.length < 4) safeAnswers.push("");
                     setAnswers(safeAnswers);
-
                     setDifficulty(String(questionData.difficulty || '1'));
                 } else {
-                    console.error("No se encontró la pregunta con ID:", questionId);
                     Alert.alert("Error", "No se encontró la pregunta.");
                     navigation.goBack();
                 }
-            } catch (error) {
-                console.error("Error al cargar la pregunta:", error);
+            } catch {
                 Alert.alert("Error", "No se pudo cargar la pregunta.");
                 navigation.goBack();
             }
         };
-
         fetchQuestion();
     }, [questionId]);
 
@@ -55,7 +58,6 @@ const EditQuestion = ({ route, navigation }) => {
     };
 
     const handleUpdate = async () => {
-
         const questionData = {
             textQuestion: question.trim(),
             answers: answers.map((text, index) => ({
@@ -65,145 +67,157 @@ const EditQuestion = ({ route, navigation }) => {
             priority: Number(difficulty),
         };
 
-        console.log(questionData);
-
         try {
             await ApiRefreshAccessToken();
             const result = await ApiEditQuestion(bankId, questionId, questionData);
-
             if (result && !result.error) {
                 Alert.alert("Éxito", "Pregunta actualizada correctamente.");
                 navigation.navigate("Questions", { bankId, refresh: true });
             } else {
                 Alert.alert("Error", result?.error || "No se pudo actualizar la pregunta.");
             }
-        } catch (error) {
+        } catch {
             Alert.alert("Error", "Ocurrió un error inesperado al actualizar.");
         }
     };
 
-    const handleDelete = () => {
-        Alert.alert(
-            "Confirmar eliminación",
-            "¿Estás seguro de que deseas eliminar esta pregunta?",
-            [
-                { text: "Cancelar", style: "cancel" },
-                {
-                    text: "Eliminar",
-                    style: "destructive",
-                    onPress: async () => {
-                        try {
-                            await ApiRefreshAccessToken();
-                            const deleted = await deleteQuestion(bankId, questionId);
-                            if (deleted) {
-                                Alert.alert("Éxito", "Pregunta eliminada correctamente.");
-                                navigation.goBack();
-                            } else {
-                                Alert.alert("Error", "No se pudo eliminar la pregunta.");
-                            }
-                        } catch (error) {
-                            console.error("Error al eliminar la pregunta:", error);
-                            Alert.alert("Error", "No se pudo eliminar la pregunta.");
-                        }
-                    }
-                }
-            ]
-        );
+    const handleCancel = () => {
+        navigation.goBack();
     };
 
+    const isFormIncomplete = () =>
+        !question.trim() ||
+        answers.some(answer => !answer.trim());
+
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Editar Pregunta</Text>
-
-            <CustomInput
-                placeholder="Editar pregunta..."
-                value={String(question)}
-                onChangeText={setQuestion}
-                required={true}
-            />
-
-            <Text style={styles.correctLabel}>Respuesta Correcta:</Text>
-            <CustomInput
-                placeholder="Respuesta Correcta"
-                value={String(answers[0])}
-                onChangeText={(text) => handleAnswerChange(text, 0)}
-                required={true}
-                customStyle={styles.correctAnswer}
-            />
-
-            <Text style={styles.incorrectLabel}>Respuestas Incorrectas:</Text>
-            {answers.slice(1).map((answer, index) => (
-                <CustomInput
-                    key={index + 1}
-                    placeholder={`Respuesta Incorrecta ${index + 1}`}
-                    value={String(answer)}
-                    onChangeText={(text) => handleAnswerChange(text, index + 1)}
-                    required={true}
-                    customStyle={styles.incorrectAnswer}
-                />
-            ))}
-
-            <Text style={styles.label}>Selecciona Dificultad:</Text>
-            <Picker
-                selectedValue={String(difficulty)}
-                onValueChange={(itemValue) => setDifficulty(String(itemValue))}
-                style={styles.picker}
+        <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.gradient}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                style={{ flex: 1 }}
             >
-                <Picker.Item label="1 Coin" value="1" />
-                <Picker.Item label="2 Coins" value="2" />
-                <Picker.Item label="3 Coins" value="3" />
-            </Picker>
+                <ScrollView contentContainerStyle={styles.scroll}>
+                    <View style={styles.card}>
+                        <Text style={styles.title}>✏️ Editar Pregunta</Text>
 
-            <CustomButton color={'#FF0000'} text={"Eliminar"} textColor={'#FFFFFF'} onPress={handleDelete} />
-            <CustomButton color={'#6200EE'} text="Aceptar" textColor={'#FFFFFF'} onPress={handleUpdate} />
-        </View>
+                        <CustomInput
+                            placeholder="Texto de la pregunta"
+                            value={question}
+                            onChangeText={setQuestion}
+                            required
+                        />
+
+                        <Text style={styles.label}>Respuesta Correcta</Text>
+                        <CustomInput
+                            placeholder="Respuesta Correcta"
+                            value={answers[0]}
+                            onChangeText={(text) => handleAnswerChange(text, 0)}
+                            required
+                            customStyle={styles.correctAnswer}
+                        />
+
+                        <Text style={styles.label}>Respuestas Incorrectas</Text>
+                        {answers.slice(1).map((answer, index) => (
+                            <CustomInput
+                                key={index}
+                                placeholder={`Respuesta Incorrecta ${index + 1}`}
+                                value={answer}
+                                onChangeText={(text) => handleAnswerChange(text, index + 1)}
+                                required
+                                customStyle={styles.incorrectAnswer}
+                            />
+                        ))}
+
+                        <Text style={styles.label}>Dificultad</Text>
+                        <View style={styles.pickerWrapper}>
+                            <Picker
+                                selectedValue={difficulty}
+                                onValueChange={(value) => setDifficulty(value)}
+                                style={styles.picker}
+                            >
+                                <Picker.Item label="1 Moneda" value="1" />
+                                <Picker.Item label="2 Monedas" value="2" />
+                                <Picker.Item label="3 Monedas" value="3" />
+                            </Picker>
+                        </View>
+
+                        <View style={styles.buttons}>
+                            <CustomButton
+                                color="#3E9697"
+                                text="Actualizar pregunta"
+                                textColor="#FFFFFF"
+                                onPress={handleUpdate}
+                                disabled={isFormIncomplete()}
+                            />
+                            <CustomButton
+                                color="#B3E5FC"
+                                text="Cancelar"
+                                textColor="#003F5C"
+                                onPress={handleCancel}
+                            />
+                        </View>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </LinearGradient>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    gradient: {
         flex: 1,
+    },
+    scroll: {
+        flexGrow: 1,
         padding: 20,
-        backgroundColor: '#f8f8f8'
+        justifyContent: "center",
+    },
+    card: {
+        backgroundColor: '#ffffff',
+        borderRadius: 16,
+        padding: 20,
+        minHeight: height * 0.80,
+        justifyContent: 'flex-start',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 4,
     },
     title: {
         fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 15,
-        textAlign: 'center'
-    },
-    correctLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: 'green',
-        marginTop: 15
-    },
-    incorrectLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: 'red',
-        marginTop: 15
-    },
-    correctAnswer: {
-        backgroundColor: '#DFFFD6',
-        borderColor: 'green',
-    },
-    incorrectAnswer: {
-        backgroundColor: '#FFD6D6',
-        borderColor: 'red',
+        marginBottom: 20,
+        textAlign: 'center',
+        color: '#333',
     },
     label: {
         fontSize: 16,
-        fontWeight: 'bold',
-        marginTop: 20
+        fontWeight: '600',
+        marginTop: 18,
+        marginBottom: 5,
+        color: '#333',
+    },
+    correctAnswer: {
+        backgroundColor: '#E6FFE6',
+        borderColor: '#4CAF50',
+    },
+    incorrectAnswer: {
+        backgroundColor: '#FFE6E6',
+        borderColor: '#E53935',
+    },
+    pickerWrapper: {
+        backgroundColor: '#f4f4f4',
+        borderRadius: 10,
+        borderWidth: 1.5,
+        borderColor: '#3E9697',
+        overflow: 'hidden',
+        marginBottom: 25,
     },
     picker: {
-        marginTop: 10,
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#ddd'
-    }
+        height: 48,
+        paddingHorizontal: 10,
+    },
 });
 
 export default EditQuestion;

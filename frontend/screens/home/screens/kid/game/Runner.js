@@ -37,6 +37,10 @@ const Runner = () => {
     const [coinAnim] = useState(new Animated.Value(1));
     const navigation = useNavigation();
     const route = useRoute();
+    const [lastCheckpointId, setLastCheckpointId] = useState(null);
+    const checkpointCountRef = useRef(0);
+    const unansweredIndexRef = useRef(0);
+
     const { bankId } = route.params;
 
     const coinSound = useRef();
@@ -101,6 +105,33 @@ const Runner = () => {
         ]).start();
     };
 
+    const generateCheckpoint = (index, world, entityMap) => {
+        const checkpoint = Matter.Bodies.rectangle(
+            1400 + index * 800 + 100,
+            230,
+            40,
+            10,
+            { isStatic: true, label: `checkpoint-${index}`, isSensor: false }
+        );
+        Matter.World.add(world, [checkpoint]);
+        entityMap[`checkpoint-${index}`] = {
+            body: checkpoint,
+            used: false,
+            isActive: true,
+            renderer: require('./components/Checkpoint').Checkpoint,
+        };
+    };
+
+    const getNextUnansweredQuestion = () => {
+        const unanswered = questions.filter(
+            (q) => !answeredQuestions.some((a) => a.question === q.question)
+        );
+        if (unanswered.length === 0) return null;
+        const next = unanswered[unansweredIndexRef.current % unanswered.length];
+        unansweredIndexRef.current++;
+        return next;
+    };
+
     const startGame = async () => {
         resetSpeed();
         const newEntities = getEntities(gameEngine.current?.dispatch);
@@ -111,22 +142,12 @@ const Runner = () => {
         setAnsweredQuestions([]);
         setResultSent(false);
         setRunningCoins(0);
+        setLastCheckpointId(null);
+        unansweredIndexRef.current = 0;
 
-        for (let i = 0; i < 5; i++) {
-            const checkpoint = Matter.Bodies.rectangle(
-                1400 + i * 600,
-                230,
-                40,
-                10,
-                { isStatic: true, label: `checkpoint-${i}`, isSensor: false }
-            );
-            Matter.World.add(newEntities.physics.world, [checkpoint]);
-            newEntities[`checkpoint-${i}`] = {
-                body: checkpoint,
-                used: false,
-                isActive: true,
-                renderer: require('./components/Checkpoint').Checkpoint,
-            };
+        if (questionsFromAPI.length > 0) {
+            checkpointCountRef.current = 1;
+            generateCheckpoint(0, newEntities.physics.world, newEntities);
         }
 
         const finishLine = Matter.Bodies.rectangle(
@@ -153,19 +174,40 @@ const Runner = () => {
     useEffect(() => {
         let cancelled = false;
         const tick = () => {
-            if (!running || cancelled) return;
+            if (!running) return;
 
             const currentSpeed = entities?.state?.currentSpeed || 3;
             setScore(prev => {
                 const newScore = prev + Math.floor(currentSpeed * 0.5);
                 if (newScore % 20 === 0) gameEngine.current?.dispatch({ type: 'increase-speed' });
+
+                // Spawn coin si no hay
                 if (!Object.keys(entities).some(key => key.startsWith('coin-')))
                     gameEngine.current?.dispatch({ type: 'spawn-coin' });
+
+                // Revisar si hay preguntas sin responder
+                const unanswered = questions.filter(
+                    (q) => !answeredQuestions.some((a) => a.question === q.question)
+                );
+
+                // Revisar si hay checkpoint activo
+                const activeCheckpoint = Object.keys(entities).find(
+                    (key) => key.startsWith('checkpoint-') && entities[key]?.isActive
+                );
+
+                // Si no hay checkpoint activo y hay preguntas pendientes, genera uno nuevo
+                if (!activeCheckpoint && unanswered.length > 0) {
+                    const newIndex = checkpointCountRef.current++;
+                    generateCheckpoint(newIndex, entities.physics.world, entities);
+                    setEntities({ ...entities });
+                }
+
                 return newScore;
             });
 
             setTimeout(tick, Math.max(1000 / currentSpeed, 100));
         };
+
         if (running) tick();
         return () => { cancelled = true; };
     }, [running, entities]);
@@ -197,32 +239,51 @@ const Runner = () => {
             animateCoin();
         }
         if (e.type === 'checkpoint-hit') {
-            const index = parseInt(e.id.split('-')[1]);
-            const checkpointKey = `checkpoint-${index}`;
+            const checkpointKey = e.id;
             const checkpoint = entities[checkpointKey];
             if (!checkpoint || !checkpoint.isActive) return;
-            setCurrentQuestion(questions[index]);
+
+            const unanswered = questions.filter(
+                (q) => !answeredQuestions.some((a) => a.question === q.question)
+            );
+            if (unanswered.length === 0) return;
+
+            // Desactivar el checkpoint inmediatamente para permitir crear otro si se ignora esta pregunta
+            if (entities[checkpointKey]) {
+                entities[checkpointKey].used = true;
+                entities[checkpointKey].isActive = false;
+                entities[checkpointKey].renderer = (props) =>
+                    require('./components/Checkpoint').Checkpoint({ ...props, isActive: false });
+            }
+
+            setEntities({ ...entities });
+
+            // Tomar la siguiente pregunta ciclando
+            const next = unanswered[unansweredIndexRef.current % unanswered.length];
+            unansweredIndexRef.current++;
+
+            setLastCheckpointId(checkpointKey);
+            setCurrentQuestion(next);
             setQuestionModalVisible(true);
             setRunning(false);
             setComingFromCheckpoint(true);
         }
     };
 
-    const handleAnswer = (isCorrect, index) => {
-        const checkpointKey = `checkpoint-${index}`;
-        const priority = questions[index]?.priority || 1;
+
+    const handleAnswer = (isCorrect) => {
+        const checkpointKey = lastCheckpointId;
+        if (!checkpointKey) return;
+
+        const priority = currentQuestion?.priority || 1;
         const coinsToAdd = priority;
 
         if (isCorrect) {
             correctSound.current?.replayAsync();
             setCoins(prev => prev + coinsToAdd);
             animateCoin();
-            gameEngine.current.dispatch({ type: 'resume-after-checkpoint' });
-            setRunning(true);
         } else {
             wrongSound.current?.replayAsync();
-            gameEngine.current.dispatch({ type: 'resume-after-checkpoint' });
-            setRunning(true);
         }
 
         if (entities[checkpointKey]) {
@@ -233,10 +294,16 @@ const Runner = () => {
         }
 
         setEntities({ ...entities });
+
         setAnsweredQuestions(prev => [...prev, {
-            question: questions[index].question,
+            question: currentQuestion.question,
             answeredCorrectly: isCorrect
         }]);
+
+        setLastCheckpointId(null);
+
+        gameEngine.current.dispatch({ type: 'resume-after-checkpoint' });
+        setRunning(true);
     };
 
     const handlePressIn = () => {
@@ -289,7 +356,7 @@ const Runner = () => {
                                         style={styles.modalButton}
                                         onPress={() => {
                                             setQuestionModalVisible(false);
-                                            handleAnswer(i === currentQuestion.correct, currentQuestion.index);
+                                            handleAnswer(i === currentQuestion.correct);
                                         }}
                                     >
                                         <Text style={styles.modalButtonText}>{opt}</Text>
