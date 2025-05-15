@@ -64,12 +64,12 @@ const HomeScreen = () => {
 
         setQuestionBanks(banksWithSessionState);
         setLoading(false);
-        if (isFirstTime) setFirstLoadDone(true); // ya no volverá a cargar skeletons
+        if (isFirstTime) setFirstLoadDone(true);
     };
 
 
     useEffect(() => {
-        fetchBanks(true); // primera vez
+        fetchBanks(true);
     }, []);
 
 
