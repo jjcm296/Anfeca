@@ -42,6 +42,8 @@
     import {SessionContext, SessionProvider} from "./context/SessionContext";
     import RedeemedRewards from "./screens/rewards/screens/RedeemedRewards";
     import CardData from "./screens/premium/screens/CardData";
+    import BankDetail from "./screens/premium/screens/BankDetail";
+    import Premium from "./screens/premium/Premium";
 
     const Stack = createStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -120,11 +122,22 @@
 
         return (
             <View style={{ flex: 1 }}>
-                {shouldShowTopBar && <TopBar/>}
-                <PremiumScreen />
+                {shouldShowTopBar && <TopBar />}
+                <PremiumStack />
             </View>
         );
     }
+
+
+    function PremiumStack() {
+        return (
+            <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="PremiumMain">
+                <Stack.Screen name="PremiumMain" component={Premium} />
+                <Stack.Screen name="BankDetail" component={BankDetail} />
+            </Stack.Navigator>
+        );
+    }
+
 
     function MainTabs() {
         const { session } = useContext(SessionContext);
