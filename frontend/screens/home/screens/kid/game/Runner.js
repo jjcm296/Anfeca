@@ -14,6 +14,7 @@ import { Audio } from 'expo-av';
 import { ApiStartGame, ApiSendGameResult } from '../../../../../api/ApiBank';
 import CoinsDisplay from '../../../../ui/components/CoinsDisplay';
 import { ApiRefreshAccessToken } from '../../../../../api/ApiLogin';
+import { ImageBackground} from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -323,86 +324,90 @@ const Runner = () => {
     };
 
     return (
-        <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
-            <View style={styles.container}>
-                <Text style={styles.score}>Score: {score}</Text>
-                <Animated.View style={[styles.coinAnimated, { transform: [{ scale: coinAnim }] }]}>
-                    <CoinsDisplay coins={coins}/>
-                </Animated.View>
-                <GameEngine
-                    ref={gameEngine}
-                    style={styles.gameContainer}
-                    systems={[Physics]}
-                    running={running}
-                    entities={entities}
-                    onEvent={onEvent}
-                />
-                {!running && !gameOver && !gameWon && (
-                    <View style={styles.overlay}>
-                        <Text style={styles.fullScreenText}>Toca para comenzar</Text>
-                    </View>
-                )}
-                <Modal visible={questionModalVisible} transparent animationType="slide">
-                    <View style={styles.modalContainer}>
-                        <View style={styles.modalContent}>
-                            <Text style={styles.modalTitle}>{currentQuestion?.question}</Text>
-                            <Text style={{ fontSize: 16, marginBottom: 10 }}>
-                                {currentQuestion?.priority ? `Recompensa: +${currentQuestion.priority} moneda${currentQuestion.priority > 1 ? 's' : ''}` : ''}
-                            </Text>
-                            {Array.isArray(currentQuestion?.options) &&
-                                currentQuestion.options.map((opt, i) => (
-                                    <TouchableOpacity
-                                        key={i}
-                                        style={styles.modalButton}
-                                        onPress={() => {
-                                            setQuestionModalVisible(false);
-                                            handleAnswer(i === currentQuestion.correct);
-                                        }}
-                                    >
-                                        <Text style={styles.modalButtonText}>{opt}</Text>
-                                    </TouchableOpacity>
-                                ))}
+        <ImageBackground
+            source={require('../../../../../assets/game/background_large.jpg')}
+            style={styles.background}
+            resizeMode="cover"
+        >
+            <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
+                <View style={styles.container}>
+                    <Text style={styles.score}>Score: {score}</Text>
+                    <Animated.View style={[styles.coinAnimated, { transform: [{ scale: coinAnim }] }]}>
+                        <CoinsDisplay coins={coins}/>
+                    </Animated.View>
+                    <GameEngine
+                        ref={gameEngine}
+                        style={styles.gameContainer}
+                        systems={[Physics]}
+                        running={running}
+                        entities={entities}
+                        onEvent={onEvent}
+                    />
+                    {!running && !gameOver && !gameWon && (
+                        <View style={styles.overlay}>
+                            <Text style={styles.fullScreenText}>Toca para comenzar</Text>
                         </View>
-                    </View>
-                </Modal>
-                {(gameOver || gameWon) && (
-                    <Modal visible={true} transparent animationType="fade">
+                    )}
+                    <Modal visible={questionModalVisible} transparent animationType="slide">
                         <View style={styles.modalContainer}>
                             <View style={styles.modalContent}>
-                                <Text style={styles.modalTitle}>{gameWon ? '¡Ganaste!' : '¡Perdiste!'}</Text>
-                                <Text style={styles.modalScore}>Puntaje: {score}</Text>
-                                <Text style={styles.modalScore}>Monedas: {coins}</Text>
-                                <TouchableOpacity style={styles.modalButton} onPress={() => {
-                                    setGameOver(false);
-                                    setGameWon(false);
-                                    startGame();
-                                }}>
-                                    <Text style={styles.modalButtonText}>Reintentar</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.modalButton, { backgroundColor: '#ccc' }]}
-                                    onPress={() => navigation.goBack()}
-                                >
-                                    <Text style={styles.modalButtonText}>Salir</Text>
-                                </TouchableOpacity>
+                                <Text style={styles.modalTitle}>{currentQuestion?.question}</Text>
+                                <Text style={{ fontSize: 16, marginBottom: 10 }}>
+                                    {currentQuestion?.priority ? `Recompensa: +${currentQuestion.priority} moneda${currentQuestion.priority > 1 ? 's' : ''}` : ''}
+                                </Text>
+                                {Array.isArray(currentQuestion?.options) &&
+                                    currentQuestion.options.map((opt, i) => (
+                                        <TouchableOpacity
+                                            key={i}
+                                            style={styles.modalButton}
+                                            onPress={() => {
+                                                setQuestionModalVisible(false);
+                                                handleAnswer(i === currentQuestion.correct);
+                                            }}
+                                        >
+                                            <Text style={styles.modalButtonText}>{opt}</Text>
+                                        </TouchableOpacity>
+                                    ))}
                             </View>
                         </View>
                     </Modal>
-                )}
-            </View>
-        </TouchableWithoutFeedback>
+                    {(gameOver || gameWon) && (
+                        <Modal visible={true} transparent animationType="fade">
+                            <View style={styles.modalContainer}>
+                                <View style={styles.modalContent}>
+                                    <Text style={styles.modalTitle}>{gameWon ? '¡Ganaste!' : '¡Perdiste!'}</Text>
+                                    <Text style={styles.modalScore}>Puntaje: {score}</Text>
+                                    <Text style={styles.modalScore}>Monedas: {coins}</Text>
+                                    <TouchableOpacity style={styles.modalButton} onPress={() => {
+                                        setGameOver(false);
+                                        setGameWon(false);
+                                        startGame();
+                                    }}>
+                                        <Text style={styles.modalButtonText}>Reintentar</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[styles.modalButton, { backgroundColor: '#ccc' }]}
+                                        onPress={() => navigation.goBack()}
+                                    >
+                                        <Text style={styles.modalButtonText}>Salir</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </Modal>
+                    )}
+                </View>
+            </TouchableWithoutFeedback>
+        </ImageBackground>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFF',
         flexDirection: 'row',
     },
     gameContainer: {
         flex: 1,
-        backgroundColor: '#EEE',
     },
     overlay: {
         position: 'absolute',
@@ -468,6 +473,11 @@ const styles = StyleSheet.create({
     modalButtonText: {
         color: '#fff',
         fontSize: 16,
+    },
+    background: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
     },
 });
 

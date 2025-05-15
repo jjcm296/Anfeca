@@ -77,7 +77,7 @@ export const Physics = (entities, { time, dispatch, events }) => {
 
     // Reiniciar obstáculo si sale de pantalla
     if (entities.obstacle.body.position.x < -30) {
-        Matter.Body.setPosition(entities.obstacle.body, { x: 960, y: 310 });
+        Matter.Body.setPosition(entities.obstacle.body, { x: 960, y: 288 });
         dispatch({ type: 'score' });
     }
 

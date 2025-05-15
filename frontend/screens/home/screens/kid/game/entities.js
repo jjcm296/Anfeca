@@ -10,18 +10,18 @@ export const getEntities = (dispatch) => {
     const engine = Matter.Engine.create({ enableSleeping: false });
     const world = engine.world;
 
-    const character = Matter.Bodies.rectangle(100, 250, 50, 50, {
+    const character = Matter.Bodies.rectangle(100, 288, 50, 50, {
         label: 'character',
         restitution: 0.1,
         friction: 1,
     });
 
-    const obstacle = Matter.Bodies.rectangle(800, 310, 40, 40, {
+    const obstacle = Matter.Bodies.rectangle(800, 288, 40, 40, {
         label: 'obstacle',
         isStatic: true,
     });
-
-    const ground = Matter.Bodies.rectangle(480, 360, 960, 60, {
+    
+    const ground = Matter.Bodies.rectangle(480, 338, 960, 60, { // ← justo debajo del personaje y la piedra
         label: 'ground',
         isStatic: true,
         render: { visible: false }
