@@ -4,6 +4,8 @@ import {
     TouchableWithoutFeedback, Keyboard, TextInput, Alert
 } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
+import { LinearGradient } from 'expo-linear-gradient';
+import * as SecureStore from "expo-secure-store";
 
 import { ApiGetProfilesNames, ApiGetCurrentName, ApiSwitchProfile } from '../../api/ApiLogin';
 import { ApiDeleteAccount } from '../../api/ApiAccount';
@@ -14,9 +16,6 @@ import ProfileImage from '../ui/components/ProfileImage';
 import CustomButton from '../ui/components/CustomButton';
 import CloseButton from '../ui/components/CloseButton';
 import EyeToggleButton from '../ui/components/EyeToggleButton';
-import * as SecureStore from "expo-secure-store";
-import { LinearGradient } from 'expo-linear-gradient';
-import CardData from "../premium/screens/CardData";
 
 const Profile = () => {
     const navigate = useNavigation();
@@ -83,7 +82,6 @@ const Profile = () => {
         }
     };
 
-    // Lista de botones
     const options = [
         { id: '1', title: 'Cambiar perfil', onPress: () => setModalVisible(true) },
         {
@@ -97,11 +95,9 @@ const Profile = () => {
                 });
             }
         },
-
         { id: '3', title: 'Cerrar sesión', onPress: () => navigate.navigate("Authentication") },
     ];
 
-    // Si el usuario es tutor, agregar opciones extra
     if (session.profileType === 'guardian') {
         options.push(
             {
@@ -109,7 +105,7 @@ const Profile = () => {
                 title: 'Activar Premium',
                 color: '#FFD700',
                 textColor: '#333',
-                onPress: () => navigate.navigate('CardData'),
+                onPress: () => navigate.navigate('CardData')
             },
             {
                 id: 'delete',
@@ -152,9 +148,10 @@ const Profile = () => {
         <LinearGradient colors={['#2faaf6', '#ffffff']} style={styles.container}>
             <View style={styles.profileContainer}>
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
-                    <ProfileImage width={100} height={100} />
+                    <View style={styles.avatarWrapper}>
+                        <ProfileImage width={100} height={100} />
+                    </View>
                 </TouchableOpacity>
-
                 {selectedProfile && (
                     <>
                         <Text style={styles.profileType}>{selectedProfile.type}</Text>
@@ -183,7 +180,9 @@ const Profile = () => {
                                         onPress={() => handleSelectProfile(item)}
                                     >
                                         <Text style={styles.profileTypeSmall}>{item.type}</Text>
-                                        <ProfileImage width={80} height={80} />
+                                        <View style={styles.avatarWrapperSmall}>
+                                            <ProfileImage width={80} height={80} />
+                                        </View>
                                         <Text style={styles.profileName}>{item.name}</Text>
                                     </TouchableOpacity>
                                 )}
@@ -227,7 +226,6 @@ const Profile = () => {
                 </TouchableWithoutFeedback>
             </Modal>
 
-            {/* Lista de opciones */}
             <FlatList
                 data={options}
                 renderItem={({ item }) => (
@@ -276,6 +274,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
         textAlign: 'center',
+        color: '#2f5c98',
     },
     modalOverlay: {
         flex: 1,
@@ -287,9 +286,16 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 20,
         padding: 20,
-        width: '80%',
-        maxHeight: '50%',
+        width: '85%',
+        maxHeight: '60%',
         position: 'relative',
+        borderWidth: 2,
+        borderColor: '#2f5c98',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 8,
     },
     profileItem: {
         alignItems: 'center',
@@ -308,6 +314,35 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         paddingHorizontal: 10,
         marginBottom: 15,
+    },
+    avatarWrapper: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#e6f3fc', // azul claro pastel
+        borderColor: '#2faaf6',
+        borderWidth: 2,
+        borderRadius: 100,
+        padding: 6,
+        width: 112,
+        height: 112,
+    },
+
+    avatarWrapperSmall: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#ffffff',
+        borderColor: '#2faaf6',
+        borderWidth: 2,
+        borderRadius: 100,
+        padding: 4,
+        width: 90,
+        height: 90,
+        marginVertical: 6,
+        shadowColor: '#2faaf6',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.12,
+        shadowRadius: 2,
+        elevation: 3,
     },
 });
 

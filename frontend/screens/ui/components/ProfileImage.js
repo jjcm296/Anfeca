@@ -22,7 +22,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         overflow: 'hidden',
-        backgroundColor: '#E0E0E0', // Gris claro para el fondo
     },
     profileImage: {
         resizeMode: 'cover',
