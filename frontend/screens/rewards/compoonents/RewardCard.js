@@ -22,6 +22,7 @@ const RewardCard = ({
                         redemptionLimit = 0,
                         redemptionCount = 0,
                         onDeleted,
+                        onRedeem // ← IMPORTANTE para que el niño pueda canjear
                     }) => {
     const navigation = useNavigation();
     const { session } = useContext(SessionContext);
@@ -65,7 +66,7 @@ const RewardCard = ({
         );
     };
 
-    return (
+    const CardContent = () => (
         <View style={styles.card}>
             <View style={styles.leftContainer}>
                 <Text style={styles.name}>{name}</Text>
@@ -83,6 +84,18 @@ const RewardCard = ({
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
                     <Ionicons name="menu" size={24} color="#555" />
                 </TouchableOpacity>
+            )}
+        </View>
+    );
+
+    return (
+        <>
+            {session.profileType === 'kid' ? (
+                <TouchableOpacity onPress={onRedeem}>
+                    <CardContent />
+                </TouchableOpacity>
+            ) : (
+                <CardContent />
             )}
 
             <Modal
@@ -108,7 +121,7 @@ const RewardCard = ({
                     </View>
                 </View>
             </Modal>
-        </View>
+        </>
     );
 };
 

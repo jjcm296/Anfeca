@@ -134,7 +134,12 @@ const Rewards = () => {
                             onDeleted={(deletedId) =>
                                 setRewards(prev => prev.filter(r => r._id !== deletedId))
                             }
+                            onRedeem={() => {
+                                setSelectedReward(item);
+                                setModalVisible(true);
+                            }}
                         />
+
                     )}
                     contentContainerStyle={styles.list}
                 />

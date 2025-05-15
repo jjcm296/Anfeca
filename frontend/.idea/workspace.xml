@@ -6,21 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="182630bf-532f-45d8-82de-760fc9189d87" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/home/Home.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/home/Home.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/home/components/QuestionBankCard.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/home/components/QuestionBankCard.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/home/components/QuestionCard.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/home/components/QuestionCard.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/home/screens/AddQuestion.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/home/screens/AddQuestion.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/home/screens/AddQuestionBank.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/home/screens/AddQuestionBank.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/home/screens/EditQuestion.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/home/screens/EditQuestion.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/home/screens/EditQuestionBank.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/home/screens/EditQuestionBank.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/home/screens/Questions.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/home/screens/Questions.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/profile/Profile.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/profile/Profile.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/home/screens/kid/game/Runner.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/home/screens/kid/game/Runner.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/screens/rewards/Rewards.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/rewards/Rewards.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/screens/rewards/compoonents/RewardCard.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/rewards/compoonents/RewardCard.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/rewards/screens/AddReward.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/rewards/screens/AddReward.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/rewards/screens/EditReward.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/rewards/screens/EditReward.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/ui/components/CustomButton.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/ui/components/CustomButton.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/ui/components/RedemptionOptionButton.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/ui/components/RedemptionOptionButton.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +40,7 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;front&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/jorda/Documents/repo/JordaIn/Anfeca/frontend/assets/logo&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/jorda/Documents/repo/JordaIn/ConcentraTDA_web&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -115,7 +103,8 @@
       <workItem from="1747196266646" duration="17801000" />
       <workItem from="1747214698464" duration="2852000" />
       <workItem from="1747217661533" duration="1865000" />
-      <workItem from="1747237616125" duration="2719000" />
+      <workItem from="1747237616125" duration="5219000" />
+      <workItem from="1747247764555" duration="7436000" />
     </task>
     <servers />
   </component>
