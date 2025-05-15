@@ -64,7 +64,6 @@ const HomeScreen = () => {
         setLoading(false);
     };
 
-// Luego la usas:
     useEffect(() => {
         fetchBanks();
     }, []);

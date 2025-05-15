@@ -140,6 +140,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 15,
         minHeight: 160,
         justifyContent: 'space-between',
+        borderWidth: 1.5,
+        borderColor: '#2f5c98',
     },
     headerRow: {
         flexDirection: 'row',
