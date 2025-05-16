@@ -45,6 +45,7 @@
     import BankDetail from "./screens/premium/screens/BankDetail";
     import Premium from "./screens/premium/Premium";
     import {CoinUpdateProvider} from "./context/CoinUpdateContext";
+    import SplashScreen from "./screens/splashScreen/SplashScreen";
 
     const Stack = createStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -235,7 +236,8 @@
 
     function MainStack() {
         return (
-            <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Authentication">
+            <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Splash">
+                <Stack.Screen name="Splash" component={SplashScreen} />
                 <Stack.Screen name="Authentication" component={Authentication} />
                 <Stack.Screen name="RegisterAccount" component={RegisterAccount} />
                 <Stack.Screen name="CreateChildAccount" component={CreateChildAccount} />
