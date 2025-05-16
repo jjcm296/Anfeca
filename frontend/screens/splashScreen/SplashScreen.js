@@ -1,27 +1,59 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
 import { View, Text, StyleSheet, Animated, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as SecureStore from 'expo-secure-store';
+import { jwtDecode } from 'jwt-decode';
+import { SessionContext } from '../../context/SessionContext';
+import { ApiRefreshAccessToken } from '../../api/ApiLogin';
 
 export default function SplashScreen() {
     const navigation = useNavigation();
     const progress = useRef(new Animated.Value(0)).current;
+    const { updateSessionFromToken } = useContext(SessionContext);
+
+    const isTokenExpired = (decoded) => {
+        const now = Date.now() / 1000;
+        return decoded.exp < now;
+    };
 
     useEffect(() => {
         const checkSession = async () => {
-            const token = await SecureStore.getItemAsync('accessToken');
+            const accessToken = await SecureStore.getItemAsync('accessToken');
+            const refreshToken = await SecureStore.getItemAsync('refreshToken');
 
             Animated.timing(progress, {
                 toValue: 1,
                 duration: 5000,
                 useNativeDriver: false,
-            }).start(() => {
-                if (token) {
-                    navigation.replace('MainTabs');
-                } else {
-                    navigation.replace('Authentication');
+            }).start(async () => {
+                if (accessToken) {
+                    try {
+                        const decoded = jwtDecode(accessToken);
+                        if (!isTokenExpired(decoded)) {
+                            updateSessionFromToken(accessToken, decoded);
+                            navigation.replace('MainTabs');
+                            return;
+                        }
+                    } catch (e) {
+                    }
                 }
+
+                if (refreshToken) {
+                    try {
+                        const newTokenData = await ApiRefreshAccessToken(refreshToken);
+                        if (newTokenData?.accessToken) {
+                            await SecureStore.setItemAsync('accessToken', newTokenData.accessToken);
+                            const decoded = jwtDecode(newTokenData.accessToken);
+                            updateSessionFromToken(newTokenData.accessToken, decoded);
+                            navigation.replace('MainTabs');
+                            return;
+                        }
+                    } catch (e) {
+                        console.error('❌ Error al refrescar token:', e);
+                    }
+                }
+                navigation.replace('Login');
             });
         };
 
