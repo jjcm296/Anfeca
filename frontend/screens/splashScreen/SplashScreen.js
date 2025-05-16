@@ -35,7 +35,7 @@ export default function SplashScreen() {
                             navigation.replace('MainTabs');
                             return;
                         }
-                    } catch (e) {
+                    } catch (e)
                     }
                 }
 
@@ -53,7 +53,9 @@ export default function SplashScreen() {
                         console.error('❌ Error al refrescar token:', e);
                     }
                 }
-                navigation.replace('Login');
+
+                // Si no hay refreshToken o falló todo, ir al login
+                navigation.replace('Authentication');
             });
         };
 
