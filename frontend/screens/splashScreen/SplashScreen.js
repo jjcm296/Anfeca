@@ -35,7 +35,8 @@ export default function SplashScreen() {
                             navigation.replace('MainTabs');
                             return;
                         }
-                    } catch (e)
+                    } catch (e) {
+                        // Token inválido o corrupto, continúa a usar refresh
                     }
                 }
 
