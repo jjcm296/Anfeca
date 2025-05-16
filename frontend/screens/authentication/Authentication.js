@@ -45,7 +45,7 @@ const Authentication = () => {
             <View style={styles.separator}>
                 <CustonButton
                     text={"Iniciar Sesión"}
-                    color={'#2faaf6'}
+                    color={"#2f5c98"}
                     textColor={'#FFFFFF'}
                     onPress={() => navigation.navigate("Login")}
                 />

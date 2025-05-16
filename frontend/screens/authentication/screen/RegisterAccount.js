@@ -222,7 +222,7 @@ const RegisterAccount = () => {
                             onPress={handleRegister}
                             text="Crear cuenta"
                             textColor="#FFFFFF"
-                            color="#2faaf6"
+                            color="#2f5c98"
                         />
                     </View>
 

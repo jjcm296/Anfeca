@@ -122,7 +122,7 @@ const Login = ({ route }) => {
 
                         <CustomButton
                             text="Iniciar sesión"
-                            color="#2faaf6"
+                            color="#2f5c98"
                             textColor="#FFF"
                             onPress={handleLogin}
                         />

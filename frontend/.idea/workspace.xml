@@ -5,13 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="182630bf-532f-45d8-82de-760fc9189d87" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/assets/mascota/Pose-3.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/screens/premium/componens/Footer.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/ApiPremium.js" beforeDir="false" afterPath="$PROJECT_DIR$/api/ApiPremium.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/premium/Premium.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/premium/Premium.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/screens/premium/screens/BankDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/premium/screens/BankDetail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/authentication/Authentication.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/authentication/Authentication.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/authentication/screen/CreateChildAccount.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/authentication/screen/CreateChildAccount.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/authentication/screen/Login.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/authentication/screen/Login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/authentication/screen/RegisterAccount.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/authentication/screen/RegisterAccount.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/authentication/screen/VerificationCode.js" beforeDir="false" afterPath="$PROJECT_DIR$/screens/authentication/screen/VerificationCode.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
