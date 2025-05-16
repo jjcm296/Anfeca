@@ -52,7 +52,7 @@ const Authentication = () => {
                 <CustonButton
                     text={"Registrarse"}
                     color={'#FFFFFF'}
-                    textColor={'#2faaf6'}
+                    textColor={'#2f5c98'}
                     borderColor={'#2faaf6'}
                     onPress={() => navigation.navigate("RegisterAccount")}
                 />

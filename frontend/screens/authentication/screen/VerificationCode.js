@@ -17,6 +17,8 @@ import { GuardianContext } from '../../../context/GuardianContext';
 import { ApiAccount, ApiVerifyCode } from "../../../api/ApiAccount";
 import { ApiLogin } from "../../../api/ApiLogin";
 import * as SecureStore from "expo-secure-store";
+import { jwtDecode } from 'jwt-decode';
+import { SessionContext } from '../../../context/SessionContext';
 
 const VerificationCode = () => {
     const navigation = useNavigation();
@@ -26,6 +28,7 @@ const VerificationCode = () => {
 
     const { guardian } = useContext(GuardianContext);
     const { account } = useContext(AccountContext);
+    const { updateSessionFromToken } = useContext(SessionContext);
 
     const body = {
         name: guardian.name,
@@ -76,6 +79,10 @@ const VerificationCode = () => {
             const responseLogin = await ApiLogin(account.email, account.password);
             await SecureStore.setItemAsync('accessToken', responseLogin.accessToken);
             await SecureStore.setItemAsync('refreshToken', responseLogin.refreshToken);
+
+            const decoded = jwtDecode(responseLogin.accessToken);
+            updateSessionFromToken(responseLogin.accessToken, decoded);
+
             navigation.navigate("CreateChildAccount");
         } catch (error) {
             console.error("Error al crear cuenta:", error);
