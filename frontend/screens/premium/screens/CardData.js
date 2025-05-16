@@ -176,7 +176,7 @@ const CardData = () => {
                         ])
                     }
                 >
-                    <Text style={styles.buttonText}>Pagar $100.00 MXN</Text>
+                    <Text style={styles.buttonText}>Pagar $99.00 MXN</Text>
                     <ChevronRightIcon size={20} color="#FEFEFE" style={styles.buttonIcon} />
                 </Pressable>
 
