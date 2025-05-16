@@ -1,15 +1,13 @@
 {
   "expo": {
-    "name": "frontend",
+    "name": "ConcentraTDA",
     "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo/icono_app.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
@@ -29,10 +27,14 @@
       "expo-font",
       "expo-secure-store"
     ],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "extra": {
       "eas": {
         "projectId": "65029ddb-5609-4658-8004-c2de712a8b13"
       }
-    }
+    },
+    "owner": "jordain"
   }
 }
