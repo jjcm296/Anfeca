@@ -1,4 +1,4 @@
-# Anfeca
+# ConcentraTDA
 
 ## 📚 Index
 
@@ -10,7 +10,6 @@
     - [Game](#game)
     - [Reward](#reward)
     - [Premium](#premium)
-- [ConcentraTDA Google acc](#concentratda-google-acc)
 - [Command to install dependencies](#command-to-install-dependencies)
 - [Command to run the API](#command-to-run-the-api)
 - [Account registered](#account-registered)
@@ -129,10 +128,6 @@ With `redemptionLimit`
 
 
 ![img_11.png](readmeImages/img_11.png)
-
-## ConcentraTDA Google acc
-- anfecaconcentratda@gmail.com  
-- Password321
 
 ## command to install dependencies 
 `npm i bcrypt cors dotenv express jsonwebtoken mongodb mongoose sib-api-v3-sdk joi luxon cron`
